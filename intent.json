@@ -30,12 +30,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q4",
-      "text": "What shape do a step's expectations take, so they can be checked against what actually changed?",
-      "proposal": "A fixed shape per kind, validated like the intent. Symbol lists (added, removed, changed from and to, unchanged) are checked mechanically; rules and invariants stay prose and are marked as checked by a test or by the human. Anything meant to be checked by machine must be a list of symbols, never prose. The fallback kind has no mechanical check.",
-      "origin": "request"
-    },
-    {
       "id": "Q5",
       "text": "How are relationships between intents recorded?",
       "proposal": "Typed links stored on one side only: blocks, duplicates, parent, and the existing follow-up for deferred work. Links between steps of different intents go in the step's dependencies, set at the plan gate. Reverse links are computed, and mentioning another intent in prose is just a mention.",
@@ -95,6 +89,12 @@
       "id": "Q3",
       "question": "How fine-grained is a plan: one step per logical change, or one step per field or symbol?",
       "answer": "One step per logical change, whose expectations list every symbol it touches.",
+      "origin": "request"
+    },
+    {
+      "id": "Q4",
+      "question": "What shape do a step's expectations take, so they can be checked against what actually changed?",
+      "answer": "A fixed, validated shape per kind. Symbol lists (added, removed, changed from and to, unchanged) are checked by machine; rules and invariants stay prose, marked as checked by a test or the human. Anything machine-checked must be a symbol list, never prose. The fallback kind has no machine check.",
       "origin": "request"
     }
   ]
