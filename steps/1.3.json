@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "1.3",
+  "parent": "1",
+  "kind": "feature",
+  "origin": "planned",
+  "summary": "Typed links between intents, and step dependencies that cross intents",
+  "risk": "medium",
+  "riskReason": "Validation starts reading other intents' refs, so a missing or broken ref now affects this intent too.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "Intent.relations",
+        "type": "{ type: 'blocks' | 'duplicates' | 'parent', target: string }[]"
+      },
+      {
+        "symbol": "incomingLinks",
+        "signature": "(repo, id) => links from other intents that point at this one"
+      }
+    ],
+    "change": [
+      {
+        "symbol": "PlanStep.dependsOn",
+        "from": "steps of this plan",
+        "to": "steps of this plan or of another intent in the same repo"
+      }
+    ],
+    "rules": [
+      "links are stored on one side only, and reverse links are computed by scanning refs/plans",
+      "a link or cross-intent dependency must point at an intent, and step, that exists",
+      "the intent gate shows outgoing and incoming links, follow-ups included"
+    ]
+  },
+  "evidence": [
+    "validation rejects a link to an intent that doesn't exist",
+    "this repo's #2 shows #1 as linking to it"
+  ],
+  "dependsOn": []
+}

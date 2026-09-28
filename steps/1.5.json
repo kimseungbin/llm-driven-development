@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "1.5",
+  "parent": "1",
+  "kind": "signature-change",
+  "origin": "planned",
+  "summary": "Rename the evidence gate to the result gate",
+  "risk": "low",
+  "riskReason": "Only the sample view uses the old name, and it's renamed in the same step.",
+  "expect": {
+    "change": [
+      {
+        "symbol": "renderEvidenceGate",
+        "from": "renderEvidenceGate",
+        "to": "renderResultGate"
+      },
+      {
+        "symbol": "EvidenceGateView",
+        "from": "EvidenceGateView",
+        "to": "ResultGateView"
+      },
+      {
+        "symbol": "View.view",
+        "from": "'evidence-gate'",
+        "to": "'result-gate'"
+      }
+    ],
+    "rules": [
+      "the view's badge reads Result, and its label names the result gate",
+      "the sample view is renamed along with it"
+    ]
+  },
+  "evidence": [
+    "the sample renders under the new name",
+    "the old name appears nowhere except in the design record's history"
+  ],
+  "dependsOn": []
+}

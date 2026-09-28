@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "1.7",
+  "parent": "1",
+  "kind": "non-semantic",
+  "origin": "planned",
+  "summary": "Record the decisions in the design record, and get the gate layouts approved",
+  "risk": "low",
+  "riskReason": "Documentation, plus a human sign-off; no code changes.",
+  "expect": {
+    "rules": [
+      "Q1 through Q13 move from open questions into the decided sections, dated",
+      "the Where we left off section reflects the result",
+      "the intent-gate and plan-gate layouts are shown on the coupons scenario and approved as a whole"
+    ]
+  },
+  "evidence": [
+    "no intent- or plan-structure item is left under Open questions",
+    "the human's layout approval is recorded as a decision"
+  ],
+  "dependsOn": [
+    "1.6"
+  ]
+}

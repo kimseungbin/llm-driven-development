@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "1.4",
+  "parent": "1",
+  "kind": "feature",
+  "origin": "planned",
+  "summary": "Each repo keeps its own area list in a config ref, with a skill that helps set it up",
+  "risk": "medium",
+  "riskReason": "Changing a repo's list can make its existing intents invalid until their areas are edited.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "refs/plans-config",
+        "type": "config ref whose tree holds the area list"
+      },
+      {
+        "symbol": "loadAreas",
+        "signature": "(repo) => string[]"
+      }
+    ],
+    "change": [
+      {
+        "symbol": "validateIntent",
+        "from": "areas from the fixed list",
+        "to": "areas from the repo's list, defaulting to fe, be, db, infra"
+      }
+    ],
+    "rules": [
+      "the config is written only through the CLI, as an event commit, like plans",
+      "scripts/github.sh pushes and fetches the config ref along with the plans",
+      "a setup skill looks at the repo's layout, proposes an area list, and asks the human to confirm it before writing it"
+    ]
+  },
+  "evidence": [
+    "an intent using an area outside its repo's list is rejected",
+    "a repo without a config accepts the default four",
+    "the config ref round-trips through github.sh push and pull"
+  ],
+  "dependsOn": []
+}

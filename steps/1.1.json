@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "1.1",
+  "parent": "1",
+  "kind": "dto-shape",
+  "origin": "planned",
+  "summary": "Switch steps to format version 2, with their own risk and a fixed expectation shape per kind, and migrate every stored plan",
+  "risk": "high",
+  "riskReason": "Stored plans can't be read between the code change and the migration (accepted in Q12), and the migration rewrites this plan too.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "PlanStep.risk",
+        "type": "'low' | 'medium' | 'high'"
+      },
+      {
+        "symbol": "PlanStep.riskReason",
+        "type": "string"
+      },
+      {
+        "symbol": "STEP_KINDS",
+        "type": "dto-shape | signature-change | behavior-change | feature | non-semantic | other"
+      }
+    ],
+    "remove": [
+      "riskByKind"
+    ],
+    "change": [
+      {
+        "symbol": "PlanStep.schemaVersion",
+        "from": "1",
+        "to": "2"
+      }
+    ],
+    "rules": [
+      "each kind's expectations are validated: symbol lists (add, remove, change from and to, unchanged) for machine checks, and rules and invariants as prose, each marked as checked by a test or by the human",
+      "a high-risk step must give its reason",
+      "the plan gate shows each step's own risk; high-risk reasons are always visible, the rest sit behind a CSS-only toggle",
+      "soft-delete #7 and this repo's #1 are each migrated by one edit event, right after the code change"
+    ],
+    "invariant": "no stored plan is left in format version 1 after this step"
+  },
+  "evidence": [
+    "plan-view builds for soft-delete #7 and this repo's #1 under the new validation",
+    "a version-1 step, and a high-risk step without a reason, are both rejected",
+    "each migration shows up as a single edit event in git log"
+  ],
+  "dependsOn": []
+}

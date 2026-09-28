@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "1.2",
+  "parent": "1",
+  "kind": "dto-shape",
+  "origin": "planned",
+  "summary": "Let a question name who must answer it",
+  "risk": "low",
+  "riskReason": "The field is optional, so every existing question stays valid.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "Question.owner",
+        "type": "string, defaulting to the approving human"
+      }
+    ],
+    "rules": [
+      "a question owned by someone other than the approver shows its owner",
+      "an owned question blocks its gate until decide records the owner's answer"
+    ]
+  },
+  "evidence": [
+    "the intent gate renders an owned question with its owner",
+    "validation accepts questions with and without an owner"
+  ],
+  "dependsOn": []
+}
