@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "1.4",
   "parent": "1",
   "kind": "feature",
@@ -26,9 +26,18 @@
       }
     ],
     "rules": [
-      "the config is written only through the CLI, as an event commit, like plans",
-      "scripts/github.sh pushes and fetches the config ref along with the plans",
-      "a setup skill looks at the repo's layout, proposes an area list, and asks the human to confirm it before writing it"
+      {
+        "text": "the config is written only through the CLI, as an event commit, like plans",
+        "checkedBy": "human"
+      },
+      {
+        "text": "scripts/github.sh pushes and fetches the config ref along with the plans",
+        "checkedBy": "human"
+      },
+      {
+        "text": "a setup skill looks at the repo's layout, proposes an area list, and asks the human to confirm it before writing it",
+        "checkedBy": "human"
+      }
     ]
   },
   "evidence": [

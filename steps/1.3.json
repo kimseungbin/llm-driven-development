@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "1.3",
   "parent": "1",
   "kind": "feature",
@@ -26,9 +26,18 @@
       }
     ],
     "rules": [
-      "links are stored on one side only, and reverse links are computed by scanning refs/plans",
-      "a link or cross-intent dependency must point at an intent, and step, that exists",
-      "the intent gate shows outgoing and incoming links, follow-ups included"
+      {
+        "text": "links are stored on one side only, and reverse links are computed by scanning refs/plans",
+        "checkedBy": "human"
+      },
+      {
+        "text": "a link or cross-intent dependency must point at an intent, and step, that exists",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the intent gate shows outgoing and incoming links, follow-ups included",
+        "checkedBy": "human"
+      }
     ]
   },
   "evidence": [

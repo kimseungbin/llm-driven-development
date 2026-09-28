@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "1.5",
   "parent": "1",
   "kind": "signature-change",
@@ -26,8 +26,14 @@
       }
     ],
     "rules": [
-      "the view's badge reads Result, and its label names the result gate",
-      "the sample view is renamed along with it"
+      {
+        "text": "the view's badge reads Result, and its label names the result gate",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the sample view is renamed along with it",
+        "checkedBy": "human"
+      }
     ]
   },
   "evidence": [

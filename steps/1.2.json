@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "1.2",
   "parent": "1",
   "kind": "data-shape",
@@ -15,8 +15,14 @@
       }
     ],
     "rules": [
-      "a question owned by someone other than the approver shows its owner",
-      "an owned question blocks its gate until decide records the owner's answer"
+      {
+        "text": "a question owned by someone other than the approver shows its owner",
+        "checkedBy": "human"
+      },
+      {
+        "text": "an owned question blocks its gate until decide records the owner's answer",
+        "checkedBy": "human"
+      }
     ]
   },
   "evidence": [

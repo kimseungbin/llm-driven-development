@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "1.1",
   "parent": "1",
   "kind": "data-shape",
@@ -38,13 +38,33 @@
       }
     ],
     "rules": [
-      "each kind's expectations are validated: symbol lists (add, remove, change from and to, unchanged) for machine checks, and rules and invariants as prose, each marked as checked by a test or by the human",
-      "a high-risk step must give its reason",
-      "the plan gate shows each step's own risk; high-risk reasons are always visible, the rest sit behind a CSS-only toggle",
-      "soft-delete #7 and this repo's #1 are each migrated by one edit event, right after the code change",
-      "the dto-shape kind is renamed data-shape everywhere: stored plans, the sample view, and the renderer registry"
+      {
+        "text": "each kind's expectations are validated: symbol lists (add, remove, change from and to, unchanged) for machine checks, and rules and invariants as prose, each marked as checked by a test or by the human",
+        "checkedBy": "human"
+      },
+      {
+        "text": "a high-risk step must give its reason",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the plan gate shows each step's own risk; high-risk reasons are always visible, the rest sit behind a CSS-only toggle",
+        "checkedBy": "human"
+      },
+      {
+        "text": "soft-delete #7 and this repo's #1 are each migrated by one edit event, right after the code change",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the dto-shape kind is renamed data-shape everywhere: stored plans, the sample view, and the renderer registry",
+        "checkedBy": "human"
+      }
     ],
-    "invariant": "no stored plan is left in format version 1 after this step"
+    "invariants": [
+      {
+        "text": "no stored plan is left in format version 1 after this step",
+        "checkedBy": "human"
+      }
+    ]
   },
   "evidence": [
     "plan-view builds for soft-delete #7 and this repo's #1 under the new validation",

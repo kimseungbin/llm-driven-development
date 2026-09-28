@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "1.7",
   "parent": "1",
   "kind": "non-semantic",
@@ -9,9 +9,18 @@
   "riskReason": "Documentation, plus a human sign-off; no code changes.",
   "expect": {
     "rules": [
-      "Q1 through Q13 move from open questions into the decided sections, dated",
-      "the Where we left off section reflects the result",
-      "the intent-gate and plan-gate layouts are shown on the coupons scenario and approved as a whole"
+      {
+        "text": "Q1 through Q13 move from open questions into the decided sections, dated",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the Where we left off section reflects the result",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the intent-gate and plan-gate layouts are shown on the coupons scenario and approved as a whole",
+        "checkedBy": "human"
+      }
     ]
   },
   "evidence": [
