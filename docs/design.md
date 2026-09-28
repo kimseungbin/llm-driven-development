@@ -220,6 +220,7 @@ Example, stored as `KRW-12/intent.json` and `KRW-12/steps/KRW-12.1.json`:
   - Fixed cost is about 5.2 KB for (a) (mostly CSS) and 0.65 KB for (b).
   - Per row, it's about 346 B for (a) and 213 B for (b).
   - Both are paid twice per render: read as a tool result, then emitted as output. (d) costs a constant ~100 output tokens.
+- 2026-09-28: GitHub accepts pushes of custom `refs/plans/*` refs. `git ls-remote` lists them on the private scenario repos, though the web UI doesn't show them.
 - Node 26 runs `.ts` directly, and `node:module` exposes `stripTypeScriptTypes`, so a browser build needs no dependencies.
 - Earlier (via docs/search):
   - SSH signing and allowed-signers behavior.
