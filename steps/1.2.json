@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "1.2",
   "parent": "1",
-  "kind": "dto-shape",
+  "kind": "data-shape",
   "origin": "planned",
   "summary": "Let a question name who must answer it",
   "risk": "low",
