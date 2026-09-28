@@ -76,6 +76,12 @@
       "text": "What's the third gate called?",
       "proposal": "The result gate. The other two are named after what they approve, and this one approves a step's result. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
       "origin": "request"
+    },
+    {
+      "id": "Q11",
+      "text": "A step's risk is now set per step, proposed by the agent. Does it need a stated reason?",
+      "proposal": "Yes, one line saying what drives it, such as \"removes a field that four call sites read\". An agent-set risk is a claim, and a reason lets you check it instead of trusting it.",
+      "origin": "request"
     }
   ],
   "decisions": [
