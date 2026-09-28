@@ -28,7 +28,14 @@
       "reason": "So far these are opinions only. Kinds get added when a scenario needs one."
     }
   ],
-  "openQuestions": [],
+  "openQuestions": [
+    {
+      "id": "Q14",
+      "origin": "request",
+      "text": "The dto-shape kind (decided in Q2) covers any change to a data type's fields, not just data transfer objects: domain entities and the tool's own model too. Rename it?",
+      "proposal": "Rename it data-shape: a change to the fields of a data type (add, remove, rename, retype, or nullability), whatever role the type plays. The migration step renames it in stored plans too. Q2 stays as recorded; this decision supersedes only the kind's name."
+    }
+  ],
   "decisions": [
     {
       "id": "Q1",
