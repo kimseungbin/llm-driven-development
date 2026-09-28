@@ -28,14 +28,7 @@
       "reason": "So far these are opinions only. Kinds get added when a scenario needs one."
     }
   ],
-  "openQuestions": [
-    {
-      "id": "Q13",
-      "origin": "code",
-      "text": "Where does a repo's area list live: a committed file in the product repo, or a ref next to the plans?",
-      "proposal": "A committed file at the product repo's root, such as .plans.json. Areas describe the code's layout, so they should change alongside the code and be reviewed like it. A ref would match how plans are stored, but nobody would see it during code review."
-    }
-  ],
+  "openQuestions": [],
   "decisions": [
     {
       "id": "Q1",
@@ -107,6 +100,12 @@
       "id": "Q12",
       "question": "Plans already stored in refs use the current step format: #7 in the soft-delete repo, and this plan itself once its steps are written. Per-step risk and fixed expectation shapes change that format. Migrate the stored plans in place, or version the format and keep reading the old one?",
       "answer": "Migrate in one step: switch to step format version 2 and migrate every stored plan in the same step. Stored plans are briefly unreadable between the code change and the migration, and that's accepted.",
+      "origin": "code"
+    },
+    {
+      "id": "Q13",
+      "question": "Where does a repo's area list live: a committed file in the product repo, or a ref next to the plans?",
+      "answer": "A ref next to the plans (refs/plans-config), written through the CLI with event history like plans. It works on repos you don't own. Revisit if areas ever gain path patterns.",
       "origin": "code"
     }
   ]
