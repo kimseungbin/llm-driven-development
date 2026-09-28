@@ -1,0 +1,12 @@
+{
+  "name": "llm-driven-development",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "render": "node src/cli.ts render",
+    "build:browser": "node scripts/build-browser.ts"
+  }
+}
