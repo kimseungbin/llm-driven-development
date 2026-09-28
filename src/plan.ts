@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { AREAS, type Intent, type PlanStep } from './model.ts'
+import { AREAS, EXPECT_FIELDS, type Intent, type PlanStep, RISKS, STEP_KINDS, type StepKind } from './model.ts'
 import type { IntentGateView } from './render/intent-gate.ts'
 import type { PlanGateView } from './render/plan-gate.ts'
 import { commit, lastApproval, listIds, read, type Snapshot } from './store.ts'
@@ -53,15 +53,46 @@ const validateIntent = (intent: Intent) =>
     need(new Set(ids).size === ids.length, 'intent: question and decision ids must be unique')
   })
 
+// A symbol is one token; anything with spaces is prose and belongs in rules or invariants.
+const isSymbol = (s: unknown) => typeof s === 'string' && s.length > 0 && !/\s/.test(s)
+
+// What each kind must state so that reconciliation has something to check.
+const kindNeeds: Record<StepKind, [check: (e: PlanStep['expect']) => boolean, message: string]> = {
+  'data-shape': [(e) => !!(e.add?.length || e.remove?.length || e.change?.length), 'needs add, remove, or change'],
+  'signature-change': [(e) => !!e.change?.length && e.change.every((c) => c.from && c.to), 'needs change entries with from and to'],
+  'behavior-change': [(e) => !!(e.change?.length && e.rules?.length), 'needs the changed symbols and at least one rule'],
+  feature: [(e) => !!e.add?.length, 'needs add'],
+  'non-semantic': [() => true, ''],
+  other: [() => true, ''],
+}
+
+function validateExpect(s: PlanStep, need: Need) {
+  const e = s.expect
+  if (!e || typeof e !== 'object') return need(false, `${s.id}: expect is required`)
+  for (const key of Object.keys(e))
+    need((EXPECT_FIELDS as readonly string[]).includes(key), `${s.id}: expect.${key} isn't a field (${EXPECT_FIELDS.join(', ')})`)
+  for (const r of [...(e.add ?? []), ...(e.change ?? [])]) need(isSymbol(r?.symbol), `${s.id}: "${r?.symbol}" isn't a symbol; prose goes in rules or invariants`)
+  for (const x of [...(e.remove ?? []), ...(e.unchanged ?? [])]) need(isSymbol(x), `${s.id}: "${x}" isn't a symbol; prose goes in rules or invariants`)
+  for (const c of [...(e.rules ?? []), ...(e.invariants ?? [])])
+    need(c?.text && (c.checkedBy === 'test' || c.checkedBy === 'human'), `${s.id}: rules and invariants need text and checkedBy (test or human)`)
+  const [check, message] = kindNeeds[s.kind] ?? [() => true, '']
+  need(check(e), `${s.id}: a ${s.kind} step ${message}`)
+}
+
 const validateSteps = (intent: Intent, steps: PlanStep[]) =>
   collect((need) => {
     const ids = new Set(steps.map((s) => s.id))
     const pattern = new RegExp(`^${intent.id}\\.\\d+$`)
     for (const s of steps) {
+      need(s.schemaVersion === 2, `${s.id}: steps use format version 2`)
       need(pattern.test(s.id) && s.parent === intent.id, `${s.id}: step ids look like ${intent.id}.<n>, with parent ${intent.id}`)
-      need(s.kind && s.summary, `${s.id}: kind and summary are required`)
+      need(s.summary, `${s.id}: summary is required`)
+      need((STEP_KINDS as readonly string[]).includes(s.kind), `${s.id}: kind must be one of ${STEP_KINDS.join(', ')}`)
+      need((RISKS as readonly string[]).includes(s.risk), `${s.id}: risk must be low, medium, or high`)
+      need(s.risk !== 'high' || s.riskReason, `${s.id}: a high-risk step needs a riskReason`)
       need(s.evidence?.length, `${s.id}: evidence is required`)
       for (const d of s.dependsOn ?? []) need(ids.has(d), `${s.id}: dependsOn ${d} is not a step in this plan`)
+      validateExpect(s, need)
     }
   })
 

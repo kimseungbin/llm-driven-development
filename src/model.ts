@@ -32,14 +32,48 @@ export interface Intent {
   decisions?: Decision[]
 }
 
+export const STEP_KINDS = ['data-shape', 'signature-change', 'behavior-change', 'feature', 'non-semantic', 'other'] as const
+export type StepKind = (typeof STEP_KINDS)[number]
+
+export const RISKS = ['low', 'medium', 'high'] as const
+export type Risk = (typeof RISKS)[number]
+
+// Prose can't be checked by machine, so it always says who checks it.
+export interface Check {
+  text: string
+  checkedBy: 'test' | 'human'
+}
+
+export interface SymbolRef {
+  symbol: string
+  type?: string
+  signature?: string
+  from?: string
+  to?: string
+}
+
+// Symbol lists are what reconciliation checks against the observed diff; rules and invariants are prose.
+export interface Expect {
+  add?: SymbolRef[]
+  remove?: string[]
+  change?: SymbolRef[]
+  unchanged?: string[]
+  rules?: Check[]
+  invariants?: Check[]
+}
+
+export const EXPECT_FIELDS = ['add', 'remove', 'change', 'unchanged', 'rules', 'invariants'] as const
+
 export interface PlanStep {
-  schemaVersion: 1
+  schemaVersion: 2
   id: string
   parent: string
-  kind: string
+  kind: StepKind
   origin: 'planned' | 'discovered'
   summary: string
-  expect?: Record<string, unknown>
+  risk: Risk
+  riskReason?: string
+  expect: Expect
   evidence: string[]
   dependsOn: string[]
 }

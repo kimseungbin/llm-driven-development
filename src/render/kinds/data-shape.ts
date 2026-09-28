@@ -22,7 +22,7 @@ const tone: Record<FieldChange['change'], string> = {
 
 const value = (v: string | null) => (v === null ? '<span class="v-dim">none</span>' : esc(v))
 
-export const dtoShape: KindRenderer = {
+export const dataShape: KindRenderer = {
   itemName: (item) => (item.detail as FieldChange).field,
 
   body(view) {

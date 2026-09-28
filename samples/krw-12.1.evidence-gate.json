@@ -8,7 +8,7 @@
     "kind": "refactor.behavior-preserving",
     "planRev": "3f9a2c1"
   },
-  "observed": { "kind": "dto-shape", "range": "main..feat/krw", "head": "a1c44e0" },
+  "observed": { "kind": "data-shape", "range": "main..feat/krw", "head": "a1c44e0" },
   "items": [
     {
       "plan": "matched",

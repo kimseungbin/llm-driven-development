@@ -1,5 +1,5 @@
 import { displayId, esc, list, plural, promptButton } from './html.ts'
-import { dtoShape } from './kinds/dto-shape.ts'
+import { dataShape } from './kinds/data-shape.ts'
 import { unknownKind } from './kinds/unknown.ts'
 import { style } from './style.ts'
 
@@ -26,7 +26,7 @@ export interface KindRenderer {
   itemName(item: ReconItem): string
 }
 
-const kinds: Record<string, KindRenderer> = { 'dto-shape': dtoShape }
+const kinds: Record<string, KindRenderer> = { 'data-shape': dataShape }
 
 const STYLE = style(`
 .v-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
