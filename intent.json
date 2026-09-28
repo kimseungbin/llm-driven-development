@@ -30,12 +30,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q7",
-      "text": "Should each acceptance criterion name the stakeholder need it serves?",
-      "proposal": "Not by default. The problem names who feels the pain, and a criterion gets an optional 'for' only when the intent serves more than one stakeholder. Requiring it everywhere adds noise to single-stakeholder intents, which are most of them.",
-      "origin": "request"
-    },
-    {
       "id": "Q8",
       "text": "What format are intents and plans written in: JSON only, or markdown with a structured header?",
       "proposal": "JSON only, written through the CLI. People read plans through the views, not the raw files, and one format keeps validation and hashing simple. Markdown can be added later as an input the CLI converts.",
@@ -95,6 +89,12 @@
       "id": "Q6",
       "question": "How does a decision that needs someone else's confirmation get tracked, like Finance confirming the tax treatment?",
       "answer": "It stays an open question owned by the outside party, and it blocks the intent until they confirm. Questions get an owner, which defaults to the approving human.",
+      "origin": "request"
+    },
+    {
+      "id": "Q7",
+      "question": "Should each acceptance criterion name the stakeholder need it serves?",
+      "answer": "Never. Acceptance criteria stay plain statements; the problem names who feels the pain.",
       "origin": "request"
     }
   ]
