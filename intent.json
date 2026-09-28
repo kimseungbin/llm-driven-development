@@ -30,12 +30,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q1",
-      "text": "Who breaks an intent into steps and writes each step's expectations?",
-      "proposal": "The agent proposes the steps and their expectations after reading the code, and the human approves, edits, or rejects them at the plan gate. The skills already work this way; recording it turns a habit into a rule.",
-      "origin": "request"
-    },
-    {
       "id": "Q2",
       "text": "What's the list of step kinds, and does a step's risk come from its kind?",
       "proposal": "Five kinds: dto-shape, signature-change, behavior-change, feature, and non-semantic, plus a fallback for anything else. Risk defaults from kind (non-semantic low; dto-shape and feature medium; signature and behavior changes high), and a step can be raised above its default by signals like breaking changes. Five cover every scenario so far without a renderer for each rare case.",
@@ -90,5 +84,12 @@
       "origin": "request"
     }
   ],
-  "decisions": []
+  "decisions": [
+    {
+      "id": "Q1",
+      "question": "Who breaks an intent into steps and writes each step's expectations?",
+      "answer": "The agent proposes the steps and their expectations after reading the code, and the human approves, edits, or rejects them at the plan gate.",
+      "origin": "request"
+    }
+  ]
 }
