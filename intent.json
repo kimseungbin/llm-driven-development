@@ -30,12 +30,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q12",
-      "origin": "code",
-      "text": "Plans already stored in refs use the current step format: #7 in the soft-delete repo, and this plan itself once its steps are written. Per-step risk and fixed expectation shapes change that format. Migrate the stored plans in place, or version the format and keep reading the old one?",
-      "proposal": "Migrate in place, and mark the new steps as schema version 2. Old commits keep their old format, but only a ref's tip is ever read (approvals are found by commit trailers, not by parsing old trees), so readers only need version 2. Do it in three safe steps: accept both formats, migrate each stored plan with a normal edit event, then require the new one."
-    },
-    {
       "id": "Q13",
       "origin": "code",
       "text": "Where does a repo's area list live: a committed file in the product repo, or a ref next to the plans?",
@@ -108,6 +102,12 @@
       "question": "What's the third gate called?",
       "answer": "The result gate. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
       "origin": "request"
+    },
+    {
+      "id": "Q12",
+      "question": "Plans already stored in refs use the current step format: #7 in the soft-delete repo, and this plan itself once its steps are written. Per-step risk and fixed expectation shapes change that format. Migrate the stored plans in place, or version the format and keep reading the old one?",
+      "answer": "Migrate in one step: switch to step format version 2 and migrate every stored plan in the same step. Stored plans are briefly unreadable between the code change and the migration, and that's accepted.",
+      "origin": "code"
     }
   ]
 }
