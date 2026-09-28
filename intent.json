@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "1",
+  "kind": "intent",
+  "title": "Settle the intent and plan structure and gate views",
+  "request": "We have settled UI and structure for both intent and plan right?\n\nSo let's do it with the tools we already have. So it's like self-.... or recursive",
+  "problem": "The intent and plan formats and their gate views are only partly decided. The open questions are scattered through the design record, so it's hard to tell what's settled, and checking a plan against real changes can't start until a step's expectations have a defined shape.",
+  "areas": [
+    "fe",
+    "be"
+  ],
+  "acceptance": [
+    "Every question below is decided, and the design record shows each one as decided.",
+    "The formats, their validation, and the authoring skills match every decision that changes a format.",
+    "The intent gate and plan gate layouts are each approved as a whole, after seeing them rendered on a real scenario.",
+    "The review-side questions are tracked in their own intent, so none of them get lost."
+  ],
+  "deferred": [
+    {
+      "item": "Review-side design questions: observed-only reviews for your own agents' work, whether reviews reach other authors, where approvals live once there's a team, and whether inline review views show only the rows that need a decision",
+      "reason": "They belong to the third gate, which hasn't been used on a real step yet, so deciding them now would be guessing.",
+      "followUp": "2"
+    }
+  ],
+  "nonGoals": [
+    {
+      "item": "Step kinds for front-end, database, and infrastructure changes",
+      "reason": "So far these are opinions only. Kinds get added when a scenario needs one."
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "text": "Who breaks an intent into steps and writes each step's expectations?",
+      "proposal": "The agent proposes the steps and their expectations after reading the code, and the human approves, edits, or rejects them at the plan gate. The skills already work this way; recording it turns a habit into a rule.",
+      "origin": "request"
+    },
+    {
+      "id": "Q2",
+      "text": "What's the list of step kinds, and does a step's risk come from its kind?",
+      "proposal": "Five kinds: dto-shape, signature-change, behavior-change, feature, and non-semantic, plus a fallback for anything else. Risk defaults from kind (non-semantic low; dto-shape and feature medium; signature and behavior changes high), and a step can be raised above its default by signals like breaking changes. Five cover every scenario so far without a renderer for each rare case.",
+      "origin": "request"
+    },
+    {
+      "id": "Q3",
+      "text": "How fine-grained is a plan: one step per logical change, or one step per field or symbol?",
+      "proposal": "One step per logical change, whose expectations list every symbol it touches. Steps per field would need a field's identity to survive renames and would bury the reviewer in steps; symbol lists inside a step keep the checks field-level without that.",
+      "origin": "request"
+    },
+    {
+      "id": "Q4",
+      "text": "What shape do a step's expectations take, so they can be checked against what actually changed?",
+      "proposal": "A fixed shape per kind, validated like the intent. Symbol lists (added, removed, changed from and to, unchanged) are checked mechanically; rules and invariants stay prose and are marked as checked by a test or by the human. Anything meant to be checked by machine must be a list of symbols, never prose. The fallback kind has no mechanical check.",
+      "origin": "request"
+    },
+    {
+      "id": "Q5",
+      "text": "How are relationships between intents recorded?",
+      "proposal": "Typed links stored on one side only: blocks, duplicates, parent, and the existing follow-up for deferred work. Links between steps of different intents go in the step's dependencies, set at the plan gate. Reverse links are computed, and mentioning another intent in prose is just a mention.",
+      "origin": "request"
+    },
+    {
+      "id": "Q6",
+      "text": "How does a decision that needs someone else's confirmation get tracked, like Finance confirming the tax treatment?",
+      "proposal": "A decision can carry a pending confirmation that names who must confirm. It doesn't block planning, but the steps that implement it can't have their results approved until the human records the confirmation. That keeps work moving without losing the dependency.",
+      "origin": "request"
+    },
+    {
+      "id": "Q7",
+      "text": "Should each acceptance criterion name the stakeholder need it serves?",
+      "proposal": "Not by default. The problem names who feels the pain, and a criterion gets an optional 'for' only when the intent serves more than one stakeholder. Requiring it everywhere adds noise to single-stakeholder intents, which are most of them.",
+      "origin": "request"
+    },
+    {
+      "id": "Q8",
+      "text": "What format are intents and plans written in: JSON only, or markdown with a structured header?",
+      "proposal": "JSON only, written through the CLI. People read plans through the views, not the raw files, and one format keeps validation and hashing simple. Markdown can be added later as an input the CLI converts.",
+      "origin": "request"
+    },
+    {
+      "id": "Q9",
+      "text": "The area list (fe, be, db, infra) doesn't fit every repo; this tool itself is a command-line tool that stores data in git. Should each repo define its own areas?",
+      "proposal": "Yes. Each repo declares its own closed list of areas in a small config file, defaulting to fe, be, db, and infra. A closed list still makes filtering and mismatch checks work, and this repo could use cli, views, and storage.",
+      "origin": "request"
+    },
+    {
+      "id": "Q10",
+      "text": "What's the third gate called?",
+      "proposal": "The result gate. The other two are named after what they approve, and this one approves a step's result. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
+      "origin": "request"
+    }
+  ],
+  "decisions": []
+}
