@@ -64,12 +64,6 @@
       "text": "What's the third gate called?",
       "proposal": "The result gate. The other two are named after what they approve, and this one approves a step's result. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
       "origin": "request"
-    },
-    {
-      "id": "Q11",
-      "text": "A step's risk is now set per step, proposed by the agent. Does it need a stated reason?",
-      "proposal": "Yes, one line saying what drives it, such as \"removes a field that four call sites read\". An agent-set risk is a claim, and a reason lets you check it instead of trusting it.",
-      "origin": "request"
     }
   ],
   "decisions": [
@@ -95,6 +89,12 @@
       "id": "Q4",
       "question": "What shape do a step's expectations take, so they can be checked against what actually changed?",
       "answer": "A fixed, validated shape per kind. Symbol lists (added, removed, changed from and to, unchanged) are checked by machine; rules and invariants stay prose, marked as checked by a test or the human. Anything machine-checked must be a symbol list, never prose. The fallback kind has no machine check.",
+      "origin": "request"
+    },
+    {
+      "id": "Q11",
+      "question": "A step's risk is now set per step, proposed by the agent. Does it need a stated reason?",
+      "answer": "A reason is required only for high-risk steps, but the agent records a one-line reason for every step. Views show high-risk reasons by default and hide the others until the reader turns them on.",
       "origin": "request"
     }
   ]
