@@ -30,12 +30,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q9",
-      "text": "The area list (fe, be, db, infra) doesn't fit every repo; this tool itself is a command-line tool that stores data in git. Should each repo define its own areas?",
-      "proposal": "Yes. Each repo declares its own closed list of areas in a small config file, defaulting to fe, be, db, and infra. A closed list still makes filtering and mismatch checks work, and this repo could use cli, views, and storage.",
-      "origin": "request"
-    },
-    {
       "id": "Q10",
       "text": "What's the third gate called?",
       "proposal": "The result gate. The other two are named after what they approve, and this one approves a step's result. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
@@ -95,6 +89,12 @@
       "id": "Q8",
       "question": "What format are intents and plans written in: JSON only, or markdown with a structured header?",
       "answer": "JSON only, written through the CLI. Markdown may be added later as an input the CLI converts.",
+      "origin": "request"
+    },
+    {
+      "id": "Q9",
+      "question": "The area list (fe, be, db, infra) doesn't fit every repo; this tool itself is a command-line tool that stores data in git. Should each repo define its own areas?",
+      "answer": "Each repo declares its own closed list of areas in a small config file, defaulting to fe, be, db, and infra. A setup skill helps create that config: it looks at the repo's layout, proposes an area list, and the human confirms it.",
       "origin": "request"
     }
   ]
