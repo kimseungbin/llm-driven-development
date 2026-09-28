@@ -28,7 +28,20 @@
       "reason": "So far these are opinions only. Kinds get added when a scenario needs one."
     }
   ],
-  "openQuestions": [],
+  "openQuestions": [
+    {
+      "id": "Q12",
+      "origin": "code",
+      "text": "Plans already stored in refs use the current step format: #7 in the soft-delete repo, and this plan itself once its steps are written. Per-step risk and fixed expectation shapes change that format. Migrate the stored plans in place, or version the format and keep reading the old one?",
+      "proposal": "Migrate in place, and mark the new steps as schema version 2. Old commits keep their old format, but only a ref's tip is ever read (approvals are found by commit trailers, not by parsing old trees), so readers only need version 2. Do it in three safe steps: accept both formats, migrate each stored plan with a normal edit event, then require the new one."
+    },
+    {
+      "id": "Q13",
+      "origin": "code",
+      "text": "Where does a repo's area list live: a committed file in the product repo, or a ref next to the plans?",
+      "proposal": "A committed file at the product repo's root, such as .plans.json. Areas describe the code's layout, so they should change alongside the code and be reviewed like it. A ref would match how plans are stored, but nobody would see it during code review."
+    }
+  ],
   "decisions": [
     {
       "id": "Q1",
