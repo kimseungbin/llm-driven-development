@@ -30,12 +30,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q5",
-      "text": "How are relationships between intents recorded?",
-      "proposal": "Typed links stored on one side only: blocks, duplicates, parent, and the existing follow-up for deferred work. Links between steps of different intents go in the step's dependencies, set at the plan gate. Reverse links are computed, and mentioning another intent in prose is just a mention.",
-      "origin": "request"
-    },
-    {
       "id": "Q6",
       "text": "How does a decision that needs someone else's confirmation get tracked, like Finance confirming the tax treatment?",
       "proposal": "A decision can carry a pending confirmation that names who must confirm. It doesn't block planning, but the steps that implement it can't have their results approved until the human records the confirmation. That keeps work moving without losing the dependency.",
@@ -95,6 +89,12 @@
       "id": "Q11",
       "question": "A step's risk is now set per step, proposed by the agent. Does it need a stated reason?",
       "answer": "A reason is required only for high-risk steps, but the agent records a one-line reason for every step. Views show high-risk reasons by default and hide the others until the reader turns them on.",
+      "origin": "request"
+    },
+    {
+      "id": "Q5",
+      "question": "How are relationships between intents recorded?",
+      "answer": "Typed links stored on one side only: blocks, duplicates, parent, plus the existing follow-up for deferred work. Links between steps of different intents go in the step's dependencies at the plan gate. Reverse links are computed, and a prose mention is just a mention.",
       "origin": "request"
     }
   ]
