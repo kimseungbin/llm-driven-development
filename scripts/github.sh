@@ -18,9 +18,17 @@ track_plans() {
   git -C "$1" config --add remote.origin.push 'refs/plans/*:refs/plans/*'
 }
 
-each_repo() {
-  "$@" "$root"
-  for s in $scenarios; do "$@" "$root/scenarios/$s/repo"; done
+each_repo() { # <function taking a repo dir>
+  "$1" "$root"
+  for s in $scenarios; do "$1" "$root/scenarios/$s/repo"; done
+}
+
+push_repo() { git -C "$1" push origin; }
+
+# Fast-forwards only a branch that tracks one, so pulling never merges main into a plan branch.
+pull_repo() {
+  git -C "$1" fetch origin
+  if git -C "$1" rev-parse -q --verify '@{u}' >/dev/null; then git -C "$1" merge --ff-only '@{u}'; fi
 }
 
 case "${1:-}" in
@@ -48,8 +56,8 @@ case "${1:-}" in
       git -C "$dir" fetch origin
     done
     ;;
-  push) each_repo git push origin ;;
-  pull) each_repo git pull --ff-only origin main ;;
+  push) each_repo push_repo ;;
+  pull) each_repo pull_repo ;;
   *)
     sed -n '2,8p' "$0"
     exit 1
