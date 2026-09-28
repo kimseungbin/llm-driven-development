@@ -28,14 +28,7 @@
       "reason": "So far these are opinions only. Kinds get added when a scenario needs one."
     }
   ],
-  "openQuestions": [
-    {
-      "id": "Q14",
-      "origin": "request",
-      "text": "The dto-shape kind (decided in Q2) covers any change to a data type's fields, not just data transfer objects: domain entities and the tool's own model too. Rename it?",
-      "proposal": "Rename it data-shape: a change to the fields of a data type (add, remove, rename, retype, or nullability), whatever role the type plays. The migration step renames it in stored plans too. Q2 stays as recorded; this decision supersedes only the kind's name."
-    }
-  ],
+  "openQuestions": [],
   "decisions": [
     {
       "id": "Q1",
@@ -114,6 +107,12 @@
       "question": "Where does a repo's area list live: a committed file in the product repo, or a ref next to the plans?",
       "answer": "A ref next to the plans (refs/plans-config), written through the CLI with event history like plans. It works on repos you don't own. Revisit if areas ever gain path patterns.",
       "origin": "code"
+    },
+    {
+      "id": "Q14",
+      "question": "The dto-shape kind (decided in Q2) covers any change to a data type's fields, not just data transfer objects: domain entities and the tool's own model too. Rename it?",
+      "answer": "Rename dto-shape to data-shape: a change to the fields of a data type (add, remove, rename, retype, or nullability), whatever role the type plays. Supersedes only the kind's name from Q2.",
+      "origin": "request"
     }
   ]
 }
