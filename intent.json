@@ -28,14 +28,7 @@
       "reason": "So far these are opinions only. Kinds get added when a scenario needs one."
     }
   ],
-  "openQuestions": [
-    {
-      "id": "Q10",
-      "text": "What's the third gate called?",
-      "proposal": "The result gate. The other two are named after what they approve, and this one approves a step's result. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
-      "origin": "request"
-    }
-  ],
+  "openQuestions": [],
   "decisions": [
     {
       "id": "Q1",
@@ -95,6 +88,12 @@
       "id": "Q9",
       "question": "The area list (fe, be, db, infra) doesn't fit every repo; this tool itself is a command-line tool that stores data in git. Should each repo define its own areas?",
       "answer": "Each repo declares its own closed list of areas in a small config file, defaulting to fe, be, db, and infra. A setup skill helps create that config: it looks at the repo's layout, proposes an area list, and the human confirms it.",
+      "origin": "request"
+    },
+    {
+      "id": "Q10",
+      "question": "What's the third gate called?",
+      "answer": "The result gate. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
       "origin": "request"
     }
   ]
