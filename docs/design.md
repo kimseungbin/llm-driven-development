@@ -6,6 +6,14 @@ Labels: **Decided** = confirmed constraint or conclusion. **Leaning** = suggeste
 
 ## Where we left off (2026-09-28)
 
+- **Active and self-hosted: this repo's own #1, "Settle the intent and plan structure and gate views"** (`refs/plans/1` in this repo, started 2026-09-28).
+  - The tool now plans its own development. The open intent and plan design questions became its questions, resolved one at a time at the intent gate.
+  - All 11 are decided: 10 from the request, plus Q11, which the Q2 answer raised. Intent rev `69ada77` waits for approval (`node src/cli.ts approve 1 --repo . --gate intent --rev 69ada77`).
+  - Recording these decisions here is part of #1's plan, not done by hand.
+  - Next: the plan gate for #1, where the agent reads the tool's code and proposes the steps.
+- **Before approving coupons #1:** under self-hosted #1's Q6, "Finance to confirm the tax treatment" (coupons Q9) must become an open question owned by Finance. Add it first; it blocks that intent.
+  - This repo's #2 holds the review-side questions.
+  - This file's Open questions section stays the discussion log; decisions land in the intent first and then here.
 - **Active: coupons scenario, #1 "Discount codes for the spring launch"** (`scenarios/coupons/repo`, `refs/plans/1`).
   - Every question is decided (13 answered, and Q2 moved to #2). Intent rev `ecbd228` is waiting for the human's approval.
   - The human runs `node src/cli.ts approve 1 --repo scenarios/coupons/repo --gate intent --rev ecbd228`. The agent never runs `approve`.
@@ -119,7 +127,8 @@ Example, stored as `KRW-12/intent.json` and `KRW-12/steps/KRW-12.1.json`:
   - `create`, `edit`, and `import` are agent events. An `edit` can't change decisions.
   - `decide` records the human's answer to a question.
   - `approve` is the human's. It refuses a stale rev, open questions, or a plan whose intent isn't approved at its current rev.
-  - The `Actor` trailer is asserted, not verified. On one machine nothing stops an agent from running `approve`, so that rule holds by convention until signed approvals or a Claude Code permission rule enforce it.
+  - The `Actor` trailer is asserted, not verified.
+  - Delegated approval (user, 2026-09-28): the agent may run `approve` only when the human's message explicitly says to approve and names the gate and the rev. The Approve buttons send exactly that. The commit keeps `Actor: human` and adds `Via: agent`, so history tells delegated approvals apart from ones the human ran. Signed approvals would later be the human-only path.
 - Search goes through a disposable local index (JSON or SQLite), gitignored and rebuilt on demand.
 
 ## Storage (decided / leaning)
@@ -256,6 +265,7 @@ Example, stored as `KRW-12/intent.json` and `KRW-12/steps/KRW-12.1.json`:
   - DB: a strong fit, since schema diffs are deterministic.
   - Infra: a good fit through structured plan output (`terraform plan -json`, `cdk diff`), but that output depends on live state, so snapshot it as evidence.
   - FE: component props fit; visual changes need screenshot evidence, which the inline widget can't show well.
+- How one decision supersedes another (raised 2026-09-28, self-hosted #1). Q14 renamed a kind that Q2 had decided. Decisions can't be edited, so the link exists only in Q14's answer text. A `supersedes: "Q2"` field would make it visible and let views mark Q2 as partly overridden.
 - How a decision that depends on an outside party gets tracked (raised 2026-09-28, from #1 Q9, where Finance must confirm the tax treatment). Options: a `pendingConfirmation` on the decision that blocks the evidence gate, or a separate open question owned by that party.
 - Gate naming (raised 2026-09-28). The intent and plan gates are named after what they approve; "evidence gate" is named after its input, which is inconsistent. Candidates: "result gate", which is consistent, or "review gate", which is familiar but overloaded, since all three gates are reviews. The view badges (Intent / Plan / Review) would follow whichever is chosen.
 - Relationships between intents (raised 2026-09-28). Proposed:

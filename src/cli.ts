@@ -11,7 +11,8 @@ const usage = `usage (plan data lives in the product repo, under refs/plans/<id>
   node src/cli.ts export <id> --repo <repo> --out <dir>                  working copy for editing
   node src/cli.ts edit <id> --repo <repo> --from <dir> --message <why>   agent: can't change decisions
   node src/cli.ts decide <id> <question id> --repo <repo> --answer <the human's answer>
-  node src/cli.ts approve <id> --repo <repo> --gate intent|plan --rev <rev>   humans only
+  node src/cli.ts approve <id> --repo <repo> --gate intent|plan --rev <rev> [--via agent]
+      a human decision; an agent runs it only on the human's explicit instruction, with --via agent
   node src/cli.ts import <dir> --repo <repo>                             one-time move from plan files
   node src/cli.ts intent-view <id> --repo <repo> [--out <file>]
   node src/cli.ts plan-view <id> --repo <repo> [--out <file>]
@@ -29,6 +30,7 @@ const { positionals, values } = parseArgs({
     answer: { type: 'string' },
     gate: { type: 'string' },
     rev: { type: 'string' },
+    via: { type: 'string' },
   },
 })
 
@@ -78,7 +80,8 @@ document.getElementById('v-root').innerHTML = renderView(${data})
   else if (command === 'decide') attempt(() => decide(repo, need(arg1), need(arg2), need(values.answer)))
   else if (command === 'approve') {
     const gate = values.gate === 'intent' || values.gate === 'plan' ? values.gate : fail(usage)
-    attempt(() => approve(repo, need(arg1), gate, need(values.rev)))
+    const via = values.via === undefined ? undefined : values.via === 'agent' ? 'agent' : fail(usage)
+    attempt(() => approve(repo, need(arg1), gate, need(values.rev), via))
   } else if (command === 'import') await emit(`${attempt(() => importDir(repo, need(arg1)))}\n`)
   else if (command === 'intent-view') await emit(`${JSON.stringify(attempt(() => loadIntentGate(repo, need(arg1))), null, 2)}\n`)
   else if (command === 'plan-view') await emit(`${JSON.stringify(attempt(() => loadPlanGate(repo, need(arg1))), null, 2)}\n`)

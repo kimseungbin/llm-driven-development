@@ -150,8 +150,9 @@ export function decide(repo: string, id: string, questionId: string, answer: str
   commit(repo, id, next, { type: 'decide', actor: 'human', subject: `decide ${questionId} on #${id}`, trailers: { Question: questionId } }, tip)
 }
 
-// Humans only. The rev must match what's current, so an approval always covers exactly what the human saw.
-export function approve(repo: string, id: string, gate: 'intent' | 'plan', rev: string): void {
+// A human decision. The rev must match what's current, so an approval always covers exactly what the human saw.
+// `via: 'agent'` means an agent ran it on the human's explicit instruction; the trailer keeps that visible.
+export function approve(repo: string, id: string, gate: 'intent' | 'plan', rev: string, via?: 'agent'): void {
   const { snapshot, tip } = read(repo, id)
   const current = gate === 'intent' ? intentRev(snapshot) : planRev(snapshot)
   const problems: string[] = []
@@ -164,7 +165,8 @@ export function approve(repo: string, id: string, gate: 'intent' | 'plan', rev: 
       problems.push(`approve: intent rev ${intentRev(snapshot)} isn't approved (last approved: ${approvedIntent ?? 'never'})`)
   }
   assertValid(`#${id}`, problems)
-  commit(repo, id, snapshot, { type: 'approve', actor: 'human', subject: `approve ${gate} rev ${rev} on #${id}`, trailers: { Gate: gate, Rev: rev } }, tip)
+  const trailers = { Gate: gate, Rev: rev, ...(via ? { Via: via } : {}) }
+  commit(repo, id, snapshot, { type: 'approve', actor: 'human', subject: `approve ${gate} rev ${rev} on #${id}`, trailers }, tip)
 }
 
 export function loadIntentGate(repo: string, id: string): IntentGateView {

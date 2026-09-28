@@ -34,7 +34,7 @@ export function renderIntentGate(view: IntentGateView): string {
     intent,
     questions,
     approvedRev === intentRev,
-    ['Approve intent', `I want to approve intent rev ${intentRev} for ${id}. Give me the command to run.`],
+    ['Approve intent', `Approve the intent gate for ${id} at rev ${intentRev}.`],
     `I want changes to the ${id} intent (rev ${intentRev}).`,
   )
 

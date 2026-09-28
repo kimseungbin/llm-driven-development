@@ -7,7 +7,7 @@ description: Propose the steps for an approved intent in this project's plan/rev
 
 Start from an intent approved at its current rev: `node src/cli.ts intent-view <id> --repo <repo>` shows `approvedRev` equal to `intentRev`. If it isn't approved, use the structure-request skill first. Now read the code.
 
-Plan data lives only in the product repo's `refs/plans/<id>`, written through `node src/cli.ts`. Work in a copy: `node src/cli.ts export <id> --repo <repo> --out out/work/<id>`, add or edit `steps/<step id>.json`, then store it with `node src/cli.ts edit <id> --repo <repo> --from out/work/<id> --message "<what changed>"`. The human approves the plan at the plan gate by running `approve` themselves; never run it.
+Plan data lives only in the product repo's `refs/plans/<id>`, written through `node src/cli.ts`. Work in a copy: `node src/cli.ts export <id> --repo <repo> --out out/work/<id>`, add or edit `steps/<step id>.json`, then store it with `node src/cli.ts edit <id> --repo <repo> --from out/work/<id> --message "<what changed>"`. Approving the plan is the human's decision. Run `approve ... --gate plan --rev <plan rev> --via agent` only when their message explicitly says to approve and names the gate and the rev; never infer it.
 
 ## Amending the intent
 

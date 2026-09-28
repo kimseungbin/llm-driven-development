@@ -26,7 +26,9 @@ each_repo() {
 case "${1:-}" in
   publish)
     owner=${2:?usage: scripts/github.sh publish <owner>}
-    gh repo create "$owner/llm-driven-development" --private --source "$root" --remote origin --push
+    gh repo create "$owner/llm-driven-development" --private --source "$root" --remote origin
+    track_plans "$root"
+    git -C "$root" push origin
     for s in $scenarios; do
       dir="$root/scenarios/$s/repo"
       gh repo create "$owner/llmdd-scenario-$s" --private --source "$dir" --remote origin
@@ -36,6 +38,9 @@ case "${1:-}" in
     ;;
   clone-scenarios)
     owner=${2:?usage: scripts/github.sh clone-scenarios <owner>}
+    # The project plans its own development too, so its clone needs the plans refspecs as well.
+    track_plans "$root"
+    git -C "$root" fetch origin
     for s in $scenarios; do
       dir="$root/scenarios/$s/repo"
       gh repo clone "$owner/llmdd-scenario-$s" "$dir"

@@ -7,7 +7,7 @@ description: Turn a human's change request into a structured intent for the inte
 
 Capture what and why in the human's terms. Don't read code, tests, or schemas yet: the how comes after the intent gate, and reading the code first bends the problem toward whatever is easy to build. You may read existing intents (`git -C <repo> for-each-ref refs/plans/` and `node src/cli.ts export`) to spot duplicates and related work.
 
-Plan data lives only in the product repo's `refs/plans/<id>`, written through `node src/cli.ts`. Never write plan files anywhere else, and never run `approve`.
+Plan data lives only in the product repo's `refs/plans/<id>`, written through `node src/cli.ts`. Never write plan files anywhere else. Run `approve` only on the human's explicit instruction (see step 5).
 
 1. Draft `out/work/new/intent.json` (any `id`; `create` assigns the real one).
 2. Fill in:
@@ -27,4 +27,4 @@ Plan data lives only in the product repo's `refs/plans/<id>`, written through `n
    - If an answer changes the problem, acceptance criteria, deferred items, or non-goals, update those too and say what changed: `node src/cli.ts export <id> --repo <repo> --out out/work/<id>`, edit the files, then `node src/cli.ts edit <id> --repo <repo> --from out/work/<id> --message "<why>"`. An edit can't touch decisions.
    - If an answer makes a later question moot or changes it, drop or reword that question the same way before asking it, and say so.
    - Re-render the intent gate once the questions are resolved, or sooner if the human asks.
-5. Stop at approval. The human approves by running `node src/cli.ts approve <id> --repo <repo> --gate intent --rev <intent rev>` themselves; give them the command, don't run it. Don't read the code or propose steps until the intent is approved at its current rev. For a small, low-risk request (a typo, a comment), say so and offer to combine both gates into one; the human decides.
+5. Stop at approval. Approval is the human's decision. Run `node src/cli.ts approve <id> --repo <repo> --gate intent --rev <intent rev> --via agent` only when their message explicitly says to approve and names the gate and the rev (the Approve button sends exactly that). Never infer approval from "looks good" or silence; if in doubt, ask. They can also run the command themselves, without `--via`. Don't read the code or propose steps until the intent is approved at its current rev. For a small, low-risk request (a typo, a comment), say so and offer to combine both gates into one; the human decides.

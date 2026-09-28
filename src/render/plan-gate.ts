@@ -66,7 +66,7 @@ export function renderPlanGate(view: PlanGateView): string {
     intent,
     questions,
     approvedPlanRev === planRev || blocked.length > 0,
-    ['Approve plan', `I want to approve plan rev ${planRev} for ${id}. Give me the command to run.`],
+    ['Approve plan', `Approve the plan gate for ${id} at rev ${planRev}.`],
     `I want changes to the ${id} plan (rev ${planRev}).`,
   )
 
