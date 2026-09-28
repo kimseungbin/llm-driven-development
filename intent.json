@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "2",
+  "kind": "intent",
+  "title": "Settle the review-side design",
+  "request": "Deferred from #1: the review-side design questions.",
+  "problem": "The third gate hasn't been used on a real step, and several review questions are open, so reviews can't be designed with confidence yet.",
+  "areas": [
+    "fe",
+    "be"
+  ],
+  "acceptance": [
+    "Each question below is decided after reviewing at least one real step result."
+  ],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "text": "Can reviews of your own agents' work skip the plan (observed-only), or only reviews of other people's changes?",
+      "proposal": "Only other people's changes. Your own agents always work from a plan, so their reviews are always checked against it.",
+      "origin": "request"
+    },
+    {
+      "id": "Q2",
+      "text": "Do reviews of other people's changes need to reach the authors?",
+      "proposal": "Export findings one way as pull-request comments when the author uses a forge; otherwise they only inform your own merge decision.",
+      "origin": "request"
+    },
+    {
+      "id": "Q3",
+      "text": "Where do approvals live once there's a team: here or in pull-request reviews?",
+      "proposal": "Here, as signed approvals, with a status mirrored to the forge. The forge never becomes the source of truth.",
+      "origin": "request"
+    },
+    {
+      "id": "Q4",
+      "text": "Should inline review views show only the rows that need a decision?",
+      "proposal": "Yes: unplanned, missing, breaking, and inferred rows inline, with matched rows counted, and the full table in a page view. That keeps inline cost tied to what needs attention rather than to the size of the change.",
+      "origin": "request"
+    }
+  ],
+  "decisions": []
+}
