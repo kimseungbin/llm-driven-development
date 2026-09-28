@@ -30,12 +30,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q6",
-      "text": "How does a decision that needs someone else's confirmation get tracked, like Finance confirming the tax treatment?",
-      "proposal": "A decision can carry a pending confirmation that names who must confirm. It doesn't block planning, but the steps that implement it can't have their results approved until the human records the confirmation. That keeps work moving without losing the dependency.",
-      "origin": "request"
-    },
-    {
       "id": "Q7",
       "text": "Should each acceptance criterion name the stakeholder need it serves?",
       "proposal": "Not by default. The problem names who feels the pain, and a criterion gets an optional 'for' only when the intent serves more than one stakeholder. Requiring it everywhere adds noise to single-stakeholder intents, which are most of them.",
@@ -95,6 +89,12 @@
       "id": "Q5",
       "question": "How are relationships between intents recorded?",
       "answer": "Typed links stored on one side only: blocks, duplicates, parent, plus the existing follow-up for deferred work. Links between steps of different intents go in the step's dependencies at the plan gate. Reverse links are computed, and a prose mention is just a mention.",
+      "origin": "request"
+    },
+    {
+      "id": "Q6",
+      "question": "How does a decision that needs someone else's confirmation get tracked, like Finance confirming the tax treatment?",
+      "answer": "It stays an open question owned by the outside party, and it blocks the intent until they confirm. Questions get an owner, which defaults to the approving human.",
       "origin": "request"
     }
   ]
