@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "view": "intent-gate",
+  "intentRev": "1de093d",
+  "approvedRev": null,
+  "intent": {
+    "schemaVersion": 1,
+    "id": "4",
+    "kind": "intent",
+    "title": "Settle the team-phase coordinator design",
+    "request": "Deferred from #3: git ref for now. coordinator db maybe in future (not decided)",
+    "problem": "The team-phase coordinator is only sketched. Questions left open for that phase, starting with whether intents move from git refs to a coordinator database, have nowhere to live, so they could get lost or be settled by accident.",
+    "areas": [
+      "docs"
+    ],
+    "acceptance": [
+      "Every question deferred to the team phase is decided, or explicitly left open with a reason."
+    ],
+    "openQuestions": [
+      {
+        "id": "Q1",
+        "text": "Do reviews of other people's changes need to reach the authors?",
+        "proposal": "Export findings one way as pull-request comments when the change comes through a forge. Replies stay on the forge and never flow back into refs/ldd, which keeps the forge a mirror (#2 Q3). Without a forge, findings only inform your own merge decision.",
+        "origin": "request"
+      }
+    ],
+    "decisions": []
+  },
+  "incoming": [
+    {
+      "from": "2",
+      "type": "follow-up"
+    },
+    {
+      "from": "3",
+      "type": "follow-up"
+    },
+    {
+      "from": "8",
+      "type": "follow-up"
+    }
+  ]
+}

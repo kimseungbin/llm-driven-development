@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "view": "intent-gate",
+  "intentRev": "8660e85",
+  "approvedRev": "1bc1770",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "1",
+    "kind": "intent",
+    "title": "Settle the intent and plan structure and gate views",
+    "request": "We have settled UI and structure for both intent and plan right?\n\nSo let's do it with the tools we already have. So it's like self-.... or recursive",
+    "problem": "The intent and plan formats and their gate views are only partly decided. The open questions are scattered through the design record, so it's hard to tell what's settled, and checking a plan against real changes can't start until a step's expectations have a defined shape.",
+    "areas": [
+      "model",
+      "store",
+      "render",
+      "skills",
+      "docs"
+    ],
+    "acceptance": [
+      "Every question below is decided, and the design record shows each one as decided.",
+      "The formats, their validation, and the authoring skills match every decision that changes a format.",
+      "The intent gate and plan gate layouts are each approved as a whole, after seeing them rendered on a real scenario.",
+      "The review-side questions are tracked in their own intent, so none of them get lost."
+    ],
+    "deferred": [
+      {
+        "item": "Review-side design questions: observed-only reviews for your own agents' work, whether reviews reach other authors, where approvals live once there's a team, and whether inline review views show only the rows that need a decision",
+        "reason": "They belong to the third gate, which hasn't been used on a real step yet, so deciding them now would be guessing.",
+        "followUp": "2"
+      }
+    ],
+    "nonGoals": [
+      {
+        "item": "Step kinds for front-end, database, and infrastructure changes",
+        "reason": "So far these are opinions only. Kinds get added when a scenario needs one."
+      }
+    ],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "Who breaks an intent into steps and writes each step's expectations?",
+        "answer": "The agent proposes the steps and their expectations after reading the code, and the human approves, edits, or rejects them at the plan gate.",
+        "origin": "request"
+      },
+      {
+        "id": "Q2",
+        "question": "What's the list of step kinds, and does a step's risk come from its kind?",
+        "answer": "Start with five kinds (dto-shape, signature-change, behavior-change, feature, non-semantic) plus a fallback, open to adding more. If the list keeps growing, move to nested kinds. Risk is set per step, not derived from its kind.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "How fine-grained is a plan: one step per logical change, or one step per field or symbol?",
+        "answer": "One step per logical change, whose expectations list every symbol it touches.",
+        "origin": "request"
+      },
+      {
+        "id": "Q4",
+        "question": "What shape do a step's expectations take, so they can be checked against what actually changed?",
+        "answer": "A fixed, validated shape per kind. Symbol lists (added, removed, changed from and to, unchanged) are checked by machine; rules and invariants stay prose, marked as checked by a test or the human. Anything machine-checked must be a symbol list, never prose. The fallback kind has no machine check.",
+        "origin": "request"
+      },
+      {
+        "id": "Q11",
+        "question": "A step's risk is now set per step, proposed by the agent. Does it need a stated reason?",
+        "answer": "A reason is required only for high-risk steps, but the agent records a one-line reason for every step. Views show high-risk reasons by default and hide the others until the reader turns them on.",
+        "origin": "request"
+      },
+      {
+        "id": "Q5",
+        "question": "How are relationships between intents recorded?",
+        "answer": "Typed links stored on one side only: blocks, duplicates, parent, plus the existing follow-up for deferred work. Links between steps of different intents go in the step's dependencies at the plan gate. Reverse links are computed, and a prose mention is just a mention.",
+        "origin": "request"
+      },
+      {
+        "id": "Q6",
+        "question": "How does a decision that needs someone else's confirmation get tracked, like Finance confirming the tax treatment?",
+        "answer": "It stays an open question owned by the outside party, and it blocks the intent until they confirm. Questions get an owner, which defaults to the approving human.",
+        "origin": "request"
+      },
+      {
+        "id": "Q7",
+        "question": "Should each acceptance criterion name the stakeholder need it serves?",
+        "answer": "Never. Acceptance criteria stay plain statements; the problem names who feels the pain.",
+        "origin": "request"
+      },
+      {
+        "id": "Q8",
+        "question": "What format are intents and plans written in: JSON only, or markdown with a structured header?",
+        "answer": "JSON only, written through the CLI. Markdown may be added later as an input the CLI converts.",
+        "origin": "request"
+      },
+      {
+        "id": "Q9",
+        "question": "The area list (fe, be, db, infra) doesn't fit every repo; this tool itself is a command-line tool that stores data in git. Should each repo define its own areas?",
+        "answer": "Each repo declares its own closed list of areas in a small config file, defaulting to fe, be, db, and infra. A setup skill helps create that config: it looks at the repo's layout, proposes an area list, and the human confirms it.",
+        "origin": "request"
+      },
+      {
+        "id": "Q10",
+        "question": "What's the third gate called?",
+        "answer": "The result gate. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
+        "origin": "request"
+      },
+      {
+        "id": "Q12",
+        "question": "Plans already stored in refs use the current step format: #7 in the soft-delete repo, and this plan itself once its steps are written. Per-step risk and fixed expectation shapes change that format. Migrate the stored plans in place, or version the format and keep reading the old one?",
+        "answer": "Migrate in one step: switch to step format version 2 and migrate every stored plan in the same step. Stored plans are briefly unreadable between the code change and the migration, and that's accepted.",
+        "origin": "code"
+      },
+      {
+        "id": "Q13",
+        "question": "Where does a repo's area list live: a committed file in the product repo, or a ref next to the plans?",
+        "answer": "A ref next to the plans (refs/plans-config), written through the CLI with event history like plans. It works on repos you don't own. Revisit if areas ever gain path patterns.",
+        "origin": "code"
+      },
+      {
+        "id": "Q14",
+        "question": "The dto-shape kind (decided in Q2) covers any change to a data type's fields, not just data transfer objects: domain entities and the tool's own model too. Rename it?",
+        "answer": "Rename dto-shape to data-shape: a change to the fields of a data type (add, remove, rename, retype, or nullability), whatever role the type plays. Supersedes only the kind's name from Q2.",
+        "origin": "request"
+      }
+    ]
+  },
+  "incoming": []
+}

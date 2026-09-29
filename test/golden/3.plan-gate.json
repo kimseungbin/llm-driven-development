@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "view": "plan-gate",
+  "intentRev": "1ce3cd4",
+  "planRev": "dcef426",
+  "approvedIntentRev": "8f72b54",
+  "approvedPlanRev": "8015f6a",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "3",
+    "kind": "intent",
+    "title": "Reconcile with the ldd design",
+    "request": "Reconcile into one design (Recommended): Compare decision by decision, resolve each conflict with you, and keep one design record (in the prototype repo, since it's the real project).",
+    "problem": "Two design records describe the same tool and contradict each other. This repo's design.md comes from building a solo, local prototype. The ldd docs (~/repos/personal/ldd/docs) were written in a separate session for a team coordinator. They disagree on scope, where issues live, the gates, approvals, rendering, and more. The human and every agent have to guess which record wins, and the ideas unique to each are at risk of getting lost.",
+    "areas": [
+      "store",
+      "skills",
+      "docs"
+    ],
+    "acceptance": [
+      "Every conflict between the two records is decided, and the design record states one answer for each.",
+      "Ideas that only one record has are carried into the design record, unless a decision drops them.",
+      "The ldd docs are no longer a second source of truth: the design record says what, if anything, still refers to them."
+    ],
+    "nonGoals": [
+      {
+        "item": "Building the team coordinator, forge adapters, or web UI",
+        "reason": "This intent settles the design only. Building any of it needs its own intent."
+      }
+    ],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "Scope: the prototype is solo and local (no server, accounts, web UI, search, or webhooks). The ldd docs design a team coordinator (NestJS, Postgres, web UI, forge adapters). Which one is the design?",
+        "answer": "Both, as two phases. The solo, local tool is the current phase. The team coordinator is the team-phase target and gets its own section. The data layer is designed now so the coordinator can adopt it unchanged.",
+        "origin": "request"
+      },
+      {
+        "id": "Q2",
+        "question": "Where do issues (intents and plans) live? The prototype keeps them in git refs in the product repo. The ldd docs keep them in the coordinator's database because issues can span repos and need deletion and per-item access control.",
+        "answer": "Git refs for now. A coordinator database may come in the future; that isn't decided.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "Ref names: the prototype uses refs/plans/*, refs/plans-config, and a planned refs/reviews/*. The ldd docs put everything under refs/ldd/*. Which naming?",
+        "answer": "Move everything under refs/ldd/: refs/ldd/plans/<id>, refs/ldd/reviews/<id>, and refs/ldd/config. One refspec (refs/ldd/*) syncs all of it. Migrate the stored refs in one step.",
+        "origin": "request"
+      },
+      {
+        "id": "Q4",
+        "question": "Gates and the unit of review: the prototype has an intent gate, a plan gate, and a result gate for each step, with steps typed by kind. The ldd docs have a plan review and a change-level review built from items per layer (Decision, Contract, Behavior, Verification, Mechanical). Which model?",
+        "answer": "The three gates (intent, plan, result for each step), with steps as the unit of review. The ldd layers become step kinds: Contract becomes data-shape and signature-change, Behavior becomes behavior-change, Mechanical becomes non-semantic, Verification becomes each step's evidence, and Decision becomes the intent's decisions. In the team phase, a change is ready to merge when every step it implements has passed the result gate and nothing unplanned is left unresolved.",
+        "origin": "request"
+      },
+      {
+        "id": "Q5",
+        "question": "Who works out planned vs built? The prototype computes it deterministically from the observed diff and step expectations, and stores LLM judgments separately, labeled inferred. The ldd docs have the author's agent submit review items that map the diff to the intent, which the coordinator then checks.",
+        "answer": "Computed deterministically. Symbol lists are compared by machine; behavior and invariants are checked by the tests named in evidence or by the human; LLM judgments stay separate and labeled inferred. Agent-submitted review items are dropped, and the ldd coverage check becomes the unplanned bucket. Research and decision records written while working stay, attached to the intent and its steps.",
+        "origin": "request"
+      },
+      {
+        "id": "Q6",
+        "question": "Linking commits to plan data: the prototype uses a Plan-Step trailer, with one step per commit. The ldd docs use an Ldd-Work trailer that names a work session. Which one?",
+        "answer": "Plan-Step only. It links each commit to its step, which gives per-step diffs for reconciliation and the result gate. Research and decision records attach to step IDs from the plan gate onward. Ldd-Work is dropped.",
+        "origin": "request"
+      },
+      {
+        "id": "Q7",
+        "question": "Detecting stale plans: the prototype stores no base SHA, recomputes the base, and records the head SHA and observed-diff hash on each approval. The ldd docs store the commit the plan was made against and flag items that went stale against it. Which one?",
+        "answer": "Baseline on approvals, scoped by symbols. Plan content stores no SHA. A plan-gate approval records the main commit it saw; when main moves, only steps whose expected symbols changed go stale. A result-gate approval records the step's head SHA and observed-diff hash; the approval carries over if the recomputed hash is the same, and goes stale otherwise (like Gerrit change kinds and GitLab patch-ids).",
+        "origin": "request"
+      },
+      {
+        "id": "Q8",
+        "question": "Who can approve? The prototype lets an agent run approve when your message explicitly names the gate and rev, recorded as Via: agent, with SSH-signed approvals as a later option. The ldd docs require a passkey signature for any act that decides a gate, so no agent can approve.",
+        "answer": "By phase. Solo phase: CLI approve with delegated Via: agent approvals, as built now. Team phase: acts that decide a gate need a passkey signature, and delegated approvals never count toward a team gate. SSH-signed approvals are dropped in favor of passkeys.",
+        "origin": "request"
+      },
+      {
+        "id": "Q9",
+        "question": "Rendering: the prototype uses deterministic renderers per kind, and Claude never writes markup for records (your requirement). The ldd docs have agents write SVG diagrams, which are then sanitized. How do they fit together?",
+        "answer": "Deterministic renderers draw every record view, count, flag, and table. An architecture diagram is authored content attached to a decision: sanitized SVG, shown as-is, and labeled authored.",
+        "origin": "request"
+      },
+      {
+        "id": "Q10",
+        "question": "Git notes: the prototype rejected notes for plan data. The ldd docs use refs/notes/ldd only for a record, written after a merge, of how each merged commit was reviewed. Keep that record?",
+        "answer": "Drop it. The Plan-Step trailer links each merged commit to its step, and the step's ref holds the approvals.",
+        "origin": "request"
+      },
+      {
+        "id": "Q11",
+        "question": "Runtime: the prototype runs .ts directly on Node 26 with no dependencies. The ldd docs chose Bun everywhere, with NestJS on Bun for the coordinator. Which one?",
+        "answer": "Node 26 now, for the solo phase. The coordinator's runtime is decided later, in #4.",
+        "origin": "request"
+      },
+      {
+        "id": "Q12",
+        "question": "Design record format: the prototype keeps one long docs/design.md. The ldd docs are short nested files, one topic each, following your standing preference. Which format for the merged record?",
+        "answer": "Short nested docs: a docs/README.md index with 'Where we left off', a folder per area, and files of about 40 lines. CLAUDE.md points to the index. The merged record replaces docs/design.md and ~/repos/personal/ldd/docs, and ldd's docs are deleted once the merge is done.",
+        "origin": "request"
+      },
+      {
+        "id": "Q13",
+        "question": "#1 is half built: step 1.1 is committed on plan/1, and 1.2 to 1.7 are still to do. Step 1.4 creates refs/plans-config, which Q3 renames to refs/ldd/config. Step 1.7 writes into docs/design.md, which Q12 splits. Steps can't depend on another intent's steps until 1.3 is built. How do #1 and #3 fit together?",
+        "answer": "Change #1's step 1.4 now to create refs/ldd/config directly, and re-approve #1's plan. Finish #1 as planned, then implement #3 on top of it. #3 moves only refs/plans/* to refs/ldd/plans/*, and splits design.md after 1.7 has written to it. #3's steps use step format version 2, from the plan/1 code.",
+        "origin": "code"
+      }
+    ],
+    "deferred": [
+      {
+        "item": "Whether intents move from git refs to a coordinator database in the team phase",
+        "reason": "The human left it undecided (Q2). It depends on what the team phase needs, which isn't known yet.",
+        "followUp": "4"
+      },
+      {
+        "item": "The coordinator's runtime (Node or Bun)",
+        "reason": "The human chose Node 26 for the solo phase and left the coordinator's runtime to be decided with the rest of the team phase (Q11).",
+        "followUp": "4"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "schemaVersion": 2,
+      "id": "3.1",
+      "parent": "3",
+      "kind": "behavior-change",
+      "origin": "planned",
+      "summary": "Store plan data under refs/ldd/plans/<id> and move every stored plan there",
+      "risk": "high",
+      "riskReason": "Every stored plan moves, and the old refs have to be removed on GitHub too. A half-done move leaves plans in two places.",
+      "expect": {
+        "change": [
+          {
+            "symbol": "PLAN_PREFIX",
+            "from": "'refs/plans/'",
+            "to": "'refs/ldd/plans/'"
+          },
+          {
+            "symbol": "syncRefspecs",
+            "from": "refspecs for refs/plans/* and refs/ldd/config",
+            "to": "one refspec, refs/ldd/*, for fetch and push, plus refs/heads/* for push"
+          },
+          {
+            "symbol": "usage",
+            "from": "names refs/plans/<id>",
+            "to": "names refs/ldd/plans/<id>"
+          },
+          {
+            "symbol": "CONFIG_REF",
+            "from": "'refs/ldd/config'",
+            "to": "derived from NAMESPACE"
+          }
+        ],
+        "rules": [
+          {
+            "text": "each stored plan is moved with its full event history: the new ref points at the old tip, created with a compare-and-swap against the zero ID, and the old ref is deleted with a compare-and-swap against that tip",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the move covers every plan in this repo (#1 to #5); the scenario repos are gone (#5)",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the human pushes the moved refs and deletes the old refs on GitHub; the agent never pushes",
+            "checkedBy": "human"
+          },
+          {
+            "text": "refs/ldd/config keeps syncing: refs/ldd/* covers it",
+            "checkedBy": "human"
+          },
+          {
+            "text": "setup removes the old refs/plans/* and refs/ldd/config refspecs from a clone it has already set up, so they don't linger",
+            "checkedBy": "test"
+          }
+        ],
+        "invariants": [
+          {
+            "text": "every plan's tip commit and event history are unchanged by the move",
+            "checkedBy": "human"
+          },
+          {
+            "text": "no refs/plans/* ref is left in this repo",
+            "checkedBy": "human"
+          }
+        ],
+        "unchanged": [
+          "ref",
+          "listIds"
+        ],
+        "add": [
+          {
+            "symbol": "NAMESPACE",
+            "type": "'refs/ldd/', the one spelling of the tool's namespace"
+          },
+          {
+            "symbol": "toolOwned",
+            "signature": "(spec) => whether a refspec belongs to the tool"
+          }
+        ]
+      },
+      "evidence": [
+        "git for-each-ref refs/plans/ is empty, and refs/ldd/plans/ lists the same IDs with the same tips as before",
+        "plan-view builds for #1, #3, and #5",
+        "git ls-remote shows refs/ldd/plans/* and no refs/plans/* on GitHub, after the human pushes"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "3.2",
+      "parent": "3",
+      "kind": "non-semantic",
+      "origin": "planned",
+      "summary": "Point the authoring skills and CLAUDE.md at refs/ldd/plans",
+      "risk": "low",
+      "riskReason": "Instruction text only; the write path already enforces the new location.",
+      "expect": {
+        "rules": [
+          {
+            "text": "the structure-request and propose-plan skills name refs/ldd/plans/<id> wherever they named refs/plans/<id>",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the propose-plan skill lists the current step kinds (data-shape, not dto-shape) if #1 hasn't already updated them",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "grep for refs/plans/ outside the design record's history finds nothing in .claude or CLAUDE.md"
+      ],
+      "dependsOn": [
+        "3.1"
+      ]
+    },
+    {
+      "schemaVersion": 2,
+      "id": "3.3",
+      "parent": "3",
+      "kind": "non-semantic",
+      "origin": "planned",
+      "summary": "Split the design record into short nested docs and merge in the ldd design",
+      "risk": "medium",
+      "riskReason": "Two records are merged and one is deleted, so a decision could be dropped by accident.",
+      "expect": {
+        "rules": [
+          {
+            "text": "docs/README.md is the index and holds 'Where we left off'; each area gets a folder; files stay near 40 lines",
+            "checkedBy": "human"
+          },
+          {
+            "text": "every decision in docs/design.md, including those 1.7 writes, lands in exactly one nested doc, with its date",
+            "checkedBy": "human"
+          },
+          {
+            "text": "#3's decisions Q1 to Q13 are recorded, and #1's Q13 is marked superseded by #3's Q3 and Q13",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the ldd design goes into a team-phase section as the target: coordinator, forge adapters, the agent kit, claims, passkey approvals, conventions, and the stack, except what #3 dropped (agent-submitted review items, Ldd-Work, git notes, SHAs in plans) and what it deferred to #4 (the store and the runtime)",
+            "checkedBy": "human"
+          },
+          {
+            "text": "ideas only the ldd design had and #3 didn't drop are carried into the solo-phase docs where they apply, such as the conventions matcher and research and decision records on steps",
+            "checkedBy": "human"
+          },
+          {
+            "text": "CLAUDE.md points to docs/README.md instead of docs/design.md, and keeps its other rules",
+            "checkedBy": "human"
+          },
+          {
+            "text": "docs/design.md is removed; ~/repos/personal/ldd/docs is deleted only after the human confirms the merged record",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "a checklist that maps every decision in docs/design.md and every ldd doc to its new location, reviewed by the human",
+        "no nested doc is much longer than 40 lines"
+      ],
+      "dependsOn": [
+        "3.2"
+      ]
+    }
+  ]
+}

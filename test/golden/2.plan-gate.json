@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "view": "plan-gate",
+  "intentRev": "ee6ac1e",
+  "planRev": "f890963",
+  "approvedIntentRev": "cb351f7",
+  "approvedPlanRev": "919968b",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "2",
+    "kind": "intent",
+    "title": "Settle the review-side design",
+    "request": "Deferred from #1: the review-side design questions.",
+    "problem": "Review-side questions were left open until real result gates had been run, so reviews couldn't be designed with confidence.",
+    "areas": [
+      "model",
+      "render"
+    ],
+    "acceptance": [
+      "Each question below is decided after reviewing at least one real step result."
+    ],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "Can reviews of your own agents' work skip the plan (observed-only), or only reviews of other people's changes?",
+        "answer": "Own work too, with a reason: your agents may skip the plan (spikes, hotfixes) by passing the explicit flag and a one-line reason. These reviews never count as 'verified' and are listed separately in every filter.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "Where do approvals live once there's a team: here or in pull-request reviews?",
+        "answer": "refs/ldd, mirrored: approvals are passkey-signed events in refs/ldd (#3 Q8). The coordinator mirrors the gate to the forge as a required check. A PR approval never decides a gate, so the record works the same on every forge, including bare remotes.",
+        "origin": "request"
+      },
+      {
+        "id": "Q4",
+        "question": "Should inline review views show only the rows that need a decision?",
+        "answer": "All rows in chat, sorted: the chat widget lists every row, with the ones needing attention (unplanned, missing, breaking, inferred) first. Everything stays in one place, accepting that a large change makes the widget long and costly.",
+        "origin": "request"
+      }
+    ],
+    "deferred": [
+      {
+        "item": "Whether reviews of other people's changes reach their authors (was Q2).",
+        "reason": "Only local mode is in scope for now (user, 2026-09-29).",
+        "followUp": "4"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "schemaVersion": 2,
+      "id": "2.1",
+      "parent": "2",
+      "kind": "data-shape",
+      "origin": "planned",
+      "summary": "Result-gate items carry whether they were inferred, whatever their kind",
+      "risk": "low",
+      "riskReason": "Only the result-gate view input changes; the one sample is updated with it, and no stored plan data uses these fields.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "ReconItem.classifiedBy",
+            "type": "'deterministic' | 'inferred'"
+          },
+          {
+            "symbol": "ReconItem.confidence",
+            "type": "number | undefined"
+          }
+        ],
+        "remove": [
+          "FieldChange.classifiedBy",
+          "FieldChange.confidence"
+        ],
+        "unchanged": [
+          "ReconItem.plan",
+          "ReconItem.breaking",
+          "ReconItem.detail",
+          "KindRenderer"
+        ],
+        "invariants": [
+          {
+            "text": "the KRW sample renders the same HTML before and after",
+            "checkedBy": "human"
+          }
+        ],
+        "change": [
+          {
+            "symbol": "dataShape.body",
+            "from": "reads classifiedBy and confidence from detail",
+            "to": "reads them from the item"
+          }
+        ]
+      },
+      "evidence": [
+        "diff of node src/cli.ts render samples/krw-12.1.result-gate.json output before and after is empty",
+        "npm test passes"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "2.2",
+      "parent": "2",
+      "kind": "behavior-change",
+      "origin": "planned",
+      "summary": "The result gate lists every row, attention first",
+      "risk": "low",
+      "riskReason": "Only row order in a rendered view changes; counts, blockers, and the breaking filter stay the same.",
+      "expect": {
+        "change": [
+          {
+            "symbol": "renderResultGate",
+            "from": "rows in input order",
+            "to": "rows ordered unplanned, missing, breaking, inferred, then matched, keeping input order within each group"
+          }
+        ],
+        "unchanged": [
+          "KindRenderer",
+          "ReconItem"
+        ],
+        "rules": [
+          {
+            "text": "a row goes in the first group it qualifies for, so an unplanned breaking row sorts with unplanned",
+            "checkedBy": "test"
+          },
+          {
+            "text": "every row is still rendered; none is hidden or collapsed",
+            "checkedBy": "test"
+          }
+        ],
+        "add": [
+          {
+            "symbol": "attention",
+            "signature": "(item: ReconItem) => number, the group rank the sort uses"
+          }
+        ]
+      },
+      "evidence": [
+        "test/result-gate.test.ts: 'result gate lists rows attention first' and 'result gate renders every row'",
+        "the KRW sample renders unplanned rows before matched ones"
+      ],
+      "dependsOn": [
+        "2.1"
+      ]
+    }
+  ]
+}

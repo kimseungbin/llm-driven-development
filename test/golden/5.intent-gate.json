@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "view": "intent-gate",
+  "intentRev": "85b0df0",
+  "approvedRev": "85fbfa6",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "5",
+    "kind": "intent",
+    "title": "Retire the exercise scenarios",
+    "request": "I don't need scenarios anymore. we're already dogfooding",
+    "problem": "The two exercise scenarios (coupons and soft-delete) were built to try the gates on a realistic codebase before the tool could plan itself. Now the tool plans its own work, so the scenarios are extra upkeep: their repos have to be synced, their plans migrated with every format or ref change, and current plans still point at them for checks that the tool's own intents could do.",
+    "areas": [
+      "cli",
+      "docs"
+    ],
+    "acceptance": [
+      "Nothing in this repo's plans, scripts, skills, or design record depends on the scenarios any more.",
+      "Checks that used a scenario are done on this repo's own intents instead.",
+      "What the scenarios taught stays findable where a decision relied on it."
+    ],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "What happens to the two scenario repos on GitHub (llmdd-scenario-coupons, llmdd-scenario-soft-delete) and the plans stored in them?",
+        "answer": "Delete the repos. The human deletes both GitHub repos, and the plans stored in them are lost.",
+        "origin": "request"
+      },
+      {
+        "id": "Q2",
+        "question": "What happens to scenarios/ in this repo (the two README files, plus the gitignored clones)?",
+        "answer": "Remove the scenarios/ directory entirely, READMEs and local clones included.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "The design record cites scenario findings as the reason for some decisions (for example, ORD-7's problem statement led to labeling every view section, and coupons Q9 led to questions having an owner). What happens to the scenario sections?",
+        "answer": "Drop the scenario sections. Keep each finding as a one-line reason next to the decision it shaped.",
+        "origin": "request"
+      }
+    ]
+  },
+  "incoming": []
+}

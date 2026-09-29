@@ -3,6 +3,7 @@ import { dirname } from 'node:path'
 import { parseArgs } from 'node:util'
 import { approve, create, decide, edit, exportTo, importDir, loadAreas, loadIntentGate, loadPlanGate, nextId, setAreas } from './plan.ts'
 import { renderView, viewTitle, type View } from './render/index.ts'
+import { personalLang } from './git.ts'
 import { setup } from './store.ts'
 import { renderPage } from './render/page.ts'
 
@@ -20,7 +21,8 @@ const usage = `usage (plan data lives in the product repo, under refs/ldd/plans/
   node src/cli.ts set-areas --repo <repo> --areas <a,b,...>              the human's confirmed list, recorded on refs/ldd/config
   node src/cli.ts intent-view <id> --repo <repo> [--out <file>]
   node src/cli.ts plan-view <id> --repo <repo> [--out <file>]
-  node src/cli.ts render <view.json> [--format widget|page|loader] [--cdn <renderer base url>] [--out <file>]`
+  node src/cli.ts render <view.json> [--format widget|page|loader] [--cdn <renderer base url>] [--out <file>]
+      in your language: git config --global ldd.lang ko (en when unset)`
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
@@ -65,15 +67,16 @@ const [command, arg1, arg2] = positionals
 if (command === 'render') {
   const view = JSON.parse(await readFile(need(arg1), 'utf8')) as View
   if (view.schemaVersion !== 1) fail(`${arg1}: expected schemaVersion 1`)
-  if (values.format === 'widget') await emit(renderView(view))
-  else if (values.format === 'page') await emit(renderPage(viewTitle(view), renderView(view)))
+  const lang = attempt(personalLang)
+  if (values.format === 'widget') await emit(renderView(view, lang))
+  else if (values.format === 'page') await emit(renderPage(viewTitle(view, lang), renderView(view, lang), lang))
   else if (values.format === 'loader' && values.cdn) {
     // JSON.stringify leaves "</script>" intact, which would end the inline script early.
     const data = JSON.stringify(view).replaceAll('<', '\\u003c')
     await emit(`<div id="v-root"></div>
 <script type="module">
 import { renderView } from '${values.cdn}/render/index.js'
-document.getElementById('v-root').innerHTML = renderView(${data})
+document.getElementById('v-root').innerHTML = renderView(${data}, ${JSON.stringify(lang)})
 </script>`)
   } else fail(usage)
 } else if (command === 'setup') {

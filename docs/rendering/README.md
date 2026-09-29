@@ -21,4 +21,4 @@
   - (d) The CLI writes a static HTML file that opens in the desktop browser pane.
   - (e) The CLI writes the file and it's published as a private Artifact by path.
 
-See [layouts.md](layouts.md) for the view layouts.
+See [layouts.md](layouts.md) for the view layouts and [languages.md](languages.md) for how views render in each person's language.

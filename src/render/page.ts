@@ -17,9 +17,9 @@ button:hover{background:var(--surface-1)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 `
 
-export function renderPage(title: string, fragment: string): string {
+export function renderPage(title: string, fragment: string, lang = 'en'): string {
   return `<!doctype html>
-<html lang="en">
+<html lang="${esc(lang)}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
