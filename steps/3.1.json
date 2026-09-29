@@ -10,24 +10,19 @@
   "expect": {
     "change": [
       {
-        "symbol": "ref",
-        "from": "refs/plans/<id>",
-        "to": "refs/ldd/plans/<id>"
+        "symbol": "PLAN_PREFIX",
+        "from": "'refs/plans/'",
+        "to": "'refs/ldd/plans/'"
       },
       {
-        "symbol": "listIds",
-        "from": "lists refs/plans/",
-        "to": "lists refs/ldd/plans/"
+        "symbol": "syncRefspecs",
+        "from": "refspecs for refs/plans/* and refs/ldd/config",
+        "to": "one refspec, refs/ldd/*, for fetch and push, plus refs/heads/* for push"
       },
       {
         "symbol": "usage",
         "from": "names refs/plans/<id>",
         "to": "names refs/ldd/plans/<id>"
-      },
-      {
-        "symbol": "syncRefspecs",
-        "from": "refspecs for refs/plans/*",
-        "to": "one refspec, refs/ldd/*, for fetch and push"
       }
     ],
     "rules": [
@@ -44,8 +39,12 @@
         "checkedBy": "human"
       },
       {
-        "text": "refs/ldd/config from #1's step 1.4 keeps working under the new refspec",
+        "text": "refs/ldd/config keeps syncing: refs/ldd/* covers it",
         "checkedBy": "human"
+      },
+      {
+        "text": "setup removes the old refs/plans/* and refs/ldd/config refspecs from a clone it has already set up, so they don't linger",
+        "checkedBy": "test"
       }
     ],
     "invariants": [
@@ -57,6 +56,10 @@
         "text": "no refs/plans/* ref is left in this repo",
         "checkedBy": "human"
       }
+    ],
+    "unchanged": [
+      "ref",
+      "listIds"
     ]
   },
   "evidence": [
