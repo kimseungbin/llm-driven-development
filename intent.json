@@ -4,7 +4,7 @@
   "kind": "intent",
   "title": "Settle the review-side design",
   "request": "Deferred from #1: the review-side design questions.",
-  "problem": "The third gate hasn't been used on a real step, and several review questions are open, so reviews can't be designed with confidence yet.",
+  "problem": "Review-side questions were left open until real result gates had been run, so reviews couldn't be designed with confidence.",
   "areas": [
     "fe",
     "be"
