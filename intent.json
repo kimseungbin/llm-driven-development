@@ -14,12 +14,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q2",
-      "text": "Do reviews of other people's changes need to reach the authors?",
-      "proposal": "Export findings one way as pull-request comments when the author uses a forge; otherwise they only inform your own merge decision.",
-      "origin": "request"
-    },
-    {
       "id": "Q4",
       "text": "Should inline review views show only the rows that need a decision?",
       "proposal": "Yes: unplanned, missing, breaking, and inferred rows inline, with matched rows counted, and the full table in a page view. That keeps inline cost tied to what needs attention rather than to the size of the change.",
@@ -38,6 +32,13 @@
       "question": "Where do approvals live once there's a team: here or in pull-request reviews?",
       "answer": "refs/ldd, mirrored: approvals are passkey-signed events in refs/ldd (#3 Q8). The coordinator mirrors the gate to the forge as a required check. A PR approval never decides a gate, so the record works the same on every forge, including bare remotes.",
       "origin": "request"
+    }
+  ],
+  "deferred": [
+    {
+      "item": "Whether reviews of other people's changes reach their authors (was Q2).",
+      "reason": "Only local mode is in scope for now (user, 2026-09-29).",
+      "followUp": "4"
     }
   ]
 }
