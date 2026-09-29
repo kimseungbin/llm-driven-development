@@ -7,7 +7,9 @@
   "problem": "Every gate view is in English only. The human deciding at the gates is a native Korean speaker who works in English, so each decision is made through a second language, and a label or status line that is misread can lead to approving the wrong thing. The tool has no way to present its views in another language.",
   "areas": [
     "render",
-    "skills"
+    "skills",
+    "cli",
+    "docs"
   ],
   "acceptance": [
     "A gate view rendered in Korean shows every fixed label, badge, button, and status line in Korean.",
