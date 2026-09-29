@@ -20,12 +20,6 @@
       "origin": "request"
     },
     {
-      "id": "Q3",
-      "text": "Where do approvals live once there's a team: here or in pull-request reviews?",
-      "proposal": "Here, in refs/ldd, as passkey-signed approvals (#3 Q8), with the gate mirrored to the forge as a required check, as docs/team already describes. The forge never becomes the source of truth, so delegated or forge-side approvals can never decide a gate.",
-      "origin": "request"
-    },
-    {
       "id": "Q4",
       "text": "Should inline review views show only the rows that need a decision?",
       "proposal": "Yes: unplanned, missing, breaking, and inferred rows inline, with matched rows counted, and the full table in a page view. That keeps inline cost tied to what needs attention rather than to the size of the change.",
@@ -37,6 +31,12 @@
       "id": "Q1",
       "question": "Can reviews of your own agents' work skip the plan (observed-only), or only reviews of other people's changes?",
       "answer": "Own work too, with a reason: your agents may skip the plan (spikes, hotfixes) by passing the explicit flag and a one-line reason. These reviews never count as 'verified' and are listed separately in every filter.",
+      "origin": "request"
+    },
+    {
+      "id": "Q3",
+      "question": "Where do approvals live once there's a team: here or in pull-request reviews?",
+      "answer": "refs/ldd, mirrored: approvals are passkey-signed events in refs/ldd (#3 Q8). The coordinator mirrors the gate to the forge as a required check. A PR approval never decides a gate, so the record works the same on every forge, including bare remotes.",
       "origin": "request"
     }
   ]
