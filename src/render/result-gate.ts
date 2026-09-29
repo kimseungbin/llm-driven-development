@@ -8,6 +8,8 @@ export type PlanMatch = 'matched' | 'unplanned' | 'missing'
 export interface ReconItem {
   plan: PlanMatch
   breaking: boolean
+  classifiedBy: 'deterministic' | 'inferred'
+  confidence?: number
   detail: unknown
 }
 
@@ -27,6 +29,10 @@ export interface KindRenderer {
 }
 
 const kinds: Record<string, KindRenderer> = { 'data-shape': dataShape }
+
+// Rows that need a decision come first. A row goes in the first group it qualifies for.
+const attention = (item: ReconItem): number =>
+  item.plan === 'unplanned' ? 0 : item.plan === 'missing' ? 1 : item.breaking ? 2 : item.classifiedBy === 'inferred' ? 3 : 4
 
 const STYLE = style(`
 .v-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
@@ -97,7 +103,7 @@ export function renderResultGate(view: ResultGateView): string {
 <div class="v-row"><span style="font-weight:500;font-size:15px">${esc(id)}</span><span class="v-sec">${esc(view.step.summary)}</span><span class="v-chip m">${esc(view.step.kind)}</span>${against}</div>
 <div class="v-stats">${stat('Matched', planned ? byPlan('matched').length : null, 'v-ok')}${stat('Unplanned', planned ? unplanned.length : null, 'v-warn')}${stat('Planned, missing', planned ? missing.length : null, 'v-bad')}${stat('Breaking', breaking.length, 'v-bad')}</div>
 <div class="v-row" role="radiogroup" aria-label="Filter changes"><label><input type="radio" name="${filterName}" value="all" checked>All changes</label><label><input type="radio" name="${filterName}" value="breaking">Breaking only</label></div>
-${kind.body(view)}
+${kind.body({ ...view, items: view.items.toSorted((a, b) => attention(a) - attention(b)) })}
 <div class="v-status">${invariants.join('')}${verdict}</div>
 <div class="v-row">${buttons.join('')}</div>
 </div>`

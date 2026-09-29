@@ -13,22 +13,27 @@
     {
       "plan": "matched",
       "breaking": false,
-      "detail": { "field": "Currency", "before": null, "after": "enum { USD }", "change": "added", "classifiedBy": "deterministic", "impact": "New symbol, compatible" }
+      "classifiedBy": "deterministic",
+      "detail": { "field": "Currency", "before": null, "after": "enum { USD }", "change": "added", "impact": "New symbol, compatible" }
     },
     {
       "plan": "matched",
       "breaking": true,
-      "detail": { "field": "Money.currency", "before": "implicit USD", "after": "Currency", "change": "added", "note": "required", "classifiedBy": "deterministic", "impact": "Breaking: constructors, JSON" }
+      "classifiedBy": "deterministic",
+      "detail": { "field": "Money.currency", "before": "implicit USD", "after": "Currency", "change": "added", "note": "required", "impact": "Breaking: constructors, JSON" }
     },
     {
       "plan": "unplanned",
       "breaking": false,
-      "detail": { "field": "Money.displayAmount", "before": "string", "after": "formatted: string", "change": "renamed", "classifiedBy": "inferred", "confidence": 0.72, "impact": "Serialization key changes; confirm rename" }
+      "classifiedBy": "inferred",
+      "confidence": 0.72,
+      "detail": { "field": "Money.displayAmount", "before": "string", "after": "formatted: string", "change": "renamed", "impact": "Serialization key changes; confirm rename" }
     },
     {
       "plan": "unplanned",
       "breaking": true,
-      "detail": { "field": "Money.precision", "before": "number?", "after": null, "change": "removed", "classifiedBy": "deterministic", "impact": "Breaking: 4 call sites read it" }
+      "classifiedBy": "deterministic",
+      "detail": { "field": "Money.precision", "before": "number?", "after": null, "change": "removed", "impact": "Breaking: 4 call sites read it" }
     }
   ],
   "invariants": [{ "text": "no observable behavior change", "status": "pending", "note": "tests not run" }]
