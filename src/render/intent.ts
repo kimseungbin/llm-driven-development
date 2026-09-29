@@ -1,4 +1,4 @@
-import type { Intent, Question } from '../model.ts'
+import type { IncomingLink, Intent, Question } from '../model.ts'
 import { displayId, esc, list, plural, promptButton } from './html.ts'
 
 export const INTENT_STYLE = `
@@ -23,6 +23,28 @@ export function scopeSections(intent: Intent): string {
     ? `<div class="v-h">Non-goals</div><ul class="v-list">${intent.nonGoals.map((n) => `<li>${esc(n.item)}<div class="v-note">Why: ${esc(n.reason)}</div></li>`).join('')}</ul>`
     : ''
   return deferred + nonGoals
+}
+
+const outgoingLabel = { blocks: 'blocks', duplicates: 'duplicates', parent: 'part of' } as const
+const incomingLabel = (l: IncomingLink): string =>
+  l.type === 'blocks'
+    ? `blocked by ${displayId(l.from)}`
+    : l.type === 'duplicates'
+      ? `duplicated by ${displayId(l.from)}`
+      : l.type === 'parent'
+        ? `parent of ${displayId(l.from)}`
+        : l.type === 'follow-up'
+          ? `follow-up for work deferred in ${displayId(l.from)}`
+          : `${displayId(l.step ?? l.from)} depends on step ${displayId(l.on ?? '')}`
+
+// Outgoing follow-ups already show under Deferred, so this lists relations out and every kind of link in.
+export function linksSection(intent: Intent, incoming: IncomingLink[]): string {
+  const rows = [
+    ...(intent.relations ?? []).map((r) => `${outgoingLabel[r.type]} ${displayId(r.target)}`),
+    ...incoming.map(incomingLabel),
+  ]
+  if (!rows.length) return ''
+  return `<div class="v-h">Links</div><ul class="v-list">${rows.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`
 }
 
 export function decisionsSection(intent: Intent): string {

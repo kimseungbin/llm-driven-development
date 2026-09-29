@@ -20,6 +20,24 @@ export interface Decision {
   owner?: string
 }
 
+export const RELATION_TYPES = ['blocks', 'duplicates', 'parent'] as const
+export type RelationType = (typeof RELATION_TYPES)[number]
+
+// Stored on one side only; the other side sees it through incomingLinks.
+export interface Relation {
+  type: RelationType
+  target: string
+}
+
+// A link that another intent holds to this one, found by scanning the plan refs.
+export interface IncomingLink {
+  from: string
+  type: RelationType | 'follow-up' | 'step-dependency'
+  // For a step dependency: the dependent step and the step it depends on.
+  step?: string
+  on?: string
+}
+
 export interface Intent {
   schemaVersion: 1
   id: string
@@ -31,6 +49,7 @@ export interface Intent {
   acceptance: string[]
   deferred?: { item: string; reason: string; followUp: string }[]
   nonGoals?: { item: string; reason: string }[]
+  relations?: Relation[]
   openQuestions: Question[]
   decisions?: Decision[]
 }
