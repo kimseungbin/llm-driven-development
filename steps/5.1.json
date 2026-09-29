@@ -15,7 +15,19 @@
       },
       {
         "symbol": "syncRefspecs",
-        "signature": "(repo) => { fetch: string[]; push: string[] }"
+        "signature": "() => { fetch: string[]; push: string[] }"
+      },
+      {
+        "symbol": "store.setup",
+        "signature": "(repo, remote) => refspecs it added"
+      },
+      {
+        "symbol": "PLAN_PREFIX",
+        "type": "'refs/plans/', the one spelling of the plan ref prefix"
+      },
+      {
+        "symbol": "test/setup.test.ts",
+        "type": "node --test suite, run with npm test"
       }
     ],
     "remove": [
