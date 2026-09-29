@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "id": "3",
+  "kind": "intent",
+  "title": "Reconcile with the ldd design",
+  "request": "Reconcile into one design (Recommended): Compare decision by decision, resolve each conflict with you, and keep one design record (in the prototype repo, since it's the real project).",
+  "problem": "Two design records describe the same tool and contradict each other. This repo's design.md comes from building a solo, local prototype. The ldd docs (~/repos/personal/ldd/docs) were written in a separate session for a team coordinator. They disagree on scope, where issues live, the gates, approvals, rendering, and more. The human and every agent have to guess which record wins, and the ideas unique to each are at risk of getting lost.",
+  "areas": [
+    "fe",
+    "be"
+  ],
+  "acceptance": [
+    "Every conflict between the two records is decided, and the design record states one answer for each.",
+    "Ideas that only one record has are carried into the design record, unless a decision drops them.",
+    "The ldd docs are no longer a second source of truth: the design record says what, if anything, still refers to them."
+  ],
+  "nonGoals": [
+    {
+      "item": "Building the team coordinator, forge adapters, or web UI",
+      "reason": "This intent settles the design only. Building any of it needs its own intent."
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "origin": "request",
+      "text": "Scope: the prototype is solo and local (no server, accounts, web UI, search, or webhooks). The ldd docs design a team coordinator (NestJS, Postgres, web UI, forge adapters). Which one is the design?",
+      "proposal": "Both, as two phases. The prototype's solo, local tool is the current phase. The ldd coordinator is the team-phase target and gets its own section. Anything that would be expensive to change later, such as the data layer, is designed now so the coordinator can adopt it unchanged. The alternatives drop one of the two designs."
+    },
+    {
+      "id": "Q2",
+      "origin": "request",
+      "text": "Where do issues (intents and plans) live? The prototype keeps them in git refs in the product repo. The ldd docs keep them in the coordinator's database because issues can span repos and need deletion and per-item access control.",
+      "proposal": "Git refs in the product repo, in both phases. Since the ldd design moved to forge-backed hosting, review data already travels with the repo, and a database-only backlog would be the one thing that doesn't. Work across repos becomes one intent per repo, joined by the existing parent links. The coordinator indexes the refs in Postgres as a copy it can rebuild. Deletion and access control stay per repo, which is accepted."
+    },
+    {
+      "id": "Q3",
+      "origin": "request",
+      "text": "Ref names: the prototype uses refs/plans/*, refs/plans-config, and a planned refs/reviews/*. The ldd docs put everything under refs/ldd/*. Which naming?",
+      "proposal": "Move everything under refs/ldd/: refs/ldd/plans/<id>, refs/ldd/reviews/<id>, and refs/ldd/config. One refspec (refs/ldd/*) then syncs all of it, and the prefix can't collide with another tool's refs. The few stored refs are migrated in one step."
+    },
+    {
+      "id": "Q4",
+      "origin": "request",
+      "text": "Gates and the unit of review: the prototype has an intent gate, a plan gate, and a result gate for each step, with steps typed by kind. The ldd docs have a plan review and a change-level review built from items per layer (Decision, Contract, Behavior, Verification, Mechanical). Which model?",
+      "proposal": "The prototype's three gates, with steps as the unit of review. The ldd layers become step kinds: Contract becomes data-shape and signature-change, Behavior becomes behavior-change, Mechanical becomes non-semantic, Verification becomes each step's evidence, and Decision becomes the intent's decisions. In the team phase, a change is ready to merge when every step it implements has passed the result gate and nothing unplanned is left unresolved. The intent gate stays because the ldd design had no place to approve what and why before any code is read."
+    },
+    {
+      "id": "Q5",
+      "origin": "request",
+      "text": "Who works out planned vs built? The prototype computes it deterministically from the observed diff and step expectations, and stores LLM judgments separately, labeled inferred. The ldd docs have the author's agent submit review items that map the diff to the intent, which the coordinator then checks.",
+      "proposal": "Computed, as in the prototype. Agent-submitted review items are dropped. The ldd coverage check becomes the prototype's bucket of unplanned changes. LLM judgments stay separate and labeled inferred. Research and decision records written while working stay, attached to the intent and its steps, because the diff can't show them."
+    },
+    {
+      "id": "Q6",
+      "origin": "request",
+      "text": "Linking commits to plan data: the prototype uses a Plan-Step trailer, with one step per commit. The ldd docs use an Ldd-Work trailer that names a work session. Which one?",
+      "proposal": "Plan-Step only. It links each commit straight to its step, and the step links to the intent, so work sessions and their records attach to step IDs instead. Ldd-Work is dropped."
+    },
+    {
+      "id": "Q7",
+      "origin": "request",
+      "text": "Detecting stale plans: the prototype stores no base SHA, recomputes the base, and records the head SHA and observed-diff hash on each approval. The ldd docs store the commit the plan was made against and flag items that went stale against it. Which one?",
+      "proposal": "The prototype's approach, with the ldd check built on it. Plans store no SHA. Staleness is a mismatch between an approval's recorded evidence (head SHA, observed-diff hash) and the current observed diff. That gives the ldd stale-item flag without putting a SHA in authored data that a rebase would invalidate."
+    },
+    {
+      "id": "Q8",
+      "origin": "request",
+      "text": "Who can approve? The prototype lets an agent run approve when your message explicitly names the gate and rev, recorded as Via: agent, with SSH-signed approvals as a later option. The ldd docs require a passkey signature for any act that decides a gate, so no agent can approve.",
+      "proposal": "By phase. Solo phase: CLI approve with delegated Via: agent approvals, as built now. Team phase: acts that decide a gate need a passkey signature, and delegated approvals never count toward a team gate. SSH-signed approvals are dropped in favor of passkeys, because only a passkey proves a human was physically present."
+    },
+    {
+      "id": "Q9",
+      "origin": "request",
+      "text": "Rendering: the prototype uses deterministic renderers per kind, and Claude never writes markup for records (your requirement). The ldd docs have agents write SVG diagrams, which are then sanitized. How do they fit together?",
+      "proposal": "Deterministic renderers draw every record view. An architecture diagram is something the human or agent authors: it's attached to a decision as sanitized SVG, shown as-is, and labeled authored. Counts, flags, and tables always come from renderers."
+    },
+    {
+      "id": "Q10",
+      "origin": "request",
+      "text": "Git notes: the prototype rejected notes for plan data. The ldd docs use refs/notes/ldd only for a record, written after a merge, of how each merged commit was reviewed. Keep that record?",
+      "proposal": "Drop it. The Plan-Step trailer already links every merged commit to its step, and the step's ref holds the approvals, so a note would repeat data the refs already have."
+    },
+    {
+      "id": "Q11",
+      "origin": "request",
+      "text": "Runtime: the prototype runs .ts directly on Node 26 with no dependencies. The ldd docs chose Bun everywhere, with NestJS on Bun for the coordinator. Which one?",
+      "proposal": "Node 26. The CLI keeps running .ts directly with no build step. The coordinator adds an SWC build when it's built, because NestJS decorators need metadata that Node's type stripping doesn't produce. Node is also NestJS's native runtime, which removes the NestJS-on-Bun compatibility risk the ldd docs flagged. Bun's advantage, a fast single-binary CLI, doesn't matter while the CLI runs from the repo."
+    },
+    {
+      "id": "Q12",
+      "origin": "request",
+      "text": "Design record format: the prototype keeps one long docs/design.md. The ldd docs are short nested files, one topic each, following your standing preference. Which format for the merged record?",
+      "proposal": "Short nested docs: a docs/README.md index with 'Where we left off', one folder per area, and files of about 40 lines. CLAUDE.md is updated to point at the index. The merged record replaces both docs/design.md and ~/repos/personal/ldd/docs, and ldd's docs are deleted once the merge is done."
+    }
+  ],
+  "decisions": []
+}
