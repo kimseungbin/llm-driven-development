@@ -59,8 +59,37 @@ export interface Intent {
   decisions?: Decision[]
 }
 
-export const STEP_KINDS = ['data-shape', 'signature-change', 'behavior-change', 'feature', 'non-semantic', 'other'] as const
+export const STEP_KINDS = ['data-shape', 'signature-change', 'behavior-change', 'feature', 'instructions', 'docs', 'non-semantic', 'other'] as const
 export type StepKind = (typeof STEP_KINDS)[number]
+
+// Prose kinds name files and sections; code kinds name symbols.
+export const PROSE_KINDS: readonly StepKind[] = ['instructions', 'docs', 'non-semantic']
+
+// One shared list, so a word means the same thing in every kind (docs/model/categories.md).
+export const CHANGE_CATEGORIES = [
+  'added',
+  'removed',
+  'renamed',
+  'moved',
+  'type-changed',
+  'nullability-changed',
+  'value-changed',
+  'behavior-changed',
+  'content-changed',
+] as const
+export type ChangeCategory = (typeof CHANGE_CATEGORIES)[number]
+
+// The categories each kind can produce; any other category on a change of that kind is a mislabel.
+export const KIND_CATEGORIES: Record<StepKind, readonly ChangeCategory[]> = {
+  'data-shape': ['added', 'removed', 'renamed', 'type-changed', 'nullability-changed'],
+  'signature-change': ['added', 'removed', 'renamed', 'type-changed'],
+  'behavior-change': ['behavior-changed', 'value-changed'],
+  feature: ['added'],
+  instructions: ['added', 'removed', 'moved', 'behavior-changed'],
+  docs: ['added', 'removed', 'moved', 'content-changed'],
+  'non-semantic': ['moved', 'renamed', 'content-changed'],
+  other: CHANGE_CATEGORIES,
+}
 
 export const RISKS = ['low', 'medium', 'high'] as const
 export type Risk = (typeof RISKS)[number]
@@ -69,6 +98,12 @@ export type Risk = (typeof RISKS)[number]
 export interface Check {
   text: string
   checkedBy: 'test' | 'human'
+}
+
+// For prose the file is the identity: doc is a skill's name or a repo-relative path, section is the heading text.
+export interface SectionRef {
+  doc: string
+  section: string
 }
 
 export interface SymbolRef {
@@ -85,11 +120,12 @@ export interface Expect {
   remove?: string[]
   change?: SymbolRef[]
   unchanged?: string[]
+  sections?: SectionRef[]
   rules?: Check[]
   invariants?: Check[]
 }
 
-export const EXPECT_FIELDS = ['add', 'remove', 'change', 'unchanged', 'rules', 'invariants'] as const
+export const EXPECT_FIELDS = ['add', 'remove', 'change', 'unchanged', 'sections', 'rules', 'invariants'] as const
 
 export interface PlanStep {
   schemaVersion: 2

@@ -5,8 +5,9 @@ import { renderResultGate, type ReconItem, type ResultGateView } from '../src/re
 const item = (field: string, plan: ReconItem['plan'], extra: Partial<ReconItem> = {}): ReconItem => ({
   plan,
   breaking: false,
+  category: 'added',
   classifiedBy: 'deterministic',
-  detail: { field, before: null, after: 'string', change: 'added', impact: 'none' },
+  detail: { field, before: null, after: 'string', impact: 'none' },
   ...extra,
 })
 
@@ -15,7 +16,7 @@ const view = (items: ReconItem[]): ResultGateView => ({
   view: 'result-gate',
   mode: 'planned',
   step: { id: '9.1', summary: 'test step', kind: 'data-shape', planRev: 'abc1234' },
-  observed: { kind: 'data-shape', range: 'main..test', head: 'def5678' },
+  observed: { range: 'main..test', head: 'def5678' },
   items,
   invariants: [],
 })
@@ -48,4 +49,31 @@ test('result gate renders every row', () => {
   const html = renderResultGate(view(items))
   for (const field of fields) assert.ok(html.includes(`<td class="m">${field}</td>`), field)
   assert.equal(html.match(/<tr data-breaking=/g)?.length, items.length)
+})
+
+test('result gate refuses a category the step kind can not produce', () => {
+  const wrong = item('fieldMoved', 'matched', { category: 'moved' })
+  assert.throws(
+    () => renderResultGate(view([wrong])),
+    /9\.1: fieldMoved is moved, which a data-shape step can't produce \(added, removed, renamed, type-changed, nullability-changed, or uncategorized\)/,
+  )
+})
+
+test('result gate renders uncategorized changes in every kind', () => {
+  const code = renderResultGate(view([item('fieldOdd', 'matched', { category: 'uncategorized' })]))
+  assert.match(code, /<span class="v-pill ">uncategorized<\/span>/)
+  const prose = renderResultGate({
+    ...view([{ ...item('x', 'matched'), category: 'uncategorized', detail: { what: 'sectionOdd', from: 'a.md', why: 'unclear' } }]),
+    step: { id: '9.2', summary: 'docs step', kind: 'docs', planRev: 'abc1234' },
+  })
+  assert.match(prose, /sectionOdd<\/td><td><span class="v-pill">uncategorized<\/span>/)
+})
+
+test('the breaking-only filter hides prose blocks as well as rows', () => {
+  const html = renderResultGate({
+    ...view([{ ...item('x', 'matched'), category: 'content-changed', detail: { what: 'paragraph', diff: '- a\n+ b', why: 'clearer' } }]),
+    step: { id: '9.3', summary: 'docs step', kind: 'docs', planRev: 'abc1234' },
+  })
+  assert.ok(html.includes('.v:has(input[value=breaking]:checked) [data-breaking=false]{display:none}'))
+  assert.match(html, /<div class="v-prose" data-breaking="false">/)
 })

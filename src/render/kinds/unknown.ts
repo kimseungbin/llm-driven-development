@@ -13,7 +13,7 @@ export const unknownKind: KindRenderer = {
       (item) =>
         `<tr data-breaking="${item.breaking}"><td><pre class="v-raw">${esc(JSON.stringify(item.detail, null, 2))}</pre></td><td>${planCell(item.plan, planned)}</td></tr>`,
     )
-    return `<p class="v-note">No renderer for kind <span class="m">${esc(view.observed.kind)}</span>; showing raw change data.</p>
+    return `<p class="v-note">No renderer for kind <span class="m">${esc(view.step.kind)}</span>; showing raw change data.</p>
 <table class="v-table"><colgroup><col style="width:80%"><col style="width:20%"></colgroup>
 <thead><tr><th>Change</th><th>Plan</th></tr></thead>
 <tbody>${rows.join('\n')}</tbody>

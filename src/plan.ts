@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { DEFAULT_AREAS, EXPECT_FIELDS, type IncomingLink, type Intent, type PlanStep, RELATION_TYPES, RISKS, STEP_KINDS, type StepKind } from './model.ts'
+import { DEFAULT_AREAS, EXPECT_FIELDS, type IncomingLink, type Intent, type PlanStep, PROSE_KINDS, RELATION_TYPES, RISKS, STEP_KINDS, type StepKind } from './model.ts'
 import type { IntentGateView } from './render/intent-gate.ts'
 import type { PlanGateView } from './render/plan-gate.ts'
 import { commit, commitConfig, configTip, lastApproval, listIds, read, readConfig, type Snapshot } from './store.ts'
@@ -69,6 +69,8 @@ const kindNeeds: Record<StepKind, [check: (e: PlanStep['expect']) => boolean, me
   'signature-change': [(e) => !!e.change?.length && e.change.every((c) => c.from && c.to), 'needs change entries with from and to'],
   'behavior-change': [(e) => !!(e.change?.length && e.rules?.length), 'needs the changed symbols and at least one rule'],
   feature: [(e) => !!e.add?.length, 'needs add'],
+  instructions: [(e) => !!(e.sections?.length && e.rules?.length), 'needs sections and at least one rule saying what it now tells agents'],
+  docs: [(e) => !!e.sections?.length, 'needs sections'],
   'non-semantic': [() => true, ''],
   other: [() => true, ''],
 }
@@ -80,10 +82,12 @@ function validateExpect(s: PlanStep, need: Need) {
     need((EXPECT_FIELDS as readonly string[]).includes(key), `${s.id}: expect.${key} isn't a field (${EXPECT_FIELDS.join(', ')})`)
   for (const r of [...(e.add ?? []), ...(e.change ?? [])]) need(isSymbol(r?.symbol), `${s.id}: "${r?.symbol}" isn't a symbol; prose goes in rules or invariants`)
   for (const x of [...(e.remove ?? []), ...(e.unchanged ?? [])]) need(isSymbol(x), `${s.id}: "${x}" isn't a symbol; prose goes in rules or invariants`)
+  for (const r of e.sections ?? []) need(r?.doc && r?.section, `${s.id}: each section needs doc and section`)
+  need(!e.sections || PROSE_KINDS.includes(s.kind), `${s.id}: only ${PROSE_KINDS.join(', ')} steps name sections; code kinds name symbols`)
   for (const c of [...(e.rules ?? []), ...(e.invariants ?? [])])
     need(c?.text && (c.checkedBy === 'test' || c.checkedBy === 'human'), `${s.id}: rules and invariants need text and checkedBy (test or human)`)
   const [check, message] = kindNeeds[s.kind] ?? [() => true, '']
-  need(check(e), `${s.id}: a ${s.kind} step ${message}`)
+  need(check(e), `${s.id}: ${/^[aeiou]/.test(s.kind) ? 'an' : 'a'} ${s.kind} step ${message}`)
 }
 
 const validateSteps = (intent: Intent, steps: PlanStep[]) =>

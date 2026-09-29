@@ -1,5 +1,7 @@
+import { type ChangeCategory, KIND_CATEGORIES, type StepKind } from '../model.ts'
 import { displayId, esc, list, plural, promptButton } from './html.ts'
-import { dataShape } from './kinds/data-shape.ts'
+import { code } from './kinds/code.ts'
+import { prose, PROSE_STYLE } from './kinds/prose.ts'
 import { unknownKind } from './kinds/unknown.ts'
 import { style } from './style.ts'
 
@@ -8,6 +10,8 @@ export type PlanMatch = 'matched' | 'unplanned' | 'missing'
 export interface ReconItem {
   plan: PlanMatch
   breaking: boolean
+  // A change no category fits is uncategorized, never the nearest category.
+  category: ChangeCategory | 'uncategorized'
   classifiedBy: 'deterministic' | 'inferred'
   confidence?: number
   detail: unknown
@@ -17,8 +21,8 @@ export interface ResultGateView {
   schemaVersion: 1
   view: 'result-gate'
   mode: 'planned' | 'observed-only'
-  step: { id: string; summary: string; kind: string; planRev: string | null }
-  observed: { kind: string; range: string; head: string }
+  step: { id: string; summary: string; kind: StepKind; planRev: string | null }
+  observed: { range: string; head: string }
   items: ReconItem[]
   invariants: { text: string; status: 'pending' | 'passed' | 'failed'; note?: string }[]
 }
@@ -28,7 +32,28 @@ export interface KindRenderer {
   itemName(item: ReconItem): string
 }
 
-const kinds: Record<string, KindRenderer> = { 'data-shape': dataShape }
+// The step's kind picks the view: code kinds get the before/after table, prose kinds the prose view.
+const renderers: Record<StepKind, KindRenderer> = {
+  'data-shape': code,
+  'signature-change': code,
+  'behavior-change': code,
+  feature: code,
+  instructions: prose,
+  docs: prose,
+  'non-semantic': prose,
+  other: unknownKind,
+}
+
+// A category the step's kind can't produce is a mislabel, so the view refuses it rather than show it.
+function checkCategories(view: ResultGateView, kind: KindRenderer) {
+  const allowed = KIND_CATEGORIES[view.step.kind]
+  if (!allowed) throw new Error(`${view.step.id}: unknown step kind ${view.step.kind}`)
+  for (const item of view.items)
+    if (item.category !== 'uncategorized' && !allowed.includes(item.category))
+      throw new Error(
+        `${view.step.id}: ${kind.itemName(item)} is ${item.category}, which a ${view.step.kind} step can't produce (${allowed.join(', ')}, or uncategorized)`,
+      )
+}
 
 // Rows that need a decision come first. A row goes in the first group it qualifies for.
 const attention = (item: ReconItem): number =>
@@ -42,16 +67,17 @@ const STYLE = style(`
 .v-row label:has(input:checked){background:var(--surface-1)}
 .v-row label:has(input:focus-visible){outline:2px solid var(--border-accent)}
 .v-row input{position:absolute;opacity:0;pointer-events:none}
-.v:has(input[value=breaking]:checked) tr[data-breaking=false]{display:none}
+.v:has(input[value=breaking]:checked) [data-breaking=false]{display:none}
 .v-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
 .v-table th{text-align:left;font-weight:500;color:var(--text-secondary);padding:6px 8px;border-bottom:0.5px solid var(--border)}
 .v-table td{padding:8px;border-bottom:0.5px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
 .v-table .v-grp th{font-size:11px;color:var(--text-muted);border-bottom:none;padding-bottom:0}
-.v-raw{margin:0;font-family:var(--font-mono);font-size:12px;white-space:pre-wrap}`)
+.v-raw{margin:0;font-family:var(--font-mono);font-size:12px;white-space:pre-wrap}${PROSE_STYLE}`)
 
 export function renderResultGate(view: ResultGateView): string {
   const planned = view.mode === 'planned'
-  const kind = kinds[view.observed.kind] ?? unknownKind
+  const kind = renderers[view.step.kind] ?? unknownKind
+  checkCategories(view, kind)
   const id = displayId(view.step.id)
   const byPlan = (plan: PlanMatch) => view.items.filter((i) => i.plan === plan)
   const unplanned = byPlan('unplanned')
