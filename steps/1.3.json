@@ -16,6 +16,18 @@
       {
         "symbol": "incomingLinks",
         "signature": "(repo, id) => links from other intents that point at this one"
+      },
+      {
+        "symbol": "RELATION_TYPES",
+        "type": "'blocks' | 'duplicates' | 'parent'"
+      },
+      {
+        "symbol": "IncomingLink",
+        "type": "{ from, type, step?, on? }"
+      },
+      {
+        "symbol": "linksSection",
+        "signature": "(intent, incoming) => html"
       }
     ],
     "change": [
@@ -23,6 +35,11 @@
         "symbol": "PlanStep.dependsOn",
         "from": "steps of this plan",
         "to": "steps of this plan or of another intent in the same repo"
+      },
+      {
+        "symbol": "validate",
+        "from": "(where, snapshot)",
+        "to": "(where, snapshot, repo)"
       }
     ],
     "rules": [
@@ -36,6 +53,10 @@
       },
       {
         "text": "the intent gate shows outgoing and incoming links, follow-ups included",
+        "checkedBy": "human"
+      },
+      {
+        "text": "each relation is listed once, and an intent can't link to itself",
         "checkedBy": "human"
       }
     ]
