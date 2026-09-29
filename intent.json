@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q11",
-      "origin": "request",
-      "text": "Runtime: the prototype runs .ts directly on Node 26 with no dependencies. The ldd docs chose Bun everywhere, with NestJS on Bun for the coordinator. Which one?",
-      "proposal": "Node 26. The CLI keeps running .ts directly with no build step. The coordinator adds an SWC build when it's built, because NestJS decorators need metadata that Node's type stripping doesn't produce. Node is also NestJS's native runtime, which removes the NestJS-on-Bun compatibility risk the ldd docs flagged. Bun's advantage, a fast single-binary CLI, doesn't matter while the CLI runs from the repo."
-    },
-    {
       "id": "Q12",
       "origin": "request",
       "text": "Design record format: the prototype keeps one long docs/design.md. The ldd docs are short nested files, one topic each, following your standing preference. Which format for the merged record?",
@@ -93,6 +87,12 @@
       "id": "Q10",
       "question": "Git notes: the prototype rejected notes for plan data. The ldd docs use refs/notes/ldd only for a record, written after a merge, of how each merged commit was reviewed. Keep that record?",
       "answer": "Drop it. The Plan-Step trailer links each merged commit to its step, and the step's ref holds the approvals.",
+      "origin": "request"
+    },
+    {
+      "id": "Q11",
+      "question": "Runtime: the prototype runs .ts directly on Node 26 with no dependencies. The ldd docs chose Bun everywhere, with NestJS on Bun for the coordinator. Which one?",
+      "answer": "Node 26 now, for the solo phase. The coordinator's runtime is decided later, in #4.",
       "origin": "request"
     }
   ],
