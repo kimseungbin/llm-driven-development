@@ -20,14 +20,7 @@
       "reason": "This intent settles the design only. Building any of it needs its own intent."
     }
   ],
-  "openQuestions": [
-    {
-      "id": "Q12",
-      "origin": "request",
-      "text": "Design record format: the prototype keeps one long docs/design.md. The ldd docs are short nested files, one topic each, following your standing preference. Which format for the merged record?",
-      "proposal": "Short nested docs: a docs/README.md index with 'Where we left off', one folder per area, and files of about 40 lines. CLAUDE.md is updated to point at the index. The merged record replaces both docs/design.md and ~/repos/personal/ldd/docs, and ldd's docs are deleted once the merge is done."
-    }
-  ],
+  "openQuestions": [],
   "decisions": [
     {
       "id": "Q1",
@@ -93,6 +86,12 @@
       "id": "Q11",
       "question": "Runtime: the prototype runs .ts directly on Node 26 with no dependencies. The ldd docs chose Bun everywhere, with NestJS on Bun for the coordinator. Which one?",
       "answer": "Node 26 now, for the solo phase. The coordinator's runtime is decided later, in #4.",
+      "origin": "request"
+    },
+    {
+      "id": "Q12",
+      "question": "Design record format: the prototype keeps one long docs/design.md. The ldd docs are short nested files, one topic each, following your standing preference. Which format for the merged record?",
+      "answer": "Short nested docs: a docs/README.md index with 'Where we left off', a folder per area, and files of about 40 lines. CLAUDE.md points to the index. The merged record replaces docs/design.md and ~/repos/personal/ldd/docs, and ldd's docs are deleted once the merge is done.",
       "origin": "request"
     }
   ],
