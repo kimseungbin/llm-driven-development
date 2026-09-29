@@ -23,6 +23,16 @@
         "symbol": "View.view",
         "from": "'evidence-gate'",
         "to": "'result-gate'"
+      },
+      {
+        "symbol": "render/evidence-gate.ts",
+        "from": "evidence-gate.ts",
+        "to": "result-gate.ts"
+      },
+      {
+        "symbol": "viewTitle",
+        "from": "'<id> review'",
+        "to": "'<id> result'"
       }
     ],
     "rules": [

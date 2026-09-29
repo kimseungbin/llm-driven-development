@@ -20,6 +20,38 @@
       {
         "symbol": "STEP_KINDS",
         "type": "data-shape | signature-change | behavior-change | feature | non-semantic | other"
+      },
+      {
+        "symbol": "RISKS",
+        "type": "'low' | 'medium' | 'high'"
+      },
+      {
+        "symbol": "Risk",
+        "type": "type"
+      },
+      {
+        "symbol": "StepKind",
+        "type": "type"
+      },
+      {
+        "symbol": "Check",
+        "type": "{ text, checkedBy }"
+      },
+      {
+        "symbol": "SymbolRef",
+        "type": "type"
+      },
+      {
+        "symbol": "Expect",
+        "type": "type"
+      },
+      {
+        "symbol": "EXPECT_FIELDS",
+        "type": "add | remove | change | unchanged | rules | invariants"
+      },
+      {
+        "symbol": "scripts/migrate-steps-v2.ts",
+        "type": "one-off migration script"
       }
     ],
     "remove": [
@@ -35,6 +67,11 @@
         "symbol": "dtoShape",
         "from": "dtoShape",
         "to": "dataShape"
+      },
+      {
+        "symbol": "describe",
+        "from": "describe",
+        "to": "expectLines"
       }
     ],
     "rules": [
