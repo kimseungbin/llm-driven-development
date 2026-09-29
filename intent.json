@@ -25,12 +25,6 @@
   "relations": [],
   "openQuestions": [
     {
-      "id": "Q1",
-      "origin": "request",
-      "text": "What does Korean support cover: only the rendered gate views, or also the CLI's messages and errors?",
-      "proposal": "Rendered gate views only. They are where decisions are made; CLI output is read mostly by agents, and its errors are what agents fix against."
-    },
-    {
       "id": "Q2",
       "origin": "request",
       "text": "Is this Korean only, or a general mechanism where Korean is the first added language?",
@@ -49,5 +43,12 @@
       "proposal": "The request's language. The fields are interpretations checked against the request, which is easiest when both are in the same language."
     }
   ],
-  "decisions": []
+  "decisions": [
+    {
+      "id": "Q1",
+      "question": "What does Korean support cover: only the rendered gate views, or also the CLI's messages and errors?",
+      "answer": "Gate views only (Recommended): labels, badges, buttons, and status lines in rendered views. CLI messages and errors stay English.",
+      "origin": "request"
+    }
+  ]
 }
