@@ -21,14 +21,17 @@ export interface LoggedEvent {
   actor?: string
 }
 
-const ref = (id: string) => `refs/plans/${id}`
+// The one place the plan ref prefix is spelled out; ref, listIds, and syncRefspecs all derive from it.
+const PLAN_PREFIX = 'refs/plans/'
+const ref = (id: string) => `${PLAN_PREFIX}${id}`
 const json = (v: unknown) => `${JSON.stringify(v, null, 2)}\n`
 const zeroOid = (repo: string) => '0'.repeat(git(repo, ['rev-parse', '--show-object-format']) === 'sha256' ? 64 : 40)
 
 export const tip = (repo: string, id: string): string | null => tryGit(repo, ['rev-parse', '--verify', '-q', ref(id)])
 
 export function listIds(repo: string): string[] {
-  const out = git(repo, ['for-each-ref', '--format=%(refname:strip=2)', 'refs/plans/'])
+  const depth = PLAN_PREFIX.split('/').filter(Boolean).length
+  const out = git(repo, ['for-each-ref', `--format=%(refname:lstrip=${depth})`, PLAN_PREFIX])
   return out ? out.split('\n') : []
 }
 
@@ -70,6 +73,31 @@ export const commit = (repo: string, id: string, snapshot: Snapshot, event: Even
 
 // The repo's config lives next to the plans, so it works on repos you don't own, with the same event history.
 export const CONFIG_REF = 'refs/ldd/config'
+
+// No "+" on plan or config refspecs: they only move forward, so a ref that diverged on two machines is
+// rejected instead of overwritten, the same compare-and-swap rule the write path follows locally.
+// Once any remote.origin.push is set, git push sends only those, so branches are listed too.
+export function syncRefspecs(): { fetch: string[]; push: string[] } {
+  const plans = `${PLAN_PREFIX}*:${PLAN_PREFIX}*`
+  const config = `${CONFIG_REF}:${CONFIG_REF}`
+  return { fetch: [plans, config], push: ['refs/heads/*:refs/heads/*', plans, config] }
+}
+
+// Adds only what's missing, so running it again changes nothing.
+export function setup(repo: string, remote = 'origin'): string[] {
+  if (!tryGit(repo, ['remote', 'get-url', remote])) throw new Error(`setup: ${repo} has no remote named ${remote}`)
+  const added: string[] = []
+  const { fetch, push } = syncRefspecs()
+  for (const [key, specs] of [['fetch', fetch], ['push', push]] as const) {
+    const current = (tryGit(repo, ['config', '--get-all', `remote.${remote}.${key}`]) ?? '').split('\n')
+    for (const spec of specs)
+      if (!current.includes(spec)) {
+        git(repo, ['config', '--add', `remote.${remote}.${key}`, spec])
+        added.push(`${key} ${spec}`)
+      }
+  }
+  return added
+}
 
 export const configTip = (repo: string): string | null => tryGit(repo, ['rev-parse', '--verify', '-q', CONFIG_REF])
 
