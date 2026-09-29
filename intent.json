@@ -11,13 +11,16 @@
   ],
   "acceptance": [
     "Every change at a result gate is described by a category that says what actually changed, whatever the step's kind.",
-    "A change no category fits is shown as uncategorized, never forced into the nearest category.",
-    "The mislabeled categories and kinds in #1's, #2's, #3's, and #5's accepted results are corrected in the record."
+    "A change no category fits is shown as uncategorized, never forced into the nearest category."
   ],
   "nonGoals": [
     {
       "item": "Building the extractor that assigns categories automatically",
       "reason": "Extraction is its own build-order step; until then categories are assigned by hand and labeled inferred."
+    },
+    {
+      "item": "Correcting the labels in #1's, #2's, #3's, and #5's accepted results",
+      "reason": "The new categories apply from #6 on; earlier results keep their labels (Q3, user, 2026-09-29)."
     }
   ],
   "openQuestions": [],
