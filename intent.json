@@ -28,7 +28,7 @@
     {
       "id": "Q3",
       "text": "Where do approvals live once there's a team: here or in pull-request reviews?",
-      "proposal": "Here, as signed approvals, with a status mirrored to the forge. The forge never becomes the source of truth.",
+      "proposal": "Here, in refs/ldd, as passkey-signed approvals (#3 Q8), with the gate mirrored to the forge as a required check, as docs/team already describes. The forge never becomes the source of truth, so delegated or forge-side approvals can never decide a gate.",
       "origin": "request"
     },
     {
