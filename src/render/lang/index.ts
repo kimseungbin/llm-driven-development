@@ -1,9 +1,10 @@
 import { en, type Messages } from './en.ts'
+import { ko } from './ko.ts'
 
 export type { Messages }
 
 // Each language is one catalog here; the views read every fixed text from the catalog they're given.
-export const CATALOGS = { en } satisfies Record<string, Messages>
+export const CATALOGS = { en, ko } satisfies Record<string, Messages>
 
 export type Lang = keyof typeof CATALOGS
 
