@@ -12,7 +12,8 @@ The agent proposes steps and their expectations after reading the code; the huma
 - The review layers from the ldd design map onto kinds (#3 Q4): contracts are `data-shape` and `signature-change`, behavior is `behavior-change`, mechanical changes are `non-semantic`, verification is each step's evidence, and decisions are the intent's decisions.
 - Risk is set per step, not derived from the kind. Every step carries a one-line `riskReason`; it's required for high risk.
 - `dependsOn` may point at another intent's step (`12.2`); validation checks that it exists.
-- `expect` is symbolic (symbols, types, rules), never file or line based.
+- `expect` for code kinds is symbolic (symbols, types, rules), never file or line based, because a symbol survives a file move and a path doesn't.
+- Prose kinds (`instructions`, `docs`) name what they change in `expect.sections`: `{ doc, section }[]`, where `doc` is the skill name for a skill or the repo-relative path for any other file, and `section` is the heading text. For prose the file is the identity (#6 Q4, 2026-09-29).
 - Plans store nothing derived: no status, approvals, or observed diffs.
 - Decompose just in time until each step is one kind with checkable evidence. Don't pre-plan everything.
 - Revising a plan is a first-class event. New steps are tagged `discovered` (vs `planned`) and need approval.
