@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { AREAS, EXPECT_FIELDS, type IncomingLink, type Intent, type PlanStep, RELATION_TYPES, RISKS, STEP_KINDS, type StepKind } from './model.ts'
+import { DEFAULT_AREAS, EXPECT_FIELDS, type IncomingLink, type Intent, type PlanStep, RELATION_TYPES, RISKS, STEP_KINDS, type StepKind } from './model.ts'
 import type { IntentGateView } from './render/intent-gate.ts'
 import type { PlanGateView } from './render/plan-gate.ts'
-import { commit, lastApproval, listIds, read, type Snapshot } from './store.ts'
+import { commit, commitConfig, configTip, lastApproval, listIds, read, readConfig, type Snapshot } from './store.ts'
 
 // Key order must not affect the hash, or reformatting a file would invalidate an approval.
 const canonical = (v: unknown): unknown =>
@@ -28,15 +28,15 @@ function collect(check: (need: Need) => void): string[] {
 }
 
 // Mirrors the structure-request and propose-plan skills: they guide authors, this rejects what slips through.
-const validateIntent = (intent: Intent) =>
+const validateIntent = (intent: Intent, areas: readonly string[]) =>
   collect((need) => {
     need(intent.schemaVersion === 1, 'intent: schemaVersion must be 1')
     need(/^\d+$/.test(intent.id ?? ''), 'intent: id must be a number written as a string, like "7"')
     need(intent.request, "intent: request (the human's words, verbatim) is required")
     need(intent.problem, 'intent: problem is required')
     need(
-      intent.areas?.length && intent.areas.every((a) => (AREAS as readonly string[]).includes(a)),
-      `intent: areas needs one or more of ${AREAS.join(', ')}`,
+      intent.areas?.length && intent.areas.every((a) => areas.includes(a)),
+      `intent: areas needs one or more of this repo's areas: ${areas.join(', ')}`,
     )
     need(intent.acceptance?.length, 'intent: acceptance needs at least one criterion')
     need(!('outOfScope' in intent), 'intent: outOfScope was split into deferred (future work) and nonGoals (never)')
@@ -129,7 +129,21 @@ const validateLinks = (repo: string, s: Snapshot) =>
   })
 
 const validate = (where: string, s: Snapshot, repo: string) =>
-  assertValid(where, [...validateIntent(s.intent), ...validateSteps(s.intent, s.steps), ...validateLinks(repo, s)])
+  assertValid(where, [...validateIntent(s.intent, loadAreas(repo)), ...validateSteps(s.intent, s.steps), ...validateLinks(repo, s)])
+
+export const loadAreas = (repo: string): string[] => readConfig(repo)?.areas ?? [...DEFAULT_AREAS]
+
+// The human confirms the list (the setup-areas skill proposes it); this records it as an event on refs/ldd/config.
+// Intents that use an area outside the new list stay stored but fail validation until their areas are edited.
+export function setAreas(repo: string, areas: string[]): string[] {
+  assertValid('config', [
+    ...(areas.length ? [] : ['config: areas needs at least one area']),
+    ...(areas.every((a) => /^[a-z][a-z0-9-]*$/.test(a)) ? [] : ['config: an area is a short lowercase name, like be or cli']),
+    ...(new Set(areas).size === areas.length ? [] : ['config: each area is listed once']),
+  ])
+  commitConfig(repo, { schemaVersion: 1, areas }, { type: 'configure', actor: 'human', subject: `configure areas: ${areas.join(', ')}` }, configTip(repo))
+  return listIds(repo).filter((id) => read(repo, id).snapshot.intent.areas.some((a) => !areas.includes(a)))
+}
 
 // Reverse links are computed, never stored: every other intent's relations, follow-ups, and step dependencies that point here.
 export function incomingLinks(repo: string, id: string): IncomingLink[] {
@@ -238,7 +252,7 @@ export function approve(repo: string, id: string, gate: 'intent' | 'plan', rev: 
 
 export function loadIntentGate(repo: string, id: string): IntentGateView {
   const { snapshot } = read(repo, id)
-  assertValid(`#${id}`, validateIntent(snapshot.intent))
+  assertValid(`#${id}`, validateIntent(snapshot.intent, loadAreas(repo)))
   return {
     schemaVersion: 1,
     view: 'intent-gate',

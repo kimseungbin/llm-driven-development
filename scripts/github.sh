@@ -1,6 +1,6 @@
 #!/bin/sh
 # Sync this workspace through private GitHub repos: the project itself plus each scenario repo,
-# including the refs/plans/* plan data that git doesn't fetch or push by default.
+# including the refs/plans/* plan data and the refs/ldd/config area list, which git doesn't fetch or push by default.
 #
 #   scripts/github.sh publish <owner>          once, on the Mac that has everything
 #   scripts/github.sh clone-scenarios <owner>  once, on a new Mac, after cloning the project
@@ -16,6 +16,8 @@ track_plans() {
   git -C "$1" config --add remote.origin.fetch 'refs/plans/*:refs/plans/*'
   git -C "$1" config --add remote.origin.push 'refs/heads/*:refs/heads/*'
   git -C "$1" config --add remote.origin.push 'refs/plans/*:refs/plans/*'
+  git -C "$1" config --add remote.origin.fetch 'refs/ldd/config:refs/ldd/config'
+  git -C "$1" config --add remote.origin.push 'refs/ldd/config:refs/ldd/config'
 }
 
 each_repo() { # <function taking a repo dir>

@@ -1,5 +1,10 @@
-export const AREAS = ['fe', 'be', 'db', 'infra'] as const
-export type Area = (typeof AREAS)[number]
+// Each repo declares its own closed list in refs/ldd/config; this list applies until it does.
+export const DEFAULT_AREAS = ['fe', 'be', 'db', 'infra'] as const
+
+export interface RepoConfig {
+  schemaVersion: 1
+  areas: string[]
+}
 
 export interface Question {
   id: string
@@ -45,7 +50,7 @@ export interface Intent {
   title: string
   request: string
   problem: string
-  areas: Area[]
+  areas: string[]
   acceptance: string[]
   deferred?: { item: string; reason: string; followUp: string }[]
   nonGoals?: { item: string; reason: string }[]
