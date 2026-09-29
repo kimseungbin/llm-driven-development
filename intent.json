@@ -12,14 +12,7 @@
   "acceptance": [
     "Each question below is decided after reviewing at least one real step result."
   ],
-  "openQuestions": [
-    {
-      "id": "Q4",
-      "text": "Should inline review views show only the rows that need a decision?",
-      "proposal": "Yes: unplanned, missing, breaking, and inferred rows inline, with matched rows counted, and the full table in a page view. That keeps inline cost tied to what needs attention rather than to the size of the change.",
-      "origin": "request"
-    }
-  ],
+  "openQuestions": [],
   "decisions": [
     {
       "id": "Q1",
@@ -31,6 +24,12 @@
       "id": "Q3",
       "question": "Where do approvals live once there's a team: here or in pull-request reviews?",
       "answer": "refs/ldd, mirrored: approvals are passkey-signed events in refs/ldd (#3 Q8). The coordinator mirrors the gate to the forge as a required check. A PR approval never decides a gate, so the record works the same on every forge, including bare remotes.",
+      "origin": "request"
+    },
+    {
+      "id": "Q4",
+      "question": "Should inline review views show only the rows that need a decision?",
+      "answer": "All rows in chat, sorted: the chat widget lists every row, with the ones needing attention (unplanned, missing, breaking, inferred) first. Everything stays in one place, accepting that a large change makes the widget long and costly.",
       "origin": "request"
     }
   ],
