@@ -16,6 +16,30 @@
       {
         "symbol": "loadAreas",
         "signature": "(repo) => string[]"
+      },
+      {
+        "symbol": "areas",
+        "signature": "node src/cli.ts areas --repo <repo>"
+      },
+      {
+        "symbol": "set-areas",
+        "signature": "node src/cli.ts set-areas --repo <repo> --areas <a,b,...>"
+      },
+      {
+        "symbol": "setAreas",
+        "signature": "(repo, areas) => ids of intents the new list leaves invalid"
+      },
+      {
+        "symbol": "readConfig",
+        "signature": "(repo) => RepoConfig | null"
+      },
+      {
+        "symbol": "commitConfig",
+        "signature": "(repo, config, event, expectedTip) => sha"
+      },
+      {
+        "symbol": "RepoConfig",
+        "type": "{ schemaVersion: 1; areas: string[] }"
       }
     ],
     "change": [
@@ -23,6 +47,16 @@
         "symbol": "validateIntent",
         "from": "areas from the fixed list",
         "to": "areas from the repo's list, defaulting to fe, be, db, infra"
+      },
+      {
+        "symbol": "AREAS",
+        "from": "AREAS",
+        "to": "DEFAULT_AREAS"
+      },
+      {
+        "symbol": "Intent.areas",
+        "from": "Area[]",
+        "to": "string[]"
       }
     ],
     "rules": [
@@ -37,7 +71,14 @@
       {
         "text": "a setup skill looks at the repo's layout, proposes an area list, and asks the human to confirm it before writing it",
         "checkedBy": "human"
+      },
+      {
+        "text": "set-areas rejects an empty list, names that aren't short lowercase words, and duplicates, and names every intent the new list leaves invalid",
+        "checkedBy": "human"
       }
+    ],
+    "remove": [
+      "Area"
     ]
   },
   "evidence": [
