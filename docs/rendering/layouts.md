@@ -22,6 +22,13 @@
 - One result gate per intent renders one of these views for each step, together.
 - The inline view lists every row, sorted by attention first: unplanned, missing, breaking, and inferred, then matched. A large change makes a long widget, and that cost is accepted so everything stays in one place (#2 Q4, 2026-09-29).
 
+## Prose changes at the result gate (#6 Q2, 2026-09-29)
+
+For `instructions`, `docs`, and `non-semantic` steps:
+
+- Mechanical changes (moved, renamed, or a whole section added or removed) are table rows: What | From | To | Why.
+- Wording changes (`content changed`, and `behavior changed` for `instructions`) are quoted: one diff code block per change, `-` lines for removed text and `+` lines for added text, with a line saying why.
+
 ## Leaning, from the ldd design
 
 - Filters by kind and step.

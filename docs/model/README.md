@@ -17,4 +17,5 @@
 
 - [intents.md](intents.md): intent fields
 - [steps.md](steps.md): step format, kinds, commits
+- [categories.md](categories.md): change categories and which kinds produce them
 - [ids.md](ids.md): IDs, revs, areas

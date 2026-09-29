@@ -5,7 +5,9 @@ The agent proposes steps and their expectations after reading the code; the huma
 ## Format version 2 (#1 Q2, Q3, Q4, Q11, Q12, Q14, 2026-09-28)
 
 - One step per logical change; its `expect` lists every symbol it touches.
-- Kinds: `data-shape` (a change to a data type's fields, whatever role the type plays; renamed from `dto-shape` by Q14), `signature-change`, `behavior-change`, `feature`, `non-semantic`, and the fallback `other`. More may be added; if the list keeps growing, move to nested kinds.
+- Kinds: `data-shape` (a change to a data type's fields, whatever role the type plays; renamed from `dto-shape` by Q14), `signature-change`, `behavior-change`, `feature`, `instructions`, `docs`, `non-semantic`, and the fallback `other`. More may be added; if the list keeps growing, move to nested kinds.
+- Prose kinds (#6 Q0, 2026-09-29): `instructions` covers agent-facing text (skills, CLAUDE.md, hook prompts): `expect` names the file and section, rules say what it now tells agents, and evidence is a dry run of the skill. `docs` covers the design record: sections added, removed, or moved. `non-semantic` is only typos, formatting, and pure moves.
+- Each kind produces a fixed set of change categories; see [categories.md](categories.md).
 - Each kind has a fixed, validated `expect` shape. Anything machine-checked is a symbol list (`add`, `remove`, `change` from and to, `unchanged`), never prose. Rules and invariants stay prose, each marked `checkedBy: test | human`. The fallback kind has no machine check.
 - The review layers from the ldd design map onto kinds (#3 Q4): contracts are `data-shape` and `signature-change`, behavior is `behavior-change`, mechanical changes are `non-semantic`, verification is each step's evidence, and decisions are the intent's decisions.
 - Risk is set per step, not derived from the kind. Every step carries a one-line `riskReason`; it's required for high risk.
