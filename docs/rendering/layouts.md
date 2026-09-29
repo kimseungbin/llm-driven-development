@@ -20,8 +20,9 @@
 - Table: Field | Before | After | Change | Plan | Impact. Change pills are colored by type; inferred changes are marked and show their confidence.
 - An invariant and evidence status line; a blocked line naming what to resolve; `sendPrompt` follow-up buttons.
 - One result gate per intent renders one of these views for each step, together.
+- The inline view lists every row, sorted by attention first: unplanned, missing, breaking, and inferred, then matched. A large change makes a long widget, and that cost is accepted so everything stays in one place (#2 Q4, 2026-09-29).
 
 ## Leaning, from the ldd design
 
-- Sort items by attention first (unplanned, missing, breaking), with filters by kind and step.
+- Filters by kind and step.
 - Per-kind result views: `data-shape` and `signature-change` as before/after tables; `behavior-change` as a condition → outcome table, with a flowchart when the change is mostly about flow; evidence as acceptance criteria mapped to tests, with gaps flagged both ways; `non-semantic` collapsed to one row per kind of change with counts.

@@ -15,6 +15,7 @@
 
 - One schema with `mode: planned | observed-only`. `planRef` is required in planned mode.
 - Planned is the default. Observed-only needs an explicit flag and a recorded one-line reason.
+- Observed-only applies to your own agents' work too, such as spikes and hotfixes, on the same flag and reason (#2 Q1, 2026-09-29).
 - "Verified against plan" and "reviewed without a plan" stay separate states in every filter and rollup.
 - A plan reconstructed from the diff is labeled `reconstructed` and never yields `verified`.
 
