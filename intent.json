@@ -6,8 +6,9 @@
   "request": "Reconcile into one design (Recommended): Compare decision by decision, resolve each conflict with you, and keep one design record (in the prototype repo, since it's the real project).",
   "problem": "Two design records describe the same tool and contradict each other. This repo's design.md comes from building a solo, local prototype. The ldd docs (~/repos/personal/ldd/docs) were written in a separate session for a team coordinator. They disagree on scope, where issues live, the gates, approvals, rendering, and more. The human and every agent have to guess which record wins, and the ideas unique to each are at risk of getting lost.",
   "areas": [
-    "fe",
-    "be"
+    "store",
+    "skills",
+    "docs"
   ],
   "acceptance": [
     "Every conflict between the two records is decided, and the design record states one answer for each.",
