@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q0",
-      "origin": "request",
-      "text": "Which kinds do prose changes get? Agent-facing instructions (skills, CLAUDE.md, hook prompts) change agent behavior; the design record is for humans; neither fits the code kinds, and both were planned as non-semantic (1.6, 1.7, 3.2, 3.3, 5.3).",
-      "proposal": "Two new kinds: instructions (expect names the skill or file and section; rules say what it now tells agents; evidence is a dry run of the skill) and docs (sections added, removed, or moved). Non-semantic narrows back to typos, formatting, and pure moves. The alternatives: one docs kind for all prose; skills as behavior-change; or the fallback other."
-    },
-    {
       "id": "Q1",
       "origin": "request",
       "text": "What are the categories?",
@@ -46,5 +40,12 @@
       "proposal": "Record a correction in the design record listing each mislabel and its right category, without re-accepting. The changes themselves were right; only their descriptions were wrong. The alternative is to re-render those gates and accept them again."
     }
   ],
-  "decisions": []
+  "decisions": [
+    {
+      "id": "Q0",
+      "question": "Which kinds do prose changes get? Agent-facing instructions (skills, CLAUDE.md, hook prompts) change agent behavior; the design record is for humans; neither fits the code kinds, and both were planned as non-semantic (1.6, 1.7, 3.2, 3.3, 5.3).",
+      "answer": "instructions + docs: two new kinds. instructions: expect names the file and section, rules say what it now tells agents, and evidence is a dry run of the skill. docs: sections added, removed, or moved. non-semantic narrows back to typos, formatting, and pure moves.",
+      "origin": "request"
+    }
+  ]
 }
