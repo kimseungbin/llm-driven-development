@@ -14,12 +14,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q1",
-      "text": "Can reviews of your own agents' work skip the plan (observed-only), or only reviews of other people's changes?",
-      "proposal": "Only other people's changes. Your own agents always work from a plan, so their reviews are always checked against it.",
-      "origin": "request"
-    },
-    {
       "id": "Q2",
       "text": "Do reviews of other people's changes need to reach the authors?",
       "proposal": "Export findings one way as pull-request comments when the author uses a forge; otherwise they only inform your own merge decision.",
@@ -38,5 +32,12 @@
       "origin": "request"
     }
   ],
-  "decisions": []
+  "decisions": [
+    {
+      "id": "Q1",
+      "question": "Can reviews of your own agents' work skip the plan (observed-only), or only reviews of other people's changes?",
+      "answer": "Own work too, with a reason: your agents may skip the plan (spikes, hotfixes) by passing the explicit flag and a one-line reason. These reviews never count as 'verified' and are listed separately in every filter.",
+      "origin": "request"
+    }
+  ]
 }
