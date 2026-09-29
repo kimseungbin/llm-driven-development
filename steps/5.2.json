@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "id": "5.2",
+  "parent": "5",
+  "kind": "non-semantic",
+  "origin": "planned",
+  "summary": "Remove the scenarios directory and its gitignore rule",
+  "risk": "medium",
+  "riskReason": "Deleting the local clones removes the last local copy of the scenario plans; the human then deletes the GitHub repos, which can't be undone.",
+  "expect": {
+    "rules": [
+      {
+        "text": "scenarios/ is removed, READMEs and the gitignored clones included, and .gitignore no longer mentions it",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the local clones are deleted only after #1's step 1.1 has its soft-delete evidence (plan-view for #7 built on 2026-09-29, before this step)",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the human deletes llmdd-scenario-coupons and llmdd-scenario-soft-delete on GitHub after this step; the agent never deletes them",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "git ls-files scenarios is empty and the directory is gone",
+    "gh repo view fails for both scenario repos, after the human deletes them"
+  ],
+  "dependsOn": [
+    "5.1"
+  ]
+}

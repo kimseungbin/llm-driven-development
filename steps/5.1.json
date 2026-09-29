@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "id": "5.1",
+  "parent": "5",
+  "kind": "behavior-change",
+  "origin": "planned",
+  "summary": "Make the sync script handle this repo only",
+  "risk": "medium",
+  "riskReason": "The script is how plan refs reach GitHub and a new Mac; a broken setup command would leave a fresh clone without the plan refspecs.",
+  "expect": {
+    "remove": [
+      "scenarios",
+      "each_repo"
+    ],
+    "change": [
+      {
+        "symbol": "clone-scenarios",
+        "from": "sets refspecs here and clones both scenario repos",
+        "to": "setup: sets the plan refspecs on a fresh clone of this repo and fetches"
+      },
+      {
+        "symbol": "publish",
+        "from": "creates the project repo and both scenario repos",
+        "to": "creates the project repo only"
+      },
+      {
+        "symbol": "push",
+        "from": "pushes all three repos",
+        "to": "pushes this repo"
+      },
+      {
+        "symbol": "pull",
+        "from": "pulls all three repos",
+        "to": "pulls this repo, fast-forward only"
+      }
+    ],
+    "unchanged": [
+      "track_plans"
+    ],
+    "rules": [
+      {
+        "text": "plan refs still sync without force, so a ref that diverged on two Macs is rejected instead of overwritten",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "scripts/github.sh setup on a fresh clone configures the plan refspecs and fetches every plan ref",
+    "scripts/github.sh has no mention of scenarios"
+  ],
+  "dependsOn": []
+}
