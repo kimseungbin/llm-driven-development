@@ -20,7 +20,14 @@
       "reason": "This intent settles the design only. Building any of it needs its own intent."
     }
   ],
-  "openQuestions": [],
+  "openQuestions": [
+    {
+      "id": "Q13",
+      "origin": "code",
+      "text": "#1 is half built: step 1.1 is committed on plan/1, and 1.2 to 1.7 are still to do. Step 1.4 creates refs/plans-config, which Q3 renames to refs/ldd/config. Step 1.7 writes into docs/design.md, which Q12 splits. Steps can't depend on another intent's steps until 1.3 is built. How do #1 and #3 fit together?",
+      "proposal": "Change #1's step 1.4 now to create refs/ldd/config directly, and re-approve #1's plan. Then finish #1 as planned, and implement #3 on top of it. That way no ref is created only to be renamed right after. #3's migration then moves only refs/plans/* to refs/ldd/plans/*, and splits design.md after 1.7 has written to it. #3's steps are written in step format version 2, from the plan/1 code."
+    }
+  ],
   "decisions": [
     {
       "id": "Q1",
