@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q4",
-      "origin": "request",
-      "text": "Gates and the unit of review: the prototype has an intent gate, a plan gate, and a result gate for each step, with steps typed by kind. The ldd docs have a plan review and a change-level review built from items per layer (Decision, Contract, Behavior, Verification, Mechanical). Which model?",
-      "proposal": "The prototype's three gates, with steps as the unit of review. The ldd layers become step kinds: Contract becomes data-shape and signature-change, Behavior becomes behavior-change, Mechanical becomes non-semantic, Verification becomes each step's evidence, and Decision becomes the intent's decisions. In the team phase, a change is ready to merge when every step it implements has passed the result gate and nothing unplanned is left unresolved. The intent gate stays because the ldd design had no place to approve what and why before any code is read."
-    },
-    {
       "id": "Q5",
       "origin": "request",
       "text": "Who works out planned vs built? The prototype computes it deterministically from the observed diff and step expectations, and stores LLM judgments separately, labeled inferred. The ldd docs have the author's agent submit review items that map the diff to the intent, which the coordinator then checks.",
@@ -93,6 +87,12 @@
       "id": "Q3",
       "question": "Ref names: the prototype uses refs/plans/*, refs/plans-config, and a planned refs/reviews/*. The ldd docs put everything under refs/ldd/*. Which naming?",
       "answer": "Move everything under refs/ldd/: refs/ldd/plans/<id>, refs/ldd/reviews/<id>, and refs/ldd/config. One refspec (refs/ldd/*) syncs all of it. Migrate the stored refs in one step.",
+      "origin": "request"
+    },
+    {
+      "id": "Q4",
+      "question": "Gates and the unit of review: the prototype has an intent gate, a plan gate, and a result gate for each step, with steps typed by kind. The ldd docs have a plan review and a change-level review built from items per layer (Decision, Contract, Behavior, Verification, Mechanical). Which model?",
+      "answer": "The three gates (intent, plan, result for each step), with steps as the unit of review. The ldd layers become step kinds: Contract becomes data-shape and signature-change, Behavior becomes behavior-change, Mechanical becomes non-semantic, Verification becomes each step's evidence, and Decision becomes the intent's decisions. In the team phase, a change is ready to merge when every step it implements has passed the result gate and nothing unplanned is left unresolved.",
       "origin": "request"
     }
   ],
