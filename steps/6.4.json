@@ -18,6 +18,21 @@
         "symbol": "ResultGateView.step.kind",
         "from": "string",
         "to": "StepKind"
+      },
+      {
+        "symbol": "dataShape",
+        "from": "dataShape",
+        "to": "code"
+      },
+      {
+        "symbol": "code.body",
+        "from": "header Field",
+        "to": "header Symbol, except data-shape steps"
+      },
+      {
+        "symbol": "unknownKind.body",
+        "from": "names observed.kind",
+        "to": "names step.kind"
       }
     ],
     "remove": [
@@ -39,6 +54,20 @@
       {
         "text": "the KRW sample's step kind is data-shape and it renders the same rows as before",
         "checkedBy": "human"
+      },
+      {
+        "text": "the browser build also emits model.js, which the result gate imports",
+        "checkedBy": "human"
+      }
+    ],
+    "add": [
+      {
+        "symbol": "renderers",
+        "type": "Record<StepKind, KindRenderer>"
+      },
+      {
+        "symbol": "checkCategories",
+        "signature": "(view, kind) => void"
       }
     ]
   },

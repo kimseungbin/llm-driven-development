@@ -28,6 +28,10 @@
       {
         "symbol": "Expect.sections",
         "type": "SectionRef[] | undefined"
+      },
+      {
+        "symbol": "PROSE_KINDS",
+        "type": "readonly StepKind[]: instructions, docs, non-semantic"
       }
     ],
     "change": [

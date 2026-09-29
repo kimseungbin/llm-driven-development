@@ -16,11 +16,15 @@
       {
         "symbol": "ProseChange",
         "type": "{ what: string; from?: string; to?: string; diff?: string; why: string }"
+      },
+      {
+        "symbol": "PROSE_STYLE",
+        "type": "CSS for prose rows and diff blocks"
       }
     ],
     "rules": [
       {
-        "text": "moved, renamed, added, and removed changes are table rows: What | From | To | Why",
+        "text": "moved, renamed, added, and removed changes are table rows: What | Change | From | To | Plan | Why",
         "checkedBy": "test"
       },
       {
