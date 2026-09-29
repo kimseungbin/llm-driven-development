@@ -7,6 +7,8 @@ export interface Question {
   proposal: string
   // "code" marks an intent amendment found while planning; it needs the intent re-approved.
   origin?: 'request' | 'code'
+  // Who must answer, when that isn't the approving human (for example, Finance confirming a tax rule).
+  owner?: string
 }
 
 // A question the human has settled. The answer is theirs: an accepted proposal or their own words.
@@ -15,6 +17,7 @@ export interface Decision {
   question: string
   answer: string
   origin: 'request' | 'code'
+  owner?: string
 }
 
 export interface Intent {

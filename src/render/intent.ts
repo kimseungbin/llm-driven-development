@@ -29,7 +29,7 @@ export function decisionsSection(intent: Intent): string {
   if (!intent.decisions?.length) return ''
   const rows = intent.decisions.map(
     (d) =>
-      `<div class="v-d"><div><span class="v-ok" style="font-weight:500">${esc(d.id)}</span> ${esc(d.question)}</div><div style="margin-top:4px"><span class="v-sec">Decided:</span> ${esc(d.answer)}</div></div>`,
+      `<div class="v-d"><div><span class="v-ok" style="font-weight:500">${esc(d.id)}</span> ${esc(d.question)}</div><div style="margin-top:4px"><span class="v-sec">${d.owner ? `Decided by ${esc(d.owner)}:` : 'Decided:'}</span> ${esc(d.answer)}</div></div>`,
   )
   return `<div class="v-h">Decided</div>${rows.join('')}`
 }
@@ -38,15 +38,16 @@ export function questionsSection(questions: Question[], heading = 'Needs your de
   if (!questions.length) return ''
   const rows = questions.map(
     (q) =>
-      `<div class="v-q"><div class="v-row" style="margin-bottom:0"><span class="v-warn" style="font-weight:500">${esc(q.id)}</span>${q.origin === 'code' ? '<span class="v-pill v-warn">found in code</span>' : ''}<span>${esc(q.text)}</span></div><div class="v-note">Proposed: ${esc(q.proposal)}</div></div>`,
+      `<div class="v-q"><div class="v-row" style="margin-bottom:0"><span class="v-warn" style="font-weight:500">${esc(q.id)}</span>${q.origin === 'code' ? '<span class="v-pill v-warn">found in code</span>' : ''}${q.owner ? `<span class="v-pill">owner: ${esc(q.owner)}</span>` : ''}<span>${esc(q.text)}</span></div><div class="v-note">Proposed: ${esc(q.proposal)}</div></div>`,
   )
   return `<div class="v-h">${esc(heading)}</div>${rows.join('')}`
 }
 
-// Answers are part of what gets approved, so an open question blocks its gate.
+// Answers are part of what gets approved, so an open question blocks its gate, including one owned by someone else.
 export function blockers(questions: Question[]): string[] {
-  const n = questions.length
-  return n ? [`${plural(n, 'question')} need${n === 1 ? 's' : ''} your decision`] : []
+  const mine = questions.filter((q) => !q.owner).length
+  const owned = questions.filter((q) => q.owner).map((q) => `${q.id} waits on ${q.owner}`)
+  return [...(mine ? [`${plural(mine, 'question')} need${mine === 1 ? 's' : ''} your decision`] : []), ...owned]
 }
 
 // `lastApproved` is the rev of this gate's latest approval event, which may be older than `current`.

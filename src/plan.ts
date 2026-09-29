@@ -47,6 +47,7 @@ const validateIntent = (intent: Intent) =>
     for (const q of intent.openQuestions ?? []) {
       need(q?.id && q?.text && q?.proposal, `intent: question ${q?.id ?? '?'} needs id, text, and proposal`)
       need(!q?.origin || q.origin === 'request' || q.origin === 'code', `intent: question ${q?.id} origin must be request or code`)
+      need(q?.owner === undefined || (typeof q.owner === 'string' && q.owner.trim().length > 0), `intent: question ${q?.id} owner must be a name when set`)
     }
     for (const d of intent.decisions ?? []) need(d?.id && d?.question && d?.answer, `intent: decision ${d?.id ?? '?'} needs id, question, and answer`)
     const ids = [...(intent.openQuestions ?? []), ...(intent.decisions ?? [])].map((x) => x?.id)
@@ -175,7 +176,7 @@ export function decide(repo: string, id: string, questionId: string, answer: str
   const index = intent.openQuestions.findIndex((q) => q.id === questionId)
   if (index < 0) throw new Error(`#${id}: no open question ${questionId}`)
   const [q] = intent.openQuestions.splice(index, 1)
-  ;(intent.decisions ??= []).push({ id: q.id, question: q.text, answer, origin: q.origin ?? 'request' })
+  ;(intent.decisions ??= []).push({ id: q.id, question: q.text, answer, origin: q.origin ?? 'request', ...(q.owner ? { owner: q.owner } : {}) })
   const next = { intent, steps: snapshot.steps }
   validate(`#${id}`, next)
   commit(repo, id, next, { type: 'decide', actor: 'human', subject: `decide ${questionId} on #${id}`, trailers: { Question: questionId } }, tip)
