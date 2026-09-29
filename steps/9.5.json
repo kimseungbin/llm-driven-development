@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "id": "9.5",
+  "parent": "9",
+  "kind": "behavior-change",
+  "origin": "discovered",
+  "summary": "로더 출력에 백슬래시와 태그 밖의 <를 없애, Claude가 옮겨 적어도 깨지지 않게 한다",
+  "risk": "medium",
+  "riskReason": "로더로 그리는 모든 뷰의 마크업이 바뀌고, 렌더러를 다시 게시해야 한다.",
+  "expect": {
+    "change": [
+      {
+        "symbol": "renderLoader",
+        "from": "\\u003c 이스케이프가 든 JSON을 스크립트 안에",
+        "to": "~b/~l/~t로 바꾼 JSON을 데이터 요소에; 실패 화면이 처음 내용"
+      }
+    ],
+    "rules": [
+      {
+        "text": "로더 출력에는 백슬래시가 없고, 데이터에는 <가 없다",
+        "checkedBy": "test"
+      },
+      {
+        "text": "~, 백슬래시, 따옴표, 줄바꿈, </script>가 든 데이터도 그대로 되돌아온다",
+        "checkedBy": "test"
+      },
+      {
+        "text": "스크립트가 아예 실행되지 않아도 실패 화면이 늦게라도 보인다",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "test/loader.test.ts",
+    "다시 게시한 뒤 결과 게이트를 로더로 위젯에 띄워 사람이 스크린샷으로 확인"
+  ],
+  "dependsOn": [
+    "9.2"
+  ]
+}
