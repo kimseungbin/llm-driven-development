@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q3",
-      "origin": "request",
-      "text": "Ref names: the prototype uses refs/plans/*, refs/plans-config, and a planned refs/reviews/*. The ldd docs put everything under refs/ldd/*. Which naming?",
-      "proposal": "Move everything under refs/ldd/: refs/ldd/plans/<id>, refs/ldd/reviews/<id>, and refs/ldd/config. One refspec (refs/ldd/*) then syncs all of it, and the prefix can't collide with another tool's refs. The few stored refs are migrated in one step."
-    },
-    {
       "id": "Q4",
       "origin": "request",
       "text": "Gates and the unit of review: the prototype has an intent gate, a plan gate, and a result gate for each step, with steps typed by kind. The ldd docs have a plan review and a change-level review built from items per layer (Decision, Contract, Behavior, Verification, Mechanical). Which model?",
@@ -93,6 +87,12 @@
       "id": "Q2",
       "question": "Where do issues (intents and plans) live? The prototype keeps them in git refs in the product repo. The ldd docs keep them in the coordinator's database because issues can span repos and need deletion and per-item access control.",
       "answer": "Git refs for now. A coordinator database may come in the future; that isn't decided.",
+      "origin": "request"
+    },
+    {
+      "id": "Q3",
+      "question": "Ref names: the prototype uses refs/plans/*, refs/plans-config, and a planned refs/reviews/*. The ldd docs put everything under refs/ldd/*. Which naming?",
+      "answer": "Move everything under refs/ldd/: refs/ldd/plans/<id>, refs/ldd/reviews/<id>, and refs/ldd/config. One refspec (refs/ldd/*) syncs all of it. Migrate the stored refs in one step.",
       "origin": "request"
     }
   ],
