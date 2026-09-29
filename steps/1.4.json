@@ -10,7 +10,7 @@
   "expect": {
     "add": [
       {
-        "symbol": "refs/plans-config",
+        "symbol": "refs/ldd/config",
         "type": "config ref whose tree holds the area list"
       },
       {
