@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 2,
+  "id": "9.4",
+  "parent": "9",
+  "kind": "docs",
+  "origin": "planned",
+  "summary": "로더를 기본으로 쓰는 전달 방식을 설계 기록에 반영",
+  "risk": "low",
+  "riskReason": "문서만 바꾼다.",
+  "expect": {
+    "sections": [
+      {
+        "doc": "docs/rendering/README.md",
+        "section": "Delivery (2026-09-28)"
+      },
+      {
+        "doc": "docs/rendering/languages.md",
+        "section": "Choosing a language (Q3, Q5)"
+      },
+      {
+        "doc": "docs/findings/verified.md",
+        "section": "Verified findings"
+      },
+      {
+        "doc": "docs/README.md",
+        "section": "Where we left off (2026-09-29)"
+      }
+    ]
+  },
+  "evidence": [
+    "사람이 Q1-Q5와 대조해 읽는다"
+  ],
+  "dependsOn": [
+    "9.3"
+  ]
+}

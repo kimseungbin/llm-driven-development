@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 2,
+  "id": "9.3",
+  "parent": "9",
+  "kind": "feature",
+  "origin": "planned",
+  "summary": "render가 기본으로 게시된 렌더러를 쓰는 로더를 내보내고, 오래됐으면 실패한다",
+  "risk": "medium",
+  "riskReason": "게이트를 그리는 모든 경로의 기본 출력이 바뀐다.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "renderCommand",
+        "signature": "(files, { format, repo }): string, CLI의 render가 부르는 함수"
+      }
+    ],
+    "rules": [
+      {
+        "text": "format을 주지 않으면 publishedRenderer의 CDN 주소로 로더를 내보낸다 (Q1)",
+        "checkedBy": "test"
+      },
+      {
+        "text": "게시된 렌더러가 없거나 오래됐으면 실패하고, publish를 실행하거나 --format widget을 쓰라고 알려 준다 (Q3)",
+        "checkedBy": "test"
+      },
+      {
+        "text": "--format widget과 page는 지금과 같은 결과를 내고, 뷰 파일 여러 개를 주면 순서대로 이어 붙인다",
+        "checkedBy": "test"
+      },
+      {
+        "text": "--cdn 옵션은 없어지고, CDN 주소는 게시된 렌더러에서만 정한다",
+        "checkedBy": "test"
+      }
+    ],
+    "invariants": [
+      {
+        "text": "위젯 형식으로 그린 골든 뷰는 바이트 단위로 그대로다",
+        "checkedBy": "test"
+      }
+    ]
+  },
+  "evidence": [
+    "test/i18n.test.ts, test/publish.test.ts의 CLI 테스트",
+    "게시한 뒤 #9의 인텐트 게이트를 한국어 로더로 위젯에 띄워 사람이 확인"
+  ],
+  "dependsOn": [
+    "9.2"
+  ]
+}

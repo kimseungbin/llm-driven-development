@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 2,
+  "id": "9.2",
+  "parent": "9",
+  "kind": "feature",
+  "origin": "planned",
+  "summary": "로더 마크업을 만드는 함수와, 렌더러를 불러오지 못했을 때의 문장과 버튼",
+  "risk": "low",
+  "riskReason": "아직 render가 쓰지 않는 새 함수와 카탈로그 키만 더한다.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "renderLoader",
+        "signature": "(views, lang, cdn): string"
+      },
+      {
+        "symbol": "Messages.loader",
+        "type": "{ failed, redraw, redrawPrompt }, en과 ko 모두"
+      }
+    ],
+    "rules": [
+      {
+        "text": "로더는 렌더러를 동적으로 불러오고, 실패하면 빈 화면 대신 보는 사람의 언어로 된 문장과 위젯 형식으로 다시 그려 달라는 버튼을 보여 준다 (Q4)",
+        "checkedBy": "test"
+      },
+      {
+        "text": "뷰 여러 개를 한 로더로 순서대로 그린다",
+        "checkedBy": "test"
+      },
+      {
+        "text": "뷰 데이터 안의 </script>가 스크립트를 끝내지 않는다",
+        "checkedBy": "test"
+      }
+    ]
+  },
+  "evidence": [
+    "test/loader.test.ts",
+    "없는 CDN 주소로 만든 로더를 위젯에 띄워 실패 화면을 사람이 확인"
+  ],
+  "dependsOn": [
+    "9.1"
+  ]
+}
