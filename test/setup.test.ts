@@ -33,6 +33,21 @@ test('setup keeps branches in git push', () => {
   assert.ok(specs(repo, 'push').includes('refs/heads/*:refs/heads/*'))
 })
 
+test('setup replaces the refspecs of a clone set up before plans moved under refs/ldd/', () => {
+  const repo = clone()
+  for (const [key, spec] of [
+    ['fetch', 'refs/plans/*:refs/plans/*'],
+    ['fetch', 'refs/ldd/config:refs/ldd/config'],
+    ['push', 'refs/heads/*:refs/heads/*'],
+    ['push', 'refs/plans/*:refs/plans/*'],
+    ['push', 'refs/ldd/config:refs/ldd/config'],
+  ])
+    git(repo, 'config', '--add', `remote.origin.${key}`, spec)
+  setup(repo)
+  assert.deepEqual(specs(repo, 'fetch'), ['+refs/heads/*:refs/remotes/origin/*', 'refs/ldd/*:refs/ldd/*'])
+  assert.deepEqual(specs(repo, 'push'), ['refs/heads/*:refs/heads/*', 'refs/ldd/*:refs/ldd/*'])
+})
+
 test('plan and config refspecs never force', () => {
   const { fetch, push } = syncRefspecs()
   for (const s of [...fetch, ...push]) assert.ok(!s.startsWith('+'), s)
