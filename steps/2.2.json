@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "id": "2.2",
+  "parent": "2",
+  "kind": "behavior-change",
+  "origin": "planned",
+  "summary": "The result gate lists every row, attention first",
+  "risk": "low",
+  "riskReason": "Only row order in a rendered view changes; counts, blockers, and the breaking filter stay the same.",
+  "expect": {
+    "change": [
+      {
+        "symbol": "renderResultGate",
+        "from": "rows in input order",
+        "to": "rows ordered unplanned, missing, breaking, inferred, then matched, keeping input order within each group"
+      }
+    ],
+    "unchanged": [
+      "KindRenderer",
+      "ReconItem"
+    ],
+    "rules": [
+      {
+        "text": "a row goes in the first group it qualifies for, so an unplanned breaking row sorts with unplanned",
+        "checkedBy": "test"
+      },
+      {
+        "text": "every row is still rendered; none is hidden or collapsed",
+        "checkedBy": "test"
+      }
+    ]
+  },
+  "evidence": [
+    "test/result-gate.test.ts: 'result gate lists rows attention first' and 'result gate renders every row'",
+    "the KRW sample renders unplanned rows before matched ones"
+  ],
+  "dependsOn": [
+    "2.1"
+  ]
+}

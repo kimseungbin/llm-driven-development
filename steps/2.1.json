@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 2,
+  "id": "2.1",
+  "parent": "2",
+  "kind": "data-shape",
+  "origin": "planned",
+  "summary": "Result-gate items carry whether they were inferred, whatever their kind",
+  "risk": "low",
+  "riskReason": "Only the result-gate view input changes; the one sample is updated with it, and no stored plan data uses these fields.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "ReconItem.classifiedBy",
+        "type": "'deterministic' | 'inferred'"
+      },
+      {
+        "symbol": "ReconItem.confidence",
+        "type": "number | undefined"
+      }
+    ],
+    "remove": [
+      "FieldChange.classifiedBy",
+      "FieldChange.confidence"
+    ],
+    "unchanged": [
+      "ReconItem.plan",
+      "ReconItem.breaking",
+      "ReconItem.detail",
+      "KindRenderer"
+    ],
+    "invariants": [
+      {
+        "text": "the KRW sample renders the same HTML before and after",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "diff of node src/cli.ts render samples/krw-12.1.result-gate.json output before and after is empty",
+    "npm test passes"
+  ],
+  "dependsOn": []
+}
