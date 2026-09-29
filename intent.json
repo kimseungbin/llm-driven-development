@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q10",
-      "origin": "request",
-      "text": "Git notes: the prototype rejected notes for plan data. The ldd docs use refs/notes/ldd only for a record, written after a merge, of how each merged commit was reviewed. Keep that record?",
-      "proposal": "Drop it. The Plan-Step trailer already links every merged commit to its step, and the step's ref holds the approvals, so a note would repeat data the refs already have."
-    },
-    {
       "id": "Q11",
       "origin": "request",
       "text": "Runtime: the prototype runs .ts directly on Node 26 with no dependencies. The ldd docs chose Bun everywhere, with NestJS on Bun for the coordinator. Which one?",
@@ -93,6 +87,12 @@
       "id": "Q9",
       "question": "Rendering: the prototype uses deterministic renderers per kind, and Claude never writes markup for records (your requirement). The ldd docs have agents write SVG diagrams, which are then sanitized. How do they fit together?",
       "answer": "Deterministic renderers draw every record view, count, flag, and table. An architecture diagram is authored content attached to a decision: sanitized SVG, shown as-is, and labeled authored.",
+      "origin": "request"
+    },
+    {
+      "id": "Q10",
+      "question": "Git notes: the prototype rejected notes for plan data. The ldd docs use refs/notes/ldd only for a record, written after a merge, of how each merged commit was reviewed. Keep that record?",
+      "answer": "Drop it. The Plan-Step trailer links each merged commit to its step, and the step's ref holds the approvals.",
       "origin": "request"
     }
   ],
