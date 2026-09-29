@@ -25,8 +25,8 @@
         "to": "names refs/ldd/plans/<id>"
       },
       {
-        "symbol": "track_plans",
-        "from": "refspecs refs/plans/*",
+        "symbol": "syncRefspecs",
+        "from": "refspecs for refs/plans/*",
         "to": "one refspec, refs/ldd/*, for fetch and push"
       }
     ],
