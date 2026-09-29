@@ -37,7 +37,14 @@
     }
   ],
   "relations": [],
-  "openQuestions": [],
+  "openQuestions": [
+    {
+      "id": "Q6",
+      "origin": "code",
+      "text": "Each gate button sends a fixed chat message that the agent acts on, such as \"Approve the intent gate for #8 at rev e28140a.\" In a Korean view, is that message Korean or English?",
+      "proposal": "English, while the button's label is Korean. The message is the instruction the agent acts on, and the approval rule matches its wording (it must name the gate and the rev), the same reason CLI output stays English (Q1)."
+    }
+  ],
   "decisions": [
     {
       "id": "Q1",
