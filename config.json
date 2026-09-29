@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "areas": [
+    "cli",
+    "model",
+    "store",
+    "render",
+    "skills",
+    "docs"
+  ]
+}
