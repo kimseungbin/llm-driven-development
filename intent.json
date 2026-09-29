@@ -37,14 +37,7 @@
     }
   ],
   "relations": [],
-  "openQuestions": [
-    {
-      "id": "Q6",
-      "origin": "code",
-      "text": "Each gate button sends a fixed chat message that the agent acts on, such as \"Approve the intent gate for #8 at rev e28140a.\" In a Korean view, is that message Korean or English?",
-      "proposal": "English, while the button's label is Korean. The message is the instruction the agent acts on, and the approval rule matches its wording (it must name the gate and the rev), the same reason CLI output stays English (Q1)."
-    }
-  ],
+  "openQuestions": [],
   "decisions": [
     {
       "id": "Q1",
@@ -75,6 +68,12 @@
       "question": "When the human writes a request in Korean, what language do agents write the rest of the intent and plan in?",
       "answer": "The request's language (Recommended): a Korean request gets a Korean problem, criteria, questions, and steps.",
       "origin": "request"
+    },
+    {
+      "id": "Q6",
+      "question": "Each gate button sends a fixed chat message that the agent acts on, such as \"Approve the intent gate for #8 at rev e28140a.\" In a Korean view, is that message Korean or English?",
+      "answer": "Korean message: in a Korean view the whole button is Korean, including the message it sends. The approval rule and skills recognize a Korean approval that names the gate and the rev.",
+      "origin": "code"
     }
   ]
 }
