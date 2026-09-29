@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
+import { execFileSync, spawnSync } from 'node:child_process'
+import { mkdtempSync, writeFileSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { test } from 'node:test'
+import { fileURLToPath } from 'node:url'
 import { esc } from '../src/render/html.ts'
 import { renderView, type View } from '../src/render/index.ts'
 import { CATALOGS, LANGS } from '../src/render/lang/index.ts'
@@ -65,4 +70,51 @@ test('authored text renders exactly as stored in every language', () => {
 
 test('an unknown language fails with the list of languages', () => {
   assert.throws(() => renderView(views[0], 'fr'), /no catalog for language "fr" \(available: en, ko\)/)
+})
+
+// Runs render with its user-level config in a temporary file, from inside a repo with its own config.
+function renderCli(opts: { global?: string; local?: string; format?: string }) {
+  const home = mkdtempSync(join(tmpdir(), 'ldd-lang-'))
+  const globalConfig = join(home, 'gitconfig')
+  writeFileSync(globalConfig, opts.global ? `[ldd]\n\tlang = ${opts.global}\n` : '')
+  const repo = join(home, 'repo')
+  execFileSync('git', ['init', '-q', repo])
+  if (opts.local) execFileSync('git', ['-C', repo, 'config', 'ldd.lang', opts.local])
+  const view = fileURLToPath(new URL('8.intent-gate.json', dir))
+  const args = [cli, 'render', view, ...(opts.format ? ['--format', opts.format, '--cdn', 'https://cdn.example'] : [])]
+  return spawnSync('node', args, { cwd: repo, encoding: 'utf8', env: { ...process.env, GIT_CONFIG_GLOBAL: globalConfig, XDG_CONFIG_HOME: home } })
+}
+const cli = fileURLToPath(new URL('../src/cli.ts', import.meta.url))
+
+test('render uses the language in the user-level git config', () => {
+  const out = renderCli({ global: 'ko' })
+  assert.equal(out.status, 0, out.stderr)
+  assert.match(out.stdout, /인텐트 게이트/)
+})
+
+test('render is English when the user-level config has no language', async () => {
+  const out = renderCli({})
+  assert.equal(out.stdout, await readFile(new URL('8.intent-gate.html', dir), 'utf8'))
+})
+
+test("a repo's own config never sets the language", async () => {
+  const out = renderCli({ local: 'ko' })
+  assert.equal(out.stdout, await readFile(new URL('8.intent-gate.html', dir), 'utf8'))
+})
+
+test('the page format is marked with the language and titled in it', () => {
+  const out = renderCli({ global: 'ko', format: 'page' })
+  assert.match(out.stdout, /<html lang="ko">/)
+  assert.match(out.stdout, /<title>#8 인텐트<\/title>/)
+})
+
+test('the loader format passes the language to the renderer it calls', () => {
+  const out = renderCli({ global: 'ko', format: 'loader' })
+  assert.match(out.stdout, /renderView\(\{.*\}, "ko"\)/s)
+})
+
+test('a language with no catalog fails with the list of languages', () => {
+  const out = renderCli({ global: 'fr' })
+  assert.equal(out.status, 1)
+  assert.match(out.stderr, /no catalog for language "fr" \(available: en, ko\)/)
 })
