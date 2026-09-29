@@ -10,7 +10,6 @@ Labels: **Decided** = confirmed. **Leaning** = suggested, not confirmed. Open it
   - #1 "Settle the intent and plan structure and gate views" (plan rev `fa0a214`)
   - #5 "Retire the exercise scenarios" (plan rev `113e2f3`)
   - #3 "Reconcile with the ldd design" (plan rev `8015f6a`). Plan refs now live under `refs/ldd/plans/`; the ldd docs were merged here and deleted.
-- **The human's remaining actions:** push, delete the old `refs/plans/*` on GitHub, and delete the two scenario repos.
 - **Open: #6 "Change categories that fit every kind".** The result-gate views used data-shape's change categories and the `non-semantic` kind for changes they don't fit; #1's, #3's, and #5's results were accepted with those labels. The changes were right; #6 corrects the record. Four questions, unresolved.
 - **Stubs:** #2 holds the review-side questions (#3 Q8 bears on its Q3). #4 holds team-phase questions deferred from #3.
 - **Offered, not done:** a Claude Code permission rule that blocks the agent from running `approve`.
