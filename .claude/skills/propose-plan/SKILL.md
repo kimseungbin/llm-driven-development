@@ -7,7 +7,7 @@ description: Propose the steps for an approved intent in this project's plan/rev
 
 Start from an intent approved at its current rev: `node src/cli.ts intent-view <id> --repo <repo>` shows `approvedRev` equal to `intentRev`. If it isn't approved, use the structure-request skill first. Now read the code.
 
-Plan data lives only in the product repo's `refs/ldd/plans/<id>`, written through `node src/cli.ts`. Work in a copy: `node src/cli.ts export <id> --repo <repo> --out out/work/<id>`, add or edit `steps/<step id>.json`, then store it with `node src/cli.ts edit <id> --repo <repo> --from out/work/<id> --message "<what changed>"`. Approving the plan is the human's decision. Run `approve ... --gate plan --rev <plan rev> --via agent` only when their message explicitly says to approve and names the gate and the rev; never infer it.
+Plan data lives only in the product repo's `refs/ldd/plans/<id>`, written through `node src/cli.ts`. Work in a copy: `node src/cli.ts export <id> --repo <repo> --out out/work/<id>`, add or edit `steps/<step id>.json`, then store it with `node src/cli.ts edit <id> --repo <repo> --from out/work/<id> --message "<what changed>"`. Approving the plan is the human's decision. Run `approve ... --gate plan --rev <plan rev> --via agent` only when their message explicitly says to approve and names the gate and the rev, in any language (in Korean, 계획 게이트 is the plan gate and 인텐트 게이트 the intent gate); never infer it.
 
 ## Amending the intent
 
@@ -19,6 +19,7 @@ Plan data lives only in the product repo's `refs/ldd/plans/<id>`, written throug
 
 ## Steps
 
+- Write each step's summary, risk reason, rules, invariants, and evidence in the intent's request language. Kinds, symbols, and section headings stay as they are.
 - IDs are `<intent id>.<n>` (for example `7.3`), with `parent` set to the intent ID.
 - One step per logical change. Its `expect` lists every symbol the change touches.
 - Steps use format version 2 (`"schemaVersion": 2`).
