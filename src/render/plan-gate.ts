@@ -24,6 +24,7 @@ function expectLines(e: Expect): string[] {
     ...(e.remove ?? []).map((s) => `remove: ${s}`),
     ...(e.change ?? []).map((r) => `change: ${ref(r)}`),
     ...(e.unchanged ?? []).map((s) => `unchanged: ${s}`),
+    ...(e.sections ?? []).map((r) => `section: ${r.doc} § ${r.section}`),
     ...(e.rules ?? []).map((c) => `rule (checked by ${c.checkedBy}): ${c.text}`),
     ...(e.invariants ?? []).map((c) => `invariant (checked by ${c.checkedBy}): ${c.text}`),
   ]
