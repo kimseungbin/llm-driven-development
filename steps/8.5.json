@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "id": "8.5",
+  "parent": "8",
+  "kind": "docs",
+  "origin": "planned",
+  "summary": "Record #8's decisions in the design record",
+  "risk": "low",
+  "riskReason": "Docs only.",
+  "expect": {
+    "sections": [
+      {
+        "doc": "docs/rendering/languages.md",
+        "section": "Languages (decided)"
+      },
+      {
+        "doc": "docs/rendering/README.md",
+        "section": "Rendering (decided)"
+      },
+      {
+        "doc": "docs/README.md",
+        "section": "Where we left off (2026-09-29)"
+      }
+    ]
+  },
+  "evidence": [
+    "the human reads languages.md against Q1-Q6"
+  ],
+  "dependsOn": [
+    "8.3",
+    "8.4"
+  ]
+}

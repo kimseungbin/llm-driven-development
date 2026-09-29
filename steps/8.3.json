@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 2,
+  "id": "8.3",
+  "parent": "8",
+  "kind": "feature",
+  "origin": "planned",
+  "summary": "render reads the person's language from their user-level git config",
+  "risk": "low",
+  "riskReason": "Without the setting, render behaves exactly as today.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "personalLang",
+        "signature": "(): Lang, from git config --global ldd.lang, 'en' when unset"
+      }
+    ],
+    "rules": [
+      {
+        "text": "render passes personalLang() to every format, and the loader format embeds it in the call it emits",
+        "checkedBy": "test"
+      },
+      {
+        "text": "an ldd.lang with no catalog fails with the list of languages, rather than falling back to English",
+        "checkedBy": "test"
+      },
+      {
+        "text": "only the user-level config is read; a repo's own config never sets the language (Q5)",
+        "checkedBy": "test"
+      },
+      {
+        "text": "the usage text says how to set it: git config --global ldd.lang ko",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "test/i18n.test.ts runs the CLI with GIT_CONFIG_GLOBAL pointed at a temporary file"
+  ],
+  "dependsOn": [
+    "8.2"
+  ]
+}

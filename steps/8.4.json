@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 2,
+  "id": "8.4",
+  "parent": "8",
+  "kind": "instructions",
+  "origin": "planned",
+  "summary": "Skills write in the request's language and accept an approval in any language",
+  "risk": "medium",
+  "riskReason": "The approval rule guards the gates; widening it to Korean must still require the gate and the rev.",
+  "expect": {
+    "sections": [
+      {
+        "doc": "structure-request",
+        "section": "Structure a request"
+      },
+      {
+        "doc": "propose-plan",
+        "section": "Propose a plan"
+      },
+      {
+        "doc": "propose-plan",
+        "section": "Steps"
+      },
+      {
+        "doc": "CLAUDE.md",
+        "section": "llm-driven-development"
+      }
+    ],
+    "rules": [
+      {
+        "text": "agents write every authored field of an intent and its plan in the request's language (Q4)",
+        "checkedBy": "human"
+      },
+      {
+        "text": "an approval counts in any language when it explicitly says to approve and names the gate and the rev, as the buttons in every language do (Q6)",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "dry run: structure a short Korean request with the skill; its fields come out in Korean and intent-view validates it"
+  ],
+  "dependsOn": [
+    "8.2"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 2,
+  "id": "8.2",
+  "parent": "8",
+  "kind": "feature",
+  "origin": "planned",
+  "summary": "A Korean catalog, including the messages buttons send",
+  "risk": "low",
+  "riskReason": "Adds a catalog nothing selects until the CLI reads the personal setting.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "ko",
+        "type": "Messages"
+      }
+    ],
+    "rules": [
+      {
+        "text": "CATALOGS has en and ko, and every catalog has exactly en's keys",
+        "checkedBy": "test"
+      },
+      {
+        "text": "a view rendered in ko contains none of en's fixed strings",
+        "checkedBy": "test"
+      },
+      {
+        "text": "a ko button message names the same intent, gate, and rev as the en one (Q6)",
+        "checkedBy": "test"
+      },
+      {
+        "text": "authored text renders exactly as stored in ko and en",
+        "checkedBy": "test"
+      }
+    ]
+  },
+  "evidence": [
+    "test/i18n.test.ts",
+    "the #8 intent gate and a sample result gate rendered in ko, read by the human"
+  ],
+  "dependsOn": [
+    "8.1"
+  ]
+}

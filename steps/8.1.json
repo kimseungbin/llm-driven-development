@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 2,
+  "id": "8.1",
+  "parent": "8",
+  "kind": "signature-change",
+  "origin": "planned",
+  "summary": "Views read every fixed text from an English catalog passed in by language",
+  "risk": "medium",
+  "riskReason": "Touches every renderer; a string left inline or mistyped changes the English views everyone sees today.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "Messages",
+        "type": "every fixed label, heading, note, pill, button label, and button message the views show"
+      },
+      {
+        "symbol": "Lang",
+        "type": "a language code with a catalog"
+      },
+      {
+        "symbol": "CATALOGS",
+        "type": "Record<Lang, Messages>, English only"
+      },
+      {
+        "symbol": "en",
+        "type": "Messages"
+      }
+    ],
+    "change": [
+      {
+        "symbol": "renderView",
+        "from": "(view)",
+        "to": "(view, lang = 'en')"
+      },
+      {
+        "symbol": "viewTitle",
+        "from": "(view)",
+        "to": "(view, lang = 'en')"
+      },
+      {
+        "symbol": "renderPage",
+        "from": "(title, fragment)",
+        "to": "(title, fragment, lang = 'en'), and <html lang> follows it"
+      },
+      {
+        "symbol": "renderIntentGate",
+        "from": "(view)",
+        "to": "(view, t: Messages)"
+      },
+      {
+        "symbol": "renderPlanGate",
+        "from": "(view)",
+        "to": "(view, t: Messages)"
+      },
+      {
+        "symbol": "renderResultGate",
+        "from": "(view)",
+        "to": "(view, t: Messages)"
+      },
+      {
+        "symbol": "KindRenderer.body",
+        "from": "(view)",
+        "to": "(view, t: Messages)"
+      },
+      {
+        "symbol": "list",
+        "from": "(items)",
+        "to": "(items, lang)"
+      }
+    ],
+    "unchanged": [
+      "esc",
+      "symbol",
+      "displayId",
+      "shortStepId",
+      "KIND_CATEGORIES"
+    ],
+    "rules": [
+      {
+        "text": "no view has an English word inline; step kinds, symbols, revs, and IDs stay as they are, since they're identifiers",
+        "checkedBy": "human"
+      },
+      {
+        "text": "counts and lists in text come from catalog functions, so a language can phrase plurals and word order its own way",
+        "checkedBy": "human"
+      }
+    ],
+    "invariants": [
+      {
+        "text": "every view rendered without a language is byte-identical to before",
+        "checkedBy": "test"
+      }
+    ]
+  },
+  "evidence": [
+    "golden files captured before the change from the samples and #1-#8's views, compared after it",
+    "existing tests pass unchanged"
+  ],
+  "dependsOn": []
+}
