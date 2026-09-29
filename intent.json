@@ -16,7 +16,8 @@
     "An approval sent from a Korean view names the same gate and rev, and is accepted the same way, as one sent from an English view.",
     "Adding another language takes only a new set of translations, with no change to any view (Q2).",
     "The language is each person's own choice: one person choosing a language never changes what anyone else sees (Q3).",
-    "A person's language choice applies in every repo they work in, without setting it per repo (Q5)."
+    "A person's language choice applies in every repo they work in, without setting it per repo (Q5).",
+    "When a request is written in Korean, the agent-written fields of its intent and plan are in Korean too (Q4)."
   ],
   "deferred": [
     {
