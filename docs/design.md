@@ -6,16 +6,15 @@ Labels: **Decided** = confirmed constraint or conclusion. **Leaning** = suggeste
 
 ## Where we left off (2026-09-29)
 
-- **#1 "Settle the intent and plan structure and gate views" is done** (steps 1.1 to 1.7 on branch `plan/1`, not yet merged). The human accepted all seven results at one result gate on 2026-09-29, with the unplanned changes attached to their steps (plan rev `fa0a214`). The tool can't record result-gate acceptance yet; this line is the record.
+- **#1 "Settle the intent and plan structure and gate views" is done** (steps 1.1 to 1.7, merged into `main`). The human accepted all seven results at one result gate on 2026-09-29, with the unplanned changes attached to their steps (plan rev `fa0a214`). The tool can't record result-gate acceptance yet; this line is the record.
+- **#5 "Retire the exercise scenarios" is done** (steps 5.1 to 5.3). The human accepted all three results at one result gate on 2026-09-29, with 5.1's unplanned changes attached (plan rev `113e2f3`). Deleting the two scenario repos on GitHub is the human's remaining action.
 - **Next, in order:**
-  1. #5 "Retire the exercise scenarios": plan approved at `cc66423`, then amended (step 5.1 also syncs `refs/ldd/config`), so it needs approving again.
-  2. #3 "Reconcile with the ldd design": every question decided. It moves plan refs under `refs/ldd/` and splits this record into short nested docs. Its intent and plan both wait for approval.
+  1. #3 "Reconcile with the ldd design": every question decided. It moves plan refs under `refs/ldd/` and splits this record into short nested docs. Its intent and plan both wait for approval.
 - **Stubs:** #2 holds the review-side questions (#3 Q8, passkey approvals in the team phase, bears on its Q3). #4 holds team-phase questions deferred from #3.
-- **The scenarios are being retired by #5;** their sections below go in step 5.3.
 - **Offered, not done:** a Claude Code permission rule that blocks the agent from running `approve`.
 - **Resuming on another Mac:**
-  - Clone the project with `gh repo clone <owner>/llm-driven-development`, then run `scripts/github.sh clone-scenarios <owner>`.
-  - Run `scripts/github.sh pull` before working and `scripts/github.sh push` after.
+  - Clone the project with `gh repo clone <owner>/llm-driven-development`, then run `node src/cli.ts setup` once, so plan refs and `refs/ldd/config` sync.
+  - Run `git pull --ff-only` before working and `git push` after.
   - In Claude Code, say "Read docs/design.md and continue where we left off."
 
 ## Goal and constraints (decided)
@@ -50,11 +49,12 @@ Labels: **Decided** = confirmed constraint or conclusion. **Leaning** = suggeste
   - Intent: human-authored and stable, with acceptance criteria.
   - Steps: the agent proposes them and their expectations after reading the code; the human approves, edits, or rejects them at the plan gate (#1 Q1, 2026-09-28). Each step is a single `kind` with checkable evidence and declares `dependsOn`.
 - Three gates, in order (2026-09-28):
-  1. Intent gate. The agent structures the human's request into an intent without reading the code (it may read other intents). The human approves it. The approval binds to the intent rev, the hash of the intent alone.
+  1. Intent gate. The agent structures the human's request into an intent without reading the code (it may read other intents). An intent drafted after reading the code absorbed the code's shape; one structured by an agent forbidden from reading it raised the product questions instead. The human approves it. The approval binds to the intent rev, the hash of the intent alone.
   2. Plan gate. Only now does the agent read the code and propose steps. Questions only the code can raise go into `openQuestions` with `origin: "code"`: they amend the intent and require re-approval. The approval binds to the plan rev, the hash of the intent plus the steps.
   3. Result gate: approves each step's result (named after what it approves, like the other two; renamed from "evidence gate", #1 Q10, 2026-09-28).
   - All of an intent's steps are built without stopping for approval, then one result gate covers them together. Its view explains each step: what changed, why, planned vs built, and every unplanned change with its reason (user, 2026-09-29).
   - Collapsing the first two gates for small, low-risk requests is leaning, not built.
+- Revs are the SHA-256 of canonical JSON (sorted keys), truncated to 7 hex characters. Open questions are part of the intent, so answering one changes both revs, and approval comes after the answers.
 - IDs (2026-09-28):
   - Opaque, stable, per-repo numbers. Intents are `"7"`, steps `"7.1"`, and the display form is `#7` / `#7.1`.
   - Allocation takes the highest existing number plus one (`next-id`), which is safe for a single writer. Multiple writers need a compare-and-swap on a counter ref.
@@ -69,12 +69,12 @@ Labels: **Decided** = confirmed constraint or conclusion. **Leaning** = suggeste
   - `request`: the human's words, verbatim. Every other field is an interpretation, checked against it.
   - `areas`: see IDs above.
   - `problem`: why the change exists, stated as the current pain. It's not a user story.
-  - `acceptance`: the testable restatement of the problem. Criteria never name stakeholders; the problem names who feels the pain (#1 Q7, 2026-09-28). Raised after soft-delete's problem statement mixed support's undo need with finance's retention need; Q7 kept criteria plain instead of citing needs.
+  - `acceptance`: the testable restatement of the problem. Criteria never name stakeholders; the problem names who feels the pain (#1 Q7, 2026-09-28). Raised after an early intent's problem mixed one team's undo need with another's retention need; Q7 kept criteria plain instead of citing needs. Criteria also never name code: an early criterion naming a response type was restated as "the public order response shape".
   - `deferred`: `{ item, reason, followUp }` for work still needed later. `followUp` is the intent ID that will do it, so deferred work can't get lost; create a stub intent if none exists.
   - `nonGoals`: `{ item, reason }` for things the change will never do.
   - These two replace `outOfScope`, which mixed future work with non-goals (user, 2026-09-28). Reasons are required on both. Checking that a `followUp` intent actually exists waits for the index.
   - `relations`: `{ type, target }` typed links to other intents: `blocks`, `duplicates`, `parent`, alongside `deferred.followUp` (#1 Q5, 2026-09-28). Stored on one side only; reverse links are computed by scanning the plan refs, and the intent gate shows both directions. A prose `#8` mention is just a mention.
-  - `openQuestions`: `{ id, text, proposal, origin, owner? }`, decisions the human must make. The proposal is required. `origin` is `request` or `code`. `owner` names who must answer when it isn't the approving human (#1 Q6, 2026-09-28): a decision that needs an outside party's confirmation stays an open question owned by them and blocks the intent until their answer is recorded.
+  - `openQuestions`: `{ id, text, proposal, origin, owner? }`, decisions the human must make. The proposal is required. `origin` is `request` or `code`. `owner` names who must answer when it isn't the approving human (#1 Q6, 2026-09-28): a decision that needs an outside party's confirmation stays an open question owned by them and blocks the intent until their answer is recorded. Raised by an early intent whose tax answer depended on Finance, which the schema couldn't track.
   - `decisions`: `{ id, question, answer, origin, owner? }`. When the human answers a question, it moves here with their answer, and its owner comes with it. Agents never answer questions.
   - Intents and plans are JSON only, written through the CLI. Markdown may come later as an input the CLI converts (#1 Q8, 2026-09-28).
 - Step format version 2 (#1 Q2, Q3, Q4, Q11, Q12, Q14, 2026-09-28):
@@ -84,7 +84,7 @@ Labels: **Decided** = confirmed constraint or conclusion. **Leaning** = suggeste
   - Risk is set per step, not derived from the kind. Every step carries a one-line `riskReason`; it's required for high risk. Views show high-risk reasons and hide the rest behind a toggle.
   - Step dependencies may point at another intent's step (`12.2`); validation checks that it exists.
   - Stored plans were migrated to version 2 in one step, accepting a brief window where they couldn't be read (Q12).
-- Resolve questions one at a time with AskUserQuestion, never as a batch (user, 2026-09-28):
+- Resolve questions one at a time with AskUserQuestion, never as a batch (user, 2026-09-28). First done on a 15-question intent, 13 of them resolved in dependency order starting with scope:
   - Go in dependency order, recording each answer as a decision before asking the next.
   - The proposal is the recommended option, with real alternatives beside it.
   - Gate views have no bulk "accept all" button, to avoid rubber-stamping.
@@ -144,11 +144,11 @@ Example, stored as `KRW-12/intent.json` and `KRW-12/steps/KRW-12.1.json`:
   - Current state is the tip's tree.
   - `git log --format='%(trailers)' refs/plans/<id>` is the audit trail, and `git diff` between two commits shows what an event changed.
   - This was chosen over an `events.jsonl` fold, because the commit chain is already append-only.
-- Syncing between Macs (2026-09-28): private GitHub repos, one for the project and one per scenario, set up by `scripts/github.sh`. The scenario remotes fetch and push `refs/plans/*` without force, so if two machines both write an intent, the second push is rejected rather than overwriting the first.
+- Syncing between Macs: a private GitHub repo. `node src/cli.ts setup` adds the refspecs for plan refs and `refs/ldd/config` once per clone, then plain `git push` and `git pull --ff-only` sync them (#5, 2026-09-29). They never force, so if two machines both write an intent, the second push is rejected rather than overwriting the first.
 - Every write is a compare-and-swap: `update-ref` with the expected old tip, and with the zero ID on create, which also makes ID allocation atomic.
 - Reviews will go under `refs/reviews/<id>`.
 - `refs/ldd/config` holds the repo's config (`config.json`, the area list), one commit per `configure` event, synced alongside the plans (#1 step 1.4, 2026-09-29).
-- Built 2026-09-28. #1, #2, #7, and #8 were imported from the earlier plan files, each as one `import` event with a note that edits before storage existed have no history. The plan files were then deleted.
+- Built 2026-09-28. The first intents were imported from the earlier plan files, each as one `import` event with a note that edits before storage existed have no history. The plan files were then deleted.
 
 ## Human-in-the-loop gate (decided)
 
@@ -206,7 +206,7 @@ Example, stored as `KRW-12/intent.json` and `KRW-12/steps/KRW-12.1.json`:
     - (d) The CLI writes a static HTML file that opens in the desktop browser pane.
     - (e) The CLI writes the file and it's published as a private Artifact by path.
 - Every view opens by naming what it is: the badge (Intent / Plan / Result), the gate (intent gate / plan gate / result gate), the mode (planned / observed-only), and the decision it prepares. Decided 2026-09-28, after the first render couldn't be told apart from a plan; badge and gate names follow #1 Q10.
-- Every section of a view gets a visible label. Unlabeled text confuses readers; ORD-7's problem statement rendered as a bare line (user, 2026-09-28).
+- Every section of a view gets a visible label. Unlabeled text confuses readers; an early problem statement rendered as a bare line and wasn't recognized (user, 2026-09-28).
 - Group column headers by data origin (observed in code vs plan), so readers can tell authored, observed, and computed data apart.
 - Result-gate view layout, accepted 2026-09-28 (first render of KRW-12.1 against the `Money` DTO):
   - Badge "Result", then the label "Result gate · planned mode · accept this step's result?"
@@ -250,7 +250,7 @@ Example, stored as `KRW-12/intent.json` and `KRW-12/steps/KRW-12.1.json`:
   - Fixed cost is about 5.2 KB for (a) (mostly CSS) and 0.65 KB for (b).
   - Per row, it's about 346 B for (a) and 213 B for (b).
   - Both are paid twice per render: read as a tool result, then emitted as output. (d) costs a constant ~100 output tokens.
-- 2026-09-28: GitHub accepts pushes of custom `refs/plans/*` refs. `git ls-remote` lists them on the private scenario repos, though the web UI doesn't show them.
+- 2026-09-28: GitHub accepts pushes of custom `refs/plans/*` refs. `git ls-remote` lists them on private repos, though the web UI doesn't show them.
 - Node 26 runs `.ts` directly, and `node:module` exposes `stripTypeScriptTypes`, so a browser build needs no dependencies.
 - Earlier (via docs/search):
   - SSH signing and allowed-signers behavior.
@@ -281,26 +281,6 @@ Example, stored as `KRW-12/intent.json` and `KRW-12/steps/KRW-12.1.json`:
   - Infra: a good fit through structured plan output (`terraform plan -json`, `cdk diff`), but that output depends on live state, so snapshot it as evidence.
   - FE: component props fit; visual changes need screenshot evidence, which the inline widget can't show well.
 - How one decision supersedes another (raised 2026-09-28, self-hosted #1). Q14 renamed a kind that Q2 had decided. Decisions can't be edited, so the link exists only in Q14's answer text. A `supersedes: "Q2"` field would make it visible and let views mark Q2 as partly overridden.
-
-## Scenario: soft delete (#7), started 2026-09-28
-
-- A real TypeScript service with its own git repo in `scenarios/soft-delete/repo` (baseline `24090f8` on `main`). The intents are in `scenarios/soft-delete/plan/7` and `plan/8`.
-- The flow being tested: request, intent gate, plan gate, implementation on a branch with `Plan-Step:` trailers, then the evidence gate.
-- Revs are the SHA-256 of canonical JSON (sorted keys), truncated to 7 hex characters. Open questions are part of the intent, so answering them changes both revs, and approval has to come after the answers.
-- Status: intent rev `0ceeec5` and plan rev `bfbeffb`, both blocked on Q1 and Q2 (found in code).
-  - #7 was drafted before the intent gate existed, so its intent includes things learned from the code.
-  - The purge schedule is deferred to the stub intent #8.
-  - "OrderSummary" in an acceptance criterion became "the public order response shape", since acceptance criteria can't name code.
-
-## Scenario: discount codes (#1 in the checkout repo), started 2026-09-28
-
-- A checkout service on `node:sqlite` with SQL migrations, in `scenarios/coupons/repo` (baseline `96fc130`). It covers products, orders with tax rounded once per order, refunds, and a daily revenue report. Areas: `be` and `db`.
-- The request is a fictional message from Marketing. The user acts as the approving human, starting at the intent gate.
-- A separate agent structured the intent while forbidden from reading the product code. That tests whether the structure-request skill works on its own.
-- The agent raised 15 questions. The user resolved 13 of them one at a time through AskUserQuestion, in dependency order starting with scope (Q3). The report question (Q2) moved to the stub intent #2 along with the deferred report. Answers are recorded with `node src/cli.ts decide`, the first piece of the single write path.
-  - One answer went against the proposal: Q13, "switch off only". It added an acceptance criterion.
-  - Q9's answer depends on an outside party ("Finance to confirm the tax treatment"), and the schema can't track that yet.
-- Status: intent rev `ecbd228`, no open questions, ready for the intent gate.
 
 ## Build order (leaning)
 
