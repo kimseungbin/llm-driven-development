@@ -36,14 +36,7 @@
     }
   ],
   "relations": [],
-  "openQuestions": [
-    {
-      "id": "Q4",
-      "origin": "request",
-      "text": "When the human writes a request in Korean, what language do agents write the rest of the intent and plan in?",
-      "proposal": "The request's language. The fields are interpretations checked against the request, which is easiest when both are in the same language."
-    }
-  ],
+  "openQuestions": [],
   "decisions": [
     {
       "id": "Q1",
@@ -67,6 +60,12 @@
       "id": "Q5",
       "question": "Where does the personal language setting live, and how far does it reach?",
       "answer": "User-level, all repos (Recommended): stored with the person like their git name and email (user-level git config), never in a repo. Team-phase views read it from the viewer's identity, deferred to #4.",
+      "origin": "request"
+    },
+    {
+      "id": "Q4",
+      "question": "When the human writes a request in Korean, what language do agents write the rest of the intent and plan in?",
+      "answer": "The request's language (Recommended): a Korean request gets a Korean problem, criteria, questions, and steps.",
       "origin": "request"
     }
   ]
