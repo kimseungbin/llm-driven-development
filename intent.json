@@ -4,7 +4,7 @@
   "kind": "intent",
   "title": "Change categories that fit every kind",
   "request": "In 3.1 plan_prefix is change of value, not type isn't it?\n\n* Validate it\n* If so, we need to update change category right?\n\n(chosen: New intent for per-kind change categories, then redo #3's gate)",
-  "problem": "The result gate labels every change with categories made for data-type fields: added, removed, renamed, type changed, nullability changed. Changes of other kinds don't fit, so they get the nearest wrong label: a constant whose value changed shows as a type change, a function whose behavior changed shows as a type change, and a moved doc section shows as a rename. The reviewer at the result gate reads a wrong description of what changed, which is the one thing the gate must get right. #1's and #5's results were accepted with such labels, and #3's gate is waiting on this. The kind list has the same gap: skills, CLAUDE.md, and the design record have no kind of their own, so they were planned as non-semantic, though a change to a skill changes what every future agent does.",
+  "problem": "The result gate labels every change with categories made for data-type fields: added, removed, renamed, type changed, nullability changed. Changes of other kinds don't fit, so they get the nearest wrong label: a constant whose value changed shows as a type change, a function whose behavior changed shows as a type change, and a moved doc section shows as a rename. The reviewer at the result gate reads a wrong description of what changed, which is the one thing the gate must get right. #1's, #3's, and #5's results were accepted with such labels; the changes themselves were right. The kind list has the same gap: skills, CLAUDE.md, and the design record have no kind of their own, so they were planned as non-semantic, though a change to a skill changes what every future agent does.",
   "areas": [
     "fe",
     "be"
@@ -12,8 +12,7 @@
   "acceptance": [
     "Every change at a result gate is described by a category that says what actually changed, whatever the step's kind.",
     "A change no category fits is shown as uncategorized, never forced into the nearest category.",
-    "#3's result gate is shown again with correct categories before it's decided.",
-    "The mislabels in #1's and #5's accepted results are corrected in the record."
+    "The mislabeled categories and kinds in #1's, #3's, and #5's accepted results are corrected in the record."
   ],
   "nonGoals": [
     {
