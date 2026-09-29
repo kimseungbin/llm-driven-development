@@ -7,7 +7,6 @@
   },
   "scripts": {
     "render": "node src/cli.ts render",
-    "build:browser": "node scripts/build-browser.ts",
     "test": "node --test test/"
   }
 }

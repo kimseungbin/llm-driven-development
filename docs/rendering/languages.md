@@ -19,7 +19,7 @@ Decided by #8 (2026-09-29), so a human can decide at the gates in their own lang
 
 - It's a personal setting in user-level git config, applying in every repo: `git config --global ldd.lang ko`. Unset means `en`.
 - `render` reads only the user-level config, so a repo's own config never sets it and one person's choice never reaches anyone else. An unknown language fails with the list of languages.
-- The loader format embeds the language in the `renderView` call it emits.
+- The loader embeds the language in the `renderView` call it emits, and its load-failure text is in that language too (#9).
 - Per-viewer language in the team phase's coordinator views, read from the viewer's identity, is deferred to #4.
 
 ## Authored text and approvals (Q4, Q6)

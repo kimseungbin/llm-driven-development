@@ -1,14 +1,16 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import { approve, create, decide, edit, exportTo, importDir, loadAreas, loadIntentGate, loadPlanGate, nextId, setAreas } from './plan.ts'
-import { renderView, viewTitle, type View } from './render/index.ts'
 import { personalLang } from './git.ts'
+import { publishRenderer } from './publish.ts'
+import { renderCommand } from './render-command.ts'
 import { setup } from './store.ts'
-import { renderPage } from './render/page.ts'
 
 const usage = `usage (plan data lives in the product repo, under refs/ldd/plans/<id>):
   node src/cli.ts setup [--repo <repo>]                                 once per clone: sync plan and config refs with git push and git pull
+  node src/cli.ts publish                                               build the renderer, commit it to the renderer branch, and push it; prints its CDN base
   node src/cli.ts next-id --repo <repo>
   node src/cli.ts create --repo <repo> --from <dir>                      agent: new intent from <dir>/intent.json; prints the id
   node src/cli.ts export <id> --repo <repo> --out <dir>                  working copy for editing
@@ -21,14 +23,14 @@ const usage = `usage (plan data lives in the product repo, under refs/ldd/plans/
   node src/cli.ts set-areas --repo <repo> --areas <a,b,...>              the human's confirmed list, recorded on refs/ldd/config
   node src/cli.ts intent-view <id> --repo <repo> [--out <file>]
   node src/cli.ts plan-view <id> --repo <repo> [--out <file>]
-  node src/cli.ts render <view.json> [--format widget|page|loader] [--cdn <renderer base url>] [--out <file>]
+  node src/cli.ts render <view.json>... [--format loader|widget|page] [--out <file>]
+      loader (the default) draws with the published renderer; after changing src/render, run publish
       in your language: git config --global ldd.lang ko (en when unset)`
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
   options: {
-    format: { type: 'string', default: 'widget' },
-    cdn: { type: 'string' },
+    format: { type: 'string' },
     out: { type: 'string' },
     repo: { type: 'string' },
     from: { type: 'string' },
@@ -64,21 +66,14 @@ const need = (value: string | undefined): string => value ?? fail(usage)
 
 const [command, arg1, arg2] = positionals
 
+// The renderer is this tool's own code, so it's published from this checkout, whatever --repo names.
+const TOOL = fileURLToPath(new URL('..', import.meta.url))
+
 if (command === 'render') {
-  const view = JSON.parse(await readFile(need(arg1), 'utf8')) as View
-  if (view.schemaVersion !== 1) fail(`${arg1}: expected schemaVersion 1`)
   const lang = attempt(personalLang)
-  if (values.format === 'widget') await emit(renderView(view, lang))
-  else if (values.format === 'page') await emit(renderPage(viewTitle(view, lang), renderView(view, lang), lang))
-  else if (values.format === 'loader' && values.cdn) {
-    // JSON.stringify leaves "</script>" intact, which would end the inline script early.
-    const data = JSON.stringify(view).replaceAll('<', '\\u003c')
-    await emit(`<div id="v-root"></div>
-<script type="module">
-import { renderView } from '${values.cdn}/render/index.js'
-document.getElementById('v-root').innerHTML = renderView(${data}, ${JSON.stringify(lang)})
-</script>`)
-  } else fail(usage)
+  await emit(attempt(() => renderCommand(positionals.slice(1), { format: values.format, repo: TOOL, lang })))
+} else if (command === 'publish') {
+  await emit(`${attempt(() => publishRenderer(TOOL))}\n`)
 } else if (command === 'setup') {
   const added = attempt(() => setup(values.repo ?? '.'))
   await emit(added.length ? `refspecs:\n${added.map((a) => `  ${a}`).join('\n')}\n` : 'already set up\n')

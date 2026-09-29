@@ -154,6 +154,12 @@ export const en = {
     plan: 'Plan',
   },
 
+  loader: {
+    failed: "The renderer couldn't be loaded, so this view can't be shown here.",
+    redraw: 'Render as a widget',
+    redrawPrompt: (titles: string) => `Render ${titles} again with --format widget.`,
+  },
+
   title: { intent: (id: string) => `${id} intent`, plan: (id: string) => `${id} plan`, result: (id: string) => `${id} result` },
 }
 

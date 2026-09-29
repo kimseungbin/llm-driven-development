@@ -10,9 +10,11 @@
 
 ## Delivery (2026-09-28)
 
-- Now: (a), the CLI's widget HTML passed through verbatim. Renderers change often during design, and (a) always shows the working copy with no publish step.
-- Target: (b), the CDN loader, once renderers stop changing often. Add a `publish` script when switching. Keep (a) for renderer development.
-- Revisit (c), MCP Apps, when [anthropics/claude-code#95149](https://github.com/anthropics/claude-code/issues/95149) lands. It would beat (b), since no data would pass through Claude.
+- Default: (b), the loader (#9 Q1, 2026-09-29). `render` emits the views' data and one module script that imports the renderer from this repo's `renderer` branch through jsDelivr, pinned to that commit's SHA, so a drawn view never changes later (#9 Q2).
+- `node src/cli.ts publish` is the only build: it turns `src/render` and `model.ts` into browser modules, commits them as the whole tree of `renderer`, and pushes. An unchanged renderer makes no new commit.
+- A published renderer that differs from `src/render` fails a loader render, which says to run `publish` or use `--format widget` (#9 Q3). (a) stays for renderer development.
+- If the widget can't load the renderer, it shows a sentence and a redraw-as-widget button in the viewer's language (#9 Q4).
+- (c), MCP Apps, would beat (b), since no data would pass through Claude. It waits on [anthropics/claude-code#95149](https://github.com/anthropics/claude-code/issues/95149), tracked as #10.
 - Not chosen: (d) browser pane, a separate view, and (e) Artifact, which uploads data.
 - The options:
   - (a) The CLI emits the full widget HTML and Claude passes it through verbatim.

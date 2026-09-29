@@ -153,5 +153,11 @@ export const ko: Messages = {
     plan: '계획',
   },
 
+  loader: {
+    failed: '렌더러를 불러오지 못해 이 뷰를 여기에 보여 줄 수 없습니다.',
+    redraw: '위젯 형식으로 다시 그리기',
+    redrawPrompt: (titles) => `${titles}을(를) --format widget으로 다시 그려 주세요.`,
+  },
+
   title: { intent: (id) => `${id} 인텐트`, plan: (id) => `${id} 계획`, result: (id) => `${id} 결과` },
 }
