@@ -7,8 +7,6 @@ interface FieldChange {
   after: string | null
   change: 'added' | 'removed' | 'renamed' | 'type-changed' | 'nullability-changed'
   note?: string
-  classifiedBy: 'deterministic' | 'inferred'
-  confidence?: number
   impact: string
 }
 
@@ -29,10 +27,10 @@ export const dataShape: KindRenderer = {
     const planned = view.mode === 'planned'
     const rows = view.items.map((item) => {
       const d = item.detail as FieldChange
-      const inferred = d.classifiedBy === 'inferred'
+      const inferred = item.classifiedBy === 'inferred'
       const label = d.change.replace('-', ' ') + (d.note ? `, ${d.note}` : '') + (inferred ? '?' : '')
       const confidence = inferred
-        ? `<div class="v-note">inferred${d.confidence === undefined ? '' : `, ${d.confidence.toFixed(2)}`}</div>`
+        ? `<div class="v-note">inferred${item.confidence === undefined ? '' : `, ${item.confidence.toFixed(2)}`}</div>`
         : ''
       return `<tr data-breaking="${item.breaking}"><td class="m">${symbol(d.field)}</td><td class="m">${value(d.before)}</td><td class="m">${value(d.after)}</td><td><span class="v-pill ${tone[d.change]}">${esc(label)}</span>${confidence}</td><td>${planCell(item.plan, planned)}</td><td class="${item.breaking ? 'v-bad' : 'v-sec'}">${esc(d.impact)}</td></tr>`
     })

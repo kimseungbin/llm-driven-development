@@ -8,6 +8,8 @@ export type PlanMatch = 'matched' | 'unplanned' | 'missing'
 export interface ReconItem {
   plan: PlanMatch
   breaking: boolean
+  classifiedBy: 'deterministic' | 'inferred'
+  confidence?: number
   detail: unknown
 }
 
