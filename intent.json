@@ -29,12 +29,6 @@
   "relations": [],
   "openQuestions": [
     {
-      "id": "Q2",
-      "origin": "request",
-      "text": "Is this Korean only, or a general mechanism where Korean is the first added language?",
-      "proposal": "A general mechanism with English and Korean. Another language is then just another set of translations, and it costs little more than Korean alone."
-    },
-    {
       "id": "Q3",
       "origin": "request",
       "text": "How is the language chosen for a view?",
@@ -52,6 +46,12 @@
       "id": "Q1",
       "question": "What does Korean support cover: only the rendered gate views, or also the CLI's messages and errors?",
       "answer": "Gate views only (Recommended): labels, badges, buttons, and status lines in rendered views. CLI messages and errors stay English.",
+      "origin": "request"
+    },
+    {
+      "id": "Q2",
+      "question": "Is this Korean only, or a general mechanism where Korean is the first added language?",
+      "answer": "General, en + ko (Recommended): views read their text from a per-language set of translations; another language is added as a new set, with no view changes.",
       "origin": "request"
     }
   ]
