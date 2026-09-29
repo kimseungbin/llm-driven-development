@@ -5,8 +5,9 @@ import { renderResultGate, type ReconItem, type ResultGateView } from '../src/re
 const item = (field: string, plan: ReconItem['plan'], extra: Partial<ReconItem> = {}): ReconItem => ({
   plan,
   breaking: false,
+  category: 'added',
   classifiedBy: 'deterministic',
-  detail: { field, before: null, after: 'string', change: 'added', impact: 'none' },
+  detail: { field, before: null, after: 'string', impact: 'none' },
   ...extra,
 })
 

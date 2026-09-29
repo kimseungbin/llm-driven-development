@@ -1,3 +1,4 @@
+import type { ChangeCategory } from '../model.ts'
 import { displayId, esc, list, plural, promptButton } from './html.ts'
 import { dataShape } from './kinds/data-shape.ts'
 import { unknownKind } from './kinds/unknown.ts'
@@ -8,6 +9,8 @@ export type PlanMatch = 'matched' | 'unplanned' | 'missing'
 export interface ReconItem {
   plan: PlanMatch
   breaking: boolean
+  // A change no category fits is uncategorized, never the nearest category.
+  category: ChangeCategory | 'uncategorized'
   classifiedBy: 'deterministic' | 'inferred'
   confidence?: number
   detail: unknown
