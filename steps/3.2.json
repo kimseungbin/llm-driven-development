@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 2,
+  "id": "3.2",
+  "parent": "3",
+  "kind": "non-semantic",
+  "origin": "planned",
+  "summary": "Point the authoring skills and CLAUDE.md at refs/ldd/plans",
+  "risk": "low",
+  "riskReason": "Instruction text only; the write path already enforces the new location.",
+  "expect": {
+    "rules": [
+      {
+        "text": "the structure-request and propose-plan skills name refs/ldd/plans/<id> wherever they named refs/plans/<id>",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the propose-plan skill lists the current step kinds (data-shape, not dto-shape) if #1 hasn't already updated them",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "grep for refs/plans/ outside the design record's history finds nothing in .claude or CLAUDE.md"
+  ],
+  "dependsOn": [
+    "3.1"
+  ]
+}

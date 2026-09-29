@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 2,
+  "id": "3.1",
+  "parent": "3",
+  "kind": "behavior-change",
+  "origin": "planned",
+  "summary": "Store plan data under refs/ldd/plans/<id> and move every stored plan there",
+  "risk": "high",
+  "riskReason": "Every stored plan moves, in this repo and both scenario repos, and the old refs have to be removed on GitHub too. A half-done move leaves plans in two places.",
+  "expect": {
+    "change": [
+      {
+        "symbol": "ref",
+        "from": "refs/plans/<id>",
+        "to": "refs/ldd/plans/<id>"
+      },
+      {
+        "symbol": "listIds",
+        "from": "lists refs/plans/",
+        "to": "lists refs/ldd/plans/"
+      },
+      {
+        "symbol": "usage",
+        "from": "names refs/plans/<id>",
+        "to": "names refs/ldd/plans/<id>"
+      },
+      {
+        "symbol": "track_plans",
+        "from": "refspecs refs/plans/*",
+        "to": "one refspec, refs/ldd/*, for fetch and push"
+      }
+    ],
+    "rules": [
+      {
+        "text": "each stored plan is moved with its full event history: the new ref points at the old tip, created with a compare-and-swap against the zero ID, and the old ref is deleted with a compare-and-swap against that tip",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the move covers this repo (#1 to #4) and both scenario repos (coupons #1 and #2, soft-delete #7 and #8)",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the human pushes the moved refs and deletes the old refs on GitHub; the agent never pushes",
+        "checkedBy": "human"
+      },
+      {
+        "text": "refs/ldd/config from #1's step 1.4 keeps working under the new refspec",
+        "checkedBy": "human"
+      }
+    ],
+    "invariants": [
+      {
+        "text": "every plan's tip commit and event history are unchanged by the move",
+        "checkedBy": "human"
+      },
+      {
+        "text": "no refs/plans/* ref is left in any of the three repos",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "git for-each-ref refs/plans/ is empty in all three repos, and refs/ldd/plans/ lists the same IDs with the same tips as before",
+    "plan-view builds for #1 and #3 here and for #7 in the soft-delete repo",
+    "git ls-remote shows refs/ldd/plans/* and no refs/plans/* on all three GitHub repos, after the human pushes"
+  ],
+  "dependsOn": []
+}

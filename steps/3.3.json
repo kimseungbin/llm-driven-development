@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 2,
+  "id": "3.3",
+  "parent": "3",
+  "kind": "non-semantic",
+  "origin": "planned",
+  "summary": "Split the design record into short nested docs and merge in the ldd design",
+  "risk": "medium",
+  "riskReason": "Two records are merged and one is deleted, so a decision could be dropped by accident.",
+  "expect": {
+    "rules": [
+      {
+        "text": "docs/README.md is the index and holds 'Where we left off'; each area gets a folder; files stay near 40 lines",
+        "checkedBy": "human"
+      },
+      {
+        "text": "every decision in docs/design.md, including those 1.7 writes, lands in exactly one nested doc, with its date",
+        "checkedBy": "human"
+      },
+      {
+        "text": "#3's decisions Q1 to Q13 are recorded, and #1's Q13 is marked superseded by #3's Q3 and Q13",
+        "checkedBy": "human"
+      },
+      {
+        "text": "the ldd design goes into a team-phase section as the target: coordinator, forge adapters, the agent kit, claims, passkey approvals, conventions, and the stack, except what #3 dropped (agent-submitted review items, Ldd-Work, git notes, SHAs in plans) and what it deferred to #4 (the store and the runtime)",
+        "checkedBy": "human"
+      },
+      {
+        "text": "ideas only the ldd design had and #3 didn't drop are carried into the solo-phase docs where they apply, such as the conventions matcher and research and decision records on steps",
+        "checkedBy": "human"
+      },
+      {
+        "text": "CLAUDE.md points to docs/README.md instead of docs/design.md, and keeps its other rules",
+        "checkedBy": "human"
+      },
+      {
+        "text": "docs/design.md is removed; ~/repos/personal/ldd/docs is deleted only after the human confirms the merged record",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "a checklist that maps every decision in docs/design.md and every ldd doc to its new location, reviewed by the human",
+    "no nested doc is much longer than 40 lines"
+  ],
+  "dependsOn": [
+    "3.2"
+  ]
+}
