@@ -101,6 +101,11 @@
       "item": "Whether intents move from git refs to a coordinator database in the team phase",
       "reason": "The human left it undecided (Q2). It depends on what the team phase needs, which isn't known yet.",
       "followUp": "4"
+    },
+    {
+      "item": "The coordinator's runtime (Node or Bun)",
+      "reason": "The human chose Node 26 for the solo phase and left the coordinator's runtime to be decided with the rest of the team phase (Q11).",
+      "followUp": "4"
     }
   ]
 }
