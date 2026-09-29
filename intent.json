@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q2",
-      "origin": "request",
-      "text": "Where do issues (intents and plans) live? The prototype keeps them in git refs in the product repo. The ldd docs keep them in the coordinator's database because issues can span repos and need deletion and per-item access control.",
-      "proposal": "Git refs in the product repo, in both phases. Since the ldd design moved to forge-backed hosting, review data already travels with the repo, and a database-only backlog would be the one thing that doesn't. Work across repos becomes one intent per repo, joined by the existing parent links. The coordinator indexes the refs in Postgres as a copy it can rebuild. Deletion and access control stay per repo, which is accepted."
-    },
-    {
       "id": "Q3",
       "origin": "request",
       "text": "Ref names: the prototype uses refs/plans/*, refs/plans-config, and a planned refs/reviews/*. The ldd docs put everything under refs/ldd/*. Which naming?",
@@ -93,6 +87,12 @@
       "id": "Q1",
       "question": "Scope: the prototype is solo and local (no server, accounts, web UI, search, or webhooks). The ldd docs design a team coordinator (NestJS, Postgres, web UI, forge adapters). Which one is the design?",
       "answer": "Both, as two phases. The solo, local tool is the current phase. The team coordinator is the team-phase target and gets its own section. The data layer is designed now so the coordinator can adopt it unchanged.",
+      "origin": "request"
+    },
+    {
+      "id": "Q2",
+      "question": "Where do issues (intents and plans) live? The prototype keeps them in git refs in the product repo. The ldd docs keep them in the coordinator's database because issues can span repos and need deletion and per-item access control.",
+      "answer": "Git refs for now. A coordinator database may come in the future; that isn't decided.",
       "origin": "request"
     }
   ]
