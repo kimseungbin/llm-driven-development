@@ -12,6 +12,13 @@
   "acceptance": [
     "Every question deferred to the team phase is decided, or explicitly left open with a reason."
   ],
-  "openQuestions": [],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "text": "Do reviews of other people's changes need to reach the authors?",
+      "proposal": "Export findings one way as pull-request comments when the change comes through a forge. Replies stay on the forge and never flow back into refs/ldd, which keeps the forge a mirror (#2 Q3). Without a forge, findings only inform your own merge decision.",
+      "origin": "request"
+    }
+  ],
   "decisions": []
 }
