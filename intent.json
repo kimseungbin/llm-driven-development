@@ -13,7 +13,8 @@
     "A gate view rendered in Korean shows every fixed label, badge, button, and status line in Korean.",
     "A gate view rendered without choosing a language is unchanged from today.",
     "Authored text (the request, problem, criteria, questions, and answers) appears exactly as written in every language.",
-    "An approval sent from a Korean view names the same gate and rev, and is accepted the same way, as one sent from an English view."
+    "An approval sent from a Korean view names the same gate and rev, and is accepted the same way, as one sent from an English view.",
+    "Adding another language takes only a new set of translations, with no change to any view (Q2)."
   ],
   "deferred": [],
   "nonGoals": [
