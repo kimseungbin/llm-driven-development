@@ -17,7 +17,8 @@
 - Header: step ID, summary, `kind`, plan revision.
 - Counts: matched, unplanned, planned-but-missing, breaking.
 - An "All changes / Breaking only" filter and the observed range with head SHA.
-- Table: Field | Before | After | Change | Plan | Impact. Change pills are colored by type; inferred changes are marked and show their confidence.
+- Code kinds: Field | Before | After | Change | Plan | Impact, headed Symbol instead of Field except for `data-shape` steps (#6, 2026-09-29). Change pills are colored by category; inferred changes are marked and show their confidence.
+- The step's kind picks the view: code kinds the table above, prose kinds the prose view below, `other` the raw view. A category the kind can't produce fails the render (#6).
 - An invariant and evidence status line; a blocked line naming what to resolve; `sendPrompt` follow-up buttons.
 - One result gate per intent renders one of these views for each step, together.
 - The inline view lists every row, sorted by attention first: unplanned, missing, breaking, and inferred, then matched. A large change makes a long widget, and that cost is accepted so everything stays in one place (#2 Q4, 2026-09-29).
@@ -26,7 +27,7 @@
 
 For `instructions`, `docs`, and `non-semantic` steps:
 
-- Mechanical changes (moved, renamed, or a whole section added or removed) are table rows: What | From | To | Why.
+- Mechanical changes (moved, renamed, or a whole section added or removed) are table rows: What | Change | From | To | Plan | Why. Like code rows, each shows its category and plan match (user, #6's result gate).
 - Wording changes (`content changed`, and `behavior changed` for `instructions`) are quoted: one diff code block per change, `-` lines for removed text and `+` lines for added text, with a line saying why.
 
 ## Leaning, from the ldd design

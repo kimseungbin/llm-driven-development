@@ -1,6 +1,6 @@
 # Design: git-ref-based plan/review tracking (working title)
 
-Status: prototype. The write path, the three gate views (result rows sorted attention first), per-repo areas, links between intents, and `setup` exist; diff extraction and reconciliation don't yet. Last updated 2026-09-29.
+Status: prototype. The write path, the three gate views (result rows sorted attention first, and chosen by step kind), per-repo areas, links between intents, and `setup` exist; diff extraction and reconciliation don't yet. Last updated 2026-09-29.
 
 Labels: **Decided** = confirmed. **Leaning** = suggested, not confirmed. Open items are in [open-questions.md](open-questions.md).
 
@@ -11,7 +11,8 @@ Labels: **Decided** = confirmed. **Leaning** = suggested, not confirmed. Open it
   - #5 "Retire the exercise scenarios" (plan rev `113e2f3`)
   - #3 "Reconcile with the ldd design" (plan rev `8015f6a`). Plan refs now live under `refs/ldd/plans/`; the ldd docs were merged here and deleted.
   - #2 "Settle the review-side design" (plan rev `919968b`). Q1: observed-only also covers your own agents' work, with a reason ([reviews.md](reviews.md)). Q3: team approvals live in `refs/ldd`, mirrored to the forge ([gates/approvals.md](gates/approvals.md)). Q4: result views list every row, attention first ([rendering/layouts.md](rendering/layouts.md)); `inferred` is now on every result-gate item. Q2 moved to #4, since only local mode is in scope for now.
-- **Open: #6 "Change categories that fit every kind": intent approved at `2cf7b64`, then Q4 was found while planning (prose steps name `expect.sections`, [model/steps.md](model/steps.md)), and the intent was re-approved at `f506611`; plan rev `45dc352` (five steps) waits for plan approval.** Q0: new `instructions` and `docs` kinds ([model/steps.md](model/steps.md)). Q1: one shared category list with per-kind subsets ([model/categories.md](model/categories.md)). Q2: prose changes are table rows when mechanical and diff blocks when wording changes ([rendering/layouts.md](rendering/layouts.md)). Q3: #1's, #2's, #3's, and #5's results keep their labels; the categories apply from #6 on.
+  - #6 "Change categories that fit every kind" (plan rev `d18c12c`). New `instructions` and `docs` kinds with `expect.sections` ([model/steps.md](model/steps.md)); one category list with per-kind subsets that the result gate enforces ([model/categories.md](model/categories.md)); prose results as table rows and diff blocks ([rendering/layouts.md](rendering/layouts.md)). Earlier results keep their labels.
+- **Open: #7 "Fit per-kind change categories to real steps"**, a stub from #6's result gate: 12 of its 30 rows were uncategorized, because a `feature` step can only produce `added` and a `behavior-change` step can't produce `removed` or `type changed`. Decide whether the lists widen or steps split finer.
 - **Deferred: #4 "Settle the team-phase coordinator design"** until the team phase, since only local mode is in scope for now (user, 2026-09-29). It holds team-phase questions deferred from #3, plus #2's Q2 as its Q1.
 - **Offered, not done:** a Claude Code permission rule that blocks the agent from running `approve`.
 - **Resuming on another Mac:** clone with `gh repo clone <owner>/llm-driven-development`, run `node src/cli.ts setup` once, then `git pull --ff-only` before working and `git push` after. A clone set up before 2026-09-29 also has local `refs/plans/*` refs; delete them after fetching `refs/ldd/*`. In Claude Code, say "Read docs/README.md and continue where we left off."
