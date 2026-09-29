@@ -6,7 +6,7 @@ import { renderView, viewTitle, type View } from './render/index.ts'
 import { setup } from './store.ts'
 import { renderPage } from './render/page.ts'
 
-const usage = `usage (plan data lives in the product repo, under refs/plans/<id>):
+const usage = `usage (plan data lives in the product repo, under refs/ldd/plans/<id>):
   node src/cli.ts setup [--repo <repo>]                                 once per clone: sync plan and config refs with git push and git pull
   node src/cli.ts next-id --repo <repo>
   node src/cli.ts create --repo <repo> --from <dir>                      agent: new intent from <dir>/intent.json; prints the id
@@ -78,7 +78,7 @@ document.getElementById('v-root').innerHTML = renderView(${data})
   } else fail(usage)
 } else if (command === 'setup') {
   const added = attempt(() => setup(values.repo ?? '.'))
-  await emit(added.length ? `added refspecs:\n${added.map((a) => `  ${a}`).join('\n')}\n` : 'already set up\n')
+  await emit(added.length ? `refspecs:\n${added.map((a) => `  ${a}`).join('\n')}\n` : 'already set up\n')
 } else {
   const repo = need(values.repo)
   if (command === 'next-id') await emit(`${nextId(repo)}\n`)

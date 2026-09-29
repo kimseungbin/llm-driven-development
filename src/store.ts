@@ -21,8 +21,9 @@ export interface LoggedEvent {
   actor?: string
 }
 
-// The one place the plan ref prefix is spelled out; ref, listIds, and syncRefspecs all derive from it.
-const PLAN_PREFIX = 'refs/plans/'
+// Everything the tool stores lives under one namespace, so one refspec syncs all of it.
+const NAMESPACE = 'refs/ldd/'
+const PLAN_PREFIX = `${NAMESPACE}plans/`
 const ref = (id: string) => `${PLAN_PREFIX}${id}`
 const json = (v: unknown) => `${JSON.stringify(v, null, 2)}\n`
 const zeroOid = (repo: string) => '0'.repeat(git(repo, ['rev-parse', '--show-object-format']) === 'sha256' ? 64 : 40)
@@ -72,31 +73,39 @@ export const commit = (repo: string, id: string, snapshot: Snapshot, event: Even
   commitTree(repo, ref(id), writeTree(repo, snapshot), event, expectedTip)
 
 // The repo's config lives next to the plans, so it works on repos you don't own, with the same event history.
-export const CONFIG_REF = 'refs/ldd/config'
+export const CONFIG_REF = `${NAMESPACE}config`
 
-// No "+" on plan or config refspecs: they only move forward, so a ref that diverged on two machines is
-// rejected instead of overwritten, the same compare-and-swap rule the write path follows locally.
+// No "+": the tool's refs only move forward, so a ref that diverged on two machines is rejected
+// instead of overwritten, the same compare-and-swap rule the write path follows locally.
 // Once any remote.origin.push is set, git push sends only those, so branches are listed too.
 export function syncRefspecs(): { fetch: string[]; push: string[] } {
-  const plans = `${PLAN_PREFIX}*:${PLAN_PREFIX}*`
-  const config = `${CONFIG_REF}:${CONFIG_REF}`
-  return { fetch: [plans, config], push: ['refs/heads/*:refs/heads/*', plans, config] }
+  const all = `${NAMESPACE}*:${NAMESPACE}*`
+  return { fetch: [all], push: ['refs/heads/*:refs/heads/*', all] }
 }
 
-// Adds only what's missing, so running it again changes nothing.
+// Clones set up before plans moved under refs/ldd/ still carry refspecs for refs/plans/*; setup removes them.
+const toolOwned = (spec: string) => [NAMESPACE, 'refs/plans/'].some((p) => spec.replace(/^\+/, '').startsWith(p))
+
+// Adds what's missing and removes the tool's refspecs that are no longer current, so running it again changes nothing.
 export function setup(repo: string, remote = 'origin'): string[] {
   if (!tryGit(repo, ['remote', 'get-url', remote])) throw new Error(`setup: ${repo} has no remote named ${remote}`)
-  const added: string[] = []
+  const changes: string[] = []
   const { fetch, push } = syncRefspecs()
   for (const [key, specs] of [['fetch', fetch], ['push', push]] as const) {
-    const current = (tryGit(repo, ['config', '--get-all', `remote.${remote}.${key}`]) ?? '').split('\n')
+    const name = `remote.${remote}.${key}`
+    const current = (tryGit(repo, ['config', '--get-all', name]) ?? '').split('\n').filter(Boolean)
+    for (const spec of current)
+      if (toolOwned(spec) && !specs.includes(spec)) {
+        git(repo, ['config', '--fixed-value', '--unset-all', name, spec])
+        changes.push(`removed ${key} ${spec}`)
+      }
     for (const spec of specs)
       if (!current.includes(spec)) {
-        git(repo, ['config', '--add', `remote.${remote}.${key}`, spec])
-        added.push(`${key} ${spec}`)
+        git(repo, ['config', '--add', name, spec])
+        changes.push(`added ${key} ${spec}`)
       }
   }
-  return added
+  return changes
 }
 
 export const configTip = (repo: string): string | null => tryGit(repo, ['rev-parse', '--verify', '-q', CONFIG_REF])
