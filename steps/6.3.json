@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 2,
+  "id": "6.3",
+  "parent": "6",
+  "kind": "feature",
+  "origin": "planned",
+  "summary": "A prose renderer for instructions, docs, and non-semantic results",
+  "risk": "low",
+  "riskReason": "A new renderer that nothing selects until the result gate is switched to it.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "prose",
+        "type": "KindRenderer"
+      },
+      {
+        "symbol": "ProseChange",
+        "type": "{ what: string; from?: string; to?: string; diff?: string; why: string }"
+      }
+    ],
+    "rules": [
+      {
+        "text": "moved, renamed, added, and removed changes are table rows: What | From | To | Why",
+        "checkedBy": "test"
+      },
+      {
+        "text": "content-changed and behavior-changed changes are one diff code block each, with - and + lines marked, and a line saying why",
+        "checkedBy": "test"
+      },
+      {
+        "text": "changes keep the order they're given; consecutive table rows share one table",
+        "checkedBy": "test"
+      },
+      {
+        "text": "every row and block carries data-breaking, like code rows",
+        "checkedBy": "test"
+      }
+    ]
+  },
+  "evidence": [
+    "test/prose.test.ts",
+    "samples/docs-2.1.result-gate.json, a docs step with a moved section and a reworded paragraph, renders both forms"
+  ],
+  "dependsOn": [
+    "6.2"
+  ]
+}

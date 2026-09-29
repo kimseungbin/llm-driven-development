@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 2,
+  "id": "6.2",
+  "parent": "6",
+  "kind": "data-shape",
+  "origin": "planned",
+  "summary": "Result-gate items carry their change category, whatever their kind",
+  "risk": "low",
+  "riskReason": "Only the result-gate view input changes; the one tracked sample moves with it.",
+  "expect": {
+    "add": [
+      {
+        "symbol": "ReconItem.category",
+        "type": "ChangeCategory | 'uncategorized'"
+      }
+    ],
+    "remove": [
+      "FieldChange.change"
+    ],
+    "change": [
+      {
+        "symbol": "dataShape.body",
+        "from": "reads the category from detail.change",
+        "to": "reads item.category, with a tone for every category and for uncategorized"
+      }
+    ],
+    "unchanged": [
+      "ReconItem.plan",
+      "ReconItem.breaking",
+      "ReconItem.classifiedBy"
+    ],
+    "invariants": [
+      {
+        "text": "the KRW sample renders the same HTML before and after",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "diff of the KRW sample's render output before and after is empty",
+    "npm test passes"
+  ],
+  "dependsOn": [
+    "6.1"
+  ]
+}

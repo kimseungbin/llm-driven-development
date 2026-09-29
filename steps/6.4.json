@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "id": "6.4",
+  "parent": "6",
+  "kind": "behavior-change",
+  "origin": "planned",
+  "summary": "The result gate renders by the step's kind and rejects a category the kind can't produce",
+  "risk": "medium",
+  "riskReason": "A view that rendered before now fails if its categories don't fit its step's kind, which is the point; the KRW sample's made-up kind is fixed with it.",
+  "expect": {
+    "change": [
+      {
+        "symbol": "renderResultGate",
+        "from": "renderer chosen by observed.kind; any category accepted",
+        "to": "renderer chosen by step.kind: code kinds get the before/after table, prose kinds the prose view, other the raw view; a category outside KIND_CATEGORIES for the step's kind fails the render"
+      },
+      {
+        "symbol": "ResultGateView.step.kind",
+        "from": "string",
+        "to": "StepKind"
+      }
+    ],
+    "remove": [
+      "ResultGateView.observed.kind"
+    ],
+    "rules": [
+      {
+        "text": "rendering fails on a category the step's kind can't produce, naming the item and the kind's allowed categories",
+        "checkedBy": "test"
+      },
+      {
+        "text": "an uncategorized change renders as uncategorized in every kind",
+        "checkedBy": "test"
+      },
+      {
+        "text": "the Breaking only filter hides non-breaking prose rows and blocks too",
+        "checkedBy": "test"
+      },
+      {
+        "text": "the KRW sample's step kind is data-shape and it renders the same rows as before",
+        "checkedBy": "human"
+      }
+    ]
+  },
+  "evidence": [
+    "test/result-gate.test.ts gains the three tested rules",
+    "the KRW and docs samples render"
+  ],
+  "dependsOn": [
+    "6.3"
+  ]
+}
