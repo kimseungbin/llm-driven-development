@@ -6,8 +6,11 @@
   "request": "We have settled UI and structure for both intent and plan right?\n\nSo let's do it with the tools we already have. So it's like self-.... or recursive",
   "problem": "The intent and plan formats and their gate views are only partly decided. The open questions are scattered through the design record, so it's hard to tell what's settled, and checking a plan against real changes can't start until a step's expectations have a defined shape.",
   "areas": [
-    "fe",
-    "be"
+    "model",
+    "store",
+    "render",
+    "skills",
+    "docs"
   ],
   "acceptance": [
     "Every question below is decided, and the design record shows each one as decided.",
