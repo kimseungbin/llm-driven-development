@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "10",
+  "kind": "intent",
+  "title": "MCP Apps로 게이트 뷰 전달",
+  "request": "1. I want you to write a new intent on it in Korean. Loader should support i18n\n2. I don't want to miss out the MCP Apps feature you mentioned. It should be an open intent too. (separate one)",
+  "problem": "게이트 뷰는 Claude가 HTML이나 뷰 데이터를 대화에 다시 출력해야만 보인다. 그 출력은 뷰 크기만큼 시간과 토큰을 쓰고, 뷰에 담긴 데이터가 모두 Claude를 거친다. MCP App은 도구가 UI를 직접 돌려주므로 데이터가 Claude를 거치지 않지만, Claude Code는 아직 MCP App UI를 그리지 않는다 (anthropics/claude-code#95149, 2026-09-28 확인).",
+  "areas": [
+    "render",
+    "cli",
+    "docs"
+  ],
+  "acceptance": [
+    "게이트 뷰가 Claude의 출력 없이 대화 안에 보인다.",
+    "뷰에 담긴 데이터가 Claude의 입력이나 출력을 거치지 않는다.",
+    "뷰가 보는 사람의 언어 설정에 맞는 언어로 보인다.",
+    "뷰의 버튼이 지금처럼 대화에 메시지를 보낸다."
+  ],
+  "deferred": [],
+  "nonGoals": [],
+  "relations": [],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "origin": "request",
+      "owner": "anthropics/claude-code#95149",
+      "text": "Claude Code가 MCP App UI를 그리나요?",
+      "proposal": "이슈가 해결되면 Code 탭과 CLI에서 직접 확인하고 결과를 docs/findings/verified.md에 기록한 뒤, 이 인텐트를 진행합니다. 그 전까지 이 인텐트는 열린 채로 기다립니다."
+    }
+  ],
+  "decisions": []
+}
