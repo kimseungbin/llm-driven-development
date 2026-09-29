@@ -14,7 +14,8 @@
     "A gate view rendered without choosing a language is unchanged from today.",
     "Authored text (the request, problem, criteria, questions, and answers) appears exactly as written in every language.",
     "An approval sent from a Korean view names the same gate and rev, and is accepted the same way, as one sent from an English view.",
-    "Adding another language takes only a new set of translations, with no change to any view (Q2)."
+    "Adding another language takes only a new set of translations, with no change to any view (Q2).",
+    "The language is each person's own choice: one person choosing a language never changes what anyone else sees (Q3)."
   ],
   "deferred": [],
   "nonGoals": [
@@ -34,6 +35,12 @@
       "origin": "request",
       "text": "When the human writes a request in Korean, what language do agents write the rest of the intent and plan in?",
       "proposal": "The request's language. The fields are interpretations checked against the request, which is easiest when both are in the same language."
+    },
+    {
+      "id": "Q5",
+      "origin": "request",
+      "text": "Where does the personal language setting live, and how far does it reach?",
+      "proposal": "With the person, across all their repos, stored like their git name and email (user-level git config) and never in a repo, so it can't reach anyone else. The team phase's coordinator views would read the same preference from the viewer's identity; that part is deferred to #4."
     }
   ],
   "decisions": [
