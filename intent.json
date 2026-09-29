@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "7",
+  "kind": "intent",
+  "title": "Fit per-kind change categories to real steps",
+  "request": "The first gate under the new rules has many uncategorized rows: a feature step can only produce 'added', and a behavior-change step can't produce 'removed' or 'type changed'. What should happen?\n\n(chosen: New intent (Recommended))",
+  "problem": "#6's result gate, the first under per-kind categories, showed 13 of its 30 rows as uncategorized. A feature step that also changes existing symbols, and a behavior-change step that also retypes or removes a field, have no category for those changes. The reviewer can't tell whether uncategorized means a step mixed kinds or the kind's list is too narrow, so the label stops carrying information.",
+  "areas": [
+    "fe",
+    "be"
+  ],
+  "acceptance": [
+    "At a result gate, uncategorized appears only for a change that no category describes, not for an ordinary part of a step of that kind.",
+    "#6's result gate is the worked example the decision is checked against."
+  ],
+  "openQuestions": [],
+  "decisions": []
+}
