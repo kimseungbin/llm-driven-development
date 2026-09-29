@@ -6,8 +6,8 @@
   "request": "Deferred from #1: the review-side design questions.",
   "problem": "Review-side questions were left open until real result gates had been run, so reviews couldn't be designed with confidence.",
   "areas": [
-    "fe",
-    "be"
+    "model",
+    "render"
   ],
   "acceptance": [
     "Each question below is decided after reviewing at least one real step result."
