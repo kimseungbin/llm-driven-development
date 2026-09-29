@@ -27,8 +27,13 @@ Plan data lives only in the product repo's `refs/ldd/plans/<id>`, written throug
   - `signature-change`: needs `change` entries with `from` and `to`.
   - `behavior-change`: needs the changed symbols in `change` and at least one rule.
   - `feature`: needs `add`.
-  - `non-semantic` and `other`: no machine check; say what the human checks in `rules`.
-- `expect` fields: `add` and `change` entries name a `symbol`; `remove` and `unchanged` list symbols; `rules` and `invariants` are `{ "text", "checkedBy": "test" | "human" }`. Anything machine-checked is a symbol list, never prose. Never file paths or line numbers, because those don't survive a rebase.
+  - `instructions`: agent-facing text (skills, CLAUDE.md, hook prompts). Needs `sections` and at least one rule saying what it now tells agents. Its evidence is a dry run of the changed instruction.
+  - `docs`: the design record and other human-facing docs. Needs `sections`.
+  - `non-semantic`: only typos, formatting, and pure moves; say what the human checks in `rules`.
+  - `other`: no machine check; say what the human checks in `rules`.
+- `expect` fields: `add` and `change` entries name a `symbol`; `remove` and `unchanged` list symbols; `rules` and `invariants` are `{ "text", "checkedBy": "test" | "human" }`. Anything machine-checked is a symbol list, never prose. Code kinds never name file paths or line numbers, because a symbol survives a file move and a path doesn't.
+- `instructions` and `docs` steps, and `non-semantic` steps that touch prose, name what they change in `sections`: `{ "doc", "section" }`, where `doc` is the skill's name for a skill or the repo-relative path for any other file, and `section` is the heading text. For prose the file is the identity. Code kinds never have `sections`.
+- At the result gate, each change gets one category from its kind's list in `docs/model/categories.md`. A change no category on that list fits is `uncategorized`, never the nearest category.
 - `risk`: `low`, `medium`, or `high`, set per step, with a one-line `riskReason` on every step. High-risk steps require it; the plan gate shows high-risk reasons and hides the rest behind a toggle.
 - `evidence`: how the result gets checked, such as named tests or call-site lists.
 - `dependsOn`: order the steps so each one is safe to ship alone. The step that changes observable behavior comes after everything it relies on. A step may depend on another intent's step (`12.2`); validation checks that it exists.
