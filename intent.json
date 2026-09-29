@@ -20,6 +20,10 @@
     {
       "item": "Machine translation of authored text",
       "reason": "Every interpretation is checked against the human's own words; a translated request or answer would no longer be those words."
+    },
+    {
+      "item": "Translating the CLI's messages and errors",
+      "reason": "Agents read CLI output and fix against its errors; the human decides in the gate views (Q1)."
     }
   ],
   "relations": [],
