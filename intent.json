@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q1",
-      "origin": "request",
-      "text": "What are the categories?",
-      "proposal": "One shared list: added, removed, renamed, moved, type changed, nullability changed, value changed, behavior changed, content changed. Each kind declares which it can produce: data-shape: added, removed, renamed, type changed, nullability changed; signature-change: added, removed, renamed, type changed; behavior-change: behavior changed, value changed; feature: added; instructions (Q0): added, removed, moved, behavior changed; docs (Q0): added, removed, moved, content changed; non-semantic: moved, renamed, content changed; other: any. One list keeps words consistent across kinds; per-kind subsets stop a kind from claiming a change it can't have. The alternatives: a separate list per kind, or one flat list any kind may use."
-    },
-    {
       "id": "Q2",
       "origin": "request",
       "text": "Prose changes, like moved doc sections or a skill's new rule, don't have a before and after value. How should they show?",
@@ -45,6 +39,12 @@
       "id": "Q0",
       "question": "Which kinds do prose changes get? Agent-facing instructions (skills, CLAUDE.md, hook prompts) change agent behavior; the design record is for humans; neither fits the code kinds, and both were planned as non-semantic (1.6, 1.7, 3.2, 3.3, 5.3).",
       "answer": "instructions + docs: two new kinds. instructions: expect names the file and section, rules say what it now tells agents, and evidence is a dry run of the skill. docs: sections added, removed, or moved. non-semantic narrows back to typos, formatting, and pure moves.",
+      "origin": "request"
+    },
+    {
+      "id": "Q1",
+      "question": "What are the categories?",
+      "answer": "Shared list, subsets: one list (added, removed, renamed, moved, type changed, nullability changed, value changed, behavior changed, content changed); each kind declares which it can produce, as in the proposal. Validation rejects a category outside a kind's subset, and a change outside it shows as uncategorized.",
       "origin": "request"
     }
   ]
