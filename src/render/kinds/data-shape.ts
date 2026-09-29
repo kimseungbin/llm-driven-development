@@ -1,4 +1,4 @@
-import type { KindRenderer } from '../evidence-gate.ts'
+import type { KindRenderer } from '../result-gate.ts'
 import { esc, planCell, symbol } from '../html.ts'
 
 interface FieldChange {
@@ -22,7 +22,7 @@ const tone: Record<FieldChange['change'], string> = {
 
 const value = (v: string | null) => (v === null ? '<span class="v-dim">none</span>' : esc(v))
 
-export const dtoShape: KindRenderer = {
+export const dataShape: KindRenderer = {
   itemName: (item) => (item.detail as FieldChange).field,
 
   body(view) {

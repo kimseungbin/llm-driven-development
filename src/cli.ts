@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { parseArgs } from 'node:util'
-import { approve, create, decide, edit, exportTo, importDir, loadIntentGate, loadPlanGate, nextId } from './plan.ts'
+import { approve, create, decide, edit, exportTo, importDir, loadAreas, loadIntentGate, loadPlanGate, nextId, setAreas } from './plan.ts'
 import { renderView, viewTitle, type View } from './render/index.ts'
 import { renderPage } from './render/page.ts'
 
@@ -14,6 +14,8 @@ const usage = `usage (plan data lives in the product repo, under refs/plans/<id>
   node src/cli.ts approve <id> --repo <repo> --gate intent|plan --rev <rev> [--via agent]
       a human decision; an agent runs it only on the human's explicit instruction, with --via agent
   node src/cli.ts import <dir> --repo <repo>                             one-time move from plan files
+  node src/cli.ts areas --repo <repo>                                    this repo's area list (fe, be, db, infra until configured)
+  node src/cli.ts set-areas --repo <repo> --areas <a,b,...>              the human's confirmed list, recorded on refs/ldd/config
   node src/cli.ts intent-view <id> --repo <repo> [--out <file>]
   node src/cli.ts plan-view <id> --repo <repo> [--out <file>]
   node src/cli.ts render <view.json> [--format widget|page|loader] [--cdn <renderer base url>] [--out <file>]`
@@ -31,6 +33,7 @@ const { positionals, values } = parseArgs({
     gate: { type: 'string' },
     rev: { type: 'string' },
     via: { type: 'string' },
+    areas: { type: 'string' },
   },
 })
 
@@ -82,6 +85,10 @@ document.getElementById('v-root').innerHTML = renderView(${data})
     const gate = values.gate === 'intent' || values.gate === 'plan' ? values.gate : fail(usage)
     const via = values.via === undefined ? undefined : values.via === 'agent' ? 'agent' : fail(usage)
     attempt(() => approve(repo, need(arg1), gate, need(values.rev), via))
+  } else if (command === 'areas') await emit(`${loadAreas(repo).join(', ')}\n`)
+  else if (command === 'set-areas') {
+    const stale = attempt(() => setAreas(repo, need(values.areas).split(',').map((a) => a.trim()).filter(Boolean)))
+    if (stale.length) console.error(`these intents use an area outside the new list; edit their areas: ${stale.map((id) => `#${id}`).join(', ')}`)
   } else if (command === 'import') await emit(`${attempt(() => importDir(repo, need(arg1)))}\n`)
   else if (command === 'intent-view') await emit(`${JSON.stringify(attempt(() => loadIntentGate(repo, need(arg1))), null, 2)}\n`)
   else if (command === 'plan-view') await emit(`${JSON.stringify(attempt(() => loadPlanGate(repo, need(arg1))), null, 2)}\n`)

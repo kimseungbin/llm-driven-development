@@ -11,6 +11,7 @@ Plan data lives only in the product repo's `refs/plans/<id>`, written through `n
 
 ## Amending the intent
 
+- The agent proposes the steps and their expectations; the human approves, edits, or rejects them at the plan gate.
 - The intent's `decisions` are settled. Follow them in the steps and never re-ask them.
 - Reading the code can raise questions the request couldn't. Add them to the intent's `openQuestions` with `"origin": "code"` and a proposal. That changes the intent rev, so the intent needs approving again. Resolve them the way the structure-request skill does: one at a time with AskUserQuestion, recording each answer with `decide` before asking the next.
 - If a question didn't need the code to ask, it was missed at the intent gate. Add it with `"origin": "request"`: `plan-view` then refuses to build, which sends the intent back to the intent gate.
@@ -19,10 +20,18 @@ Plan data lives only in the product repo's `refs/plans/<id>`, written through `n
 ## Steps
 
 - IDs are `<intent id>.<n>` (for example `7.3`), with `parent` set to the intent ID.
-- One `kind` per step: `dto-shape`, `behavior-change`, `signature-change`, `feature`, or `non-semantic`.
-- `expect` is symbolic: symbols, types, rules, and invariants. Never file paths or line numbers, because those don't survive a rebase.
+- One step per logical change. Its `expect` lists every symbol the change touches.
+- Steps use format version 2 (`"schemaVersion": 2`).
+- One `kind` per step, and each kind states what reconciliation needs:
+  - `data-shape`: a change to a data type's fields (add, remove, rename, retype, nullability), whatever role the type plays. Needs `add`, `remove`, or `change`.
+  - `signature-change`: needs `change` entries with `from` and `to`.
+  - `behavior-change`: needs the changed symbols in `change` and at least one rule.
+  - `feature`: needs `add`.
+  - `non-semantic` and `other`: no machine check; say what the human checks in `rules`.
+- `expect` fields: `add` and `change` entries name a `symbol`; `remove` and `unchanged` list symbols; `rules` and `invariants` are `{ "text", "checkedBy": "test" | "human" }`. Anything machine-checked is a symbol list, never prose. Never file paths or line numbers, because those don't survive a rebase.
+- `risk`: `low`, `medium`, or `high`, set per step, with a one-line `riskReason` on every step. High-risk steps require it; the plan gate shows high-risk reasons and hides the rest behind a toggle.
 - `evidence`: how the result gets checked, such as named tests or call-site lists.
-- `dependsOn`: order the steps so each one is safe to ship alone. The step that changes observable behavior comes after everything it relies on.
+- `dependsOn`: order the steps so each one is safe to ship alone. The step that changes observable behavior comes after everything it relies on. A step may depend on another intent's step (`12.2`); validation checks that it exists.
 - Don't mention other step IDs in the prose; `dependsOn` carries the ordering.
 - `origin`: `planned`. Steps added after approval are `discovered`, and they need their own approval.
 - Decompose until each step is one kind with checkable evidence. Refine later steps when you get to them; don't guess.
@@ -33,6 +42,7 @@ Plan data lives only in the product repo's `refs/plans/<id>`, written through `n
 - One step is one commit by default. Rebase review fixups into it.
 - A step may take several commits, but only back to back, never interleaved with another step's.
 - A commit never serves two steps: at most one `Plan-Step: <step id>` trailer per commit.
+- Build every step of an approved plan without stopping for approval in between. Then hold one result gate for the whole intent, rendered as a view that explains each step: what changed, why, planned vs built, and every unplanned change with its reason. The human decides once, there.
 
 ## Before showing it
 

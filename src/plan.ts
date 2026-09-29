@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { AREAS, type Intent, type PlanStep } from './model.ts'
+import { DEFAULT_AREAS, EXPECT_FIELDS, type IncomingLink, type Intent, type PlanStep, RELATION_TYPES, RISKS, STEP_KINDS, type StepKind } from './model.ts'
 import type { IntentGateView } from './render/intent-gate.ts'
 import type { PlanGateView } from './render/plan-gate.ts'
-import { commit, lastApproval, listIds, read, type Snapshot } from './store.ts'
+import { commit, commitConfig, configTip, lastApproval, listIds, read, readConfig, type Snapshot } from './store.ts'
 
 // Key order must not affect the hash, or reformatting a file would invalidate an approval.
 const canonical = (v: unknown): unknown =>
@@ -28,40 +28,79 @@ function collect(check: (need: Need) => void): string[] {
 }
 
 // Mirrors the structure-request and propose-plan skills: they guide authors, this rejects what slips through.
-const validateIntent = (intent: Intent) =>
+const validateIntent = (intent: Intent, areas: readonly string[]) =>
   collect((need) => {
     need(intent.schemaVersion === 1, 'intent: schemaVersion must be 1')
     need(/^\d+$/.test(intent.id ?? ''), 'intent: id must be a number written as a string, like "7"')
     need(intent.request, "intent: request (the human's words, verbatim) is required")
     need(intent.problem, 'intent: problem is required')
     need(
-      intent.areas?.length && intent.areas.every((a) => (AREAS as readonly string[]).includes(a)),
-      `intent: areas needs one or more of ${AREAS.join(', ')}`,
+      intent.areas?.length && intent.areas.every((a) => areas.includes(a)),
+      `intent: areas needs one or more of this repo's areas: ${areas.join(', ')}`,
     )
     need(intent.acceptance?.length, 'intent: acceptance needs at least one criterion')
     need(!('outOfScope' in intent), 'intent: outOfScope was split into deferred (future work) and nonGoals (never)')
     for (const [i, d] of (intent.deferred ?? []).entries())
       need(d?.item && d?.reason && d?.followUp, `intent: deferred[${i}] needs item, reason, and followUp`)
     for (const [i, n] of (intent.nonGoals ?? []).entries()) need(n?.item && n?.reason, `intent: nonGoals[${i}] needs item and reason`)
+    for (const [i, r] of (intent.relations ?? []).entries()) {
+      need((RELATION_TYPES as readonly string[]).includes(r?.type), `intent: relations[${i}] type must be one of ${RELATION_TYPES.join(', ')}`)
+      need(/^\d+$/.test(r?.target ?? '') && r.target !== intent.id, `intent: relations[${i}] target must be another intent's id`)
+    }
+    const links = (intent.relations ?? []).map((r) => `${r?.type} ${r?.target}`)
+    need(new Set(links).size === links.length, 'intent: each relation is listed once')
     need(Array.isArray(intent.openQuestions), 'intent: openQuestions is required (empty when nothing is open)')
     for (const q of intent.openQuestions ?? []) {
       need(q?.id && q?.text && q?.proposal, `intent: question ${q?.id ?? '?'} needs id, text, and proposal`)
       need(!q?.origin || q.origin === 'request' || q.origin === 'code', `intent: question ${q?.id} origin must be request or code`)
+      need(q?.owner === undefined || (typeof q.owner === 'string' && q.owner.trim().length > 0), `intent: question ${q?.id} owner must be a name when set`)
     }
     for (const d of intent.decisions ?? []) need(d?.id && d?.question && d?.answer, `intent: decision ${d?.id ?? '?'} needs id, question, and answer`)
     const ids = [...(intent.openQuestions ?? []), ...(intent.decisions ?? [])].map((x) => x?.id)
     need(new Set(ids).size === ids.length, 'intent: question and decision ids must be unique')
   })
 
+// A symbol is one token; anything with spaces is prose and belongs in rules or invariants.
+const isSymbol = (s: unknown) => typeof s === 'string' && s.length > 0 && !/\s/.test(s)
+
+// What each kind must state so that reconciliation has something to check.
+const kindNeeds: Record<StepKind, [check: (e: PlanStep['expect']) => boolean, message: string]> = {
+  'data-shape': [(e) => !!(e.add?.length || e.remove?.length || e.change?.length), 'needs add, remove, or change'],
+  'signature-change': [(e) => !!e.change?.length && e.change.every((c) => c.from && c.to), 'needs change entries with from and to'],
+  'behavior-change': [(e) => !!(e.change?.length && e.rules?.length), 'needs the changed symbols and at least one rule'],
+  feature: [(e) => !!e.add?.length, 'needs add'],
+  'non-semantic': [() => true, ''],
+  other: [() => true, ''],
+}
+
+function validateExpect(s: PlanStep, need: Need) {
+  const e = s.expect
+  if (!e || typeof e !== 'object') return need(false, `${s.id}: expect is required`)
+  for (const key of Object.keys(e))
+    need((EXPECT_FIELDS as readonly string[]).includes(key), `${s.id}: expect.${key} isn't a field (${EXPECT_FIELDS.join(', ')})`)
+  for (const r of [...(e.add ?? []), ...(e.change ?? [])]) need(isSymbol(r?.symbol), `${s.id}: "${r?.symbol}" isn't a symbol; prose goes in rules or invariants`)
+  for (const x of [...(e.remove ?? []), ...(e.unchanged ?? [])]) need(isSymbol(x), `${s.id}: "${x}" isn't a symbol; prose goes in rules or invariants`)
+  for (const c of [...(e.rules ?? []), ...(e.invariants ?? [])])
+    need(c?.text && (c.checkedBy === 'test' || c.checkedBy === 'human'), `${s.id}: rules and invariants need text and checkedBy (test or human)`)
+  const [check, message] = kindNeeds[s.kind] ?? [() => true, '']
+  need(check(e), `${s.id}: a ${s.kind} step ${message}`)
+}
+
 const validateSteps = (intent: Intent, steps: PlanStep[]) =>
   collect((need) => {
     const ids = new Set(steps.map((s) => s.id))
     const pattern = new RegExp(`^${intent.id}\\.\\d+$`)
     for (const s of steps) {
+      need(s.schemaVersion === 2, `${s.id}: steps use format version 2`)
       need(pattern.test(s.id) && s.parent === intent.id, `${s.id}: step ids look like ${intent.id}.<n>, with parent ${intent.id}`)
-      need(s.kind && s.summary, `${s.id}: kind and summary are required`)
+      need(s.summary, `${s.id}: summary is required`)
+      need((STEP_KINDS as readonly string[]).includes(s.kind), `${s.id}: kind must be one of ${STEP_KINDS.join(', ')}`)
+      need((RISKS as readonly string[]).includes(s.risk), `${s.id}: risk must be low, medium, or high`)
+      need(s.risk !== 'high' || s.riskReason, `${s.id}: a high-risk step needs a riskReason`)
       need(s.evidence?.length, `${s.id}: evidence is required`)
-      for (const d of s.dependsOn ?? []) need(ids.has(d), `${s.id}: dependsOn ${d} is not a step in this plan`)
+      for (const d of s.dependsOn ?? [])
+        need(ids.has(d) || (/^\d+\.\d+$/.test(d) && !d.startsWith(`${intent.id}.`)), `${s.id}: dependsOn ${d} is not a step in this plan or another intent's step`)
+      validateExpect(s, need)
     }
   })
 
@@ -76,7 +115,49 @@ function assertValid(where: string, errors: string[]) {
   if (errors.length) throw new Error(`invalid plan ${where}:\n  ${errors.join('\n  ')}`)
 }
 
-const validate = (where: string, s: Snapshot) => assertValid(where, [...validateIntent(s.intent), ...validateSteps(s.intent, s.steps)])
+// Links reach into other intents' refs, so a link to an intent or step that doesn't exist is rejected here.
+const validateLinks = (repo: string, s: Snapshot) =>
+  collect((need) => {
+    const known = new Set(listIds(repo))
+    for (const r of s.intent.relations ?? []) need(known.has(r.target), `intent: relations ${r.type} #${r.target}: no such intent`)
+    for (const step of s.steps)
+      for (const d of step.dependsOn ?? []) {
+        const target = d.split('.')[0]
+        if (target === s.intent.id) continue
+        need(known.has(target) && read(repo, target).snapshot.steps.some((t) => t.id === d), `${step.id}: dependsOn ${d}: no such step`)
+      }
+  })
+
+const validate = (where: string, s: Snapshot, repo: string) =>
+  assertValid(where, [...validateIntent(s.intent, loadAreas(repo)), ...validateSteps(s.intent, s.steps), ...validateLinks(repo, s)])
+
+export const loadAreas = (repo: string): string[] => readConfig(repo)?.areas ?? [...DEFAULT_AREAS]
+
+// The human confirms the list (the setup-areas skill proposes it); this records it as an event on refs/ldd/config.
+// Intents that use an area outside the new list stay stored but fail validation until their areas are edited.
+export function setAreas(repo: string, areas: string[]): string[] {
+  assertValid('config', [
+    ...(areas.length ? [] : ['config: areas needs at least one area']),
+    ...(areas.every((a) => /^[a-z][a-z0-9-]*$/.test(a)) ? [] : ['config: an area is a short lowercase name, like be or cli']),
+    ...(new Set(areas).size === areas.length ? [] : ['config: each area is listed once']),
+  ])
+  commitConfig(repo, { schemaVersion: 1, areas }, { type: 'configure', actor: 'human', subject: `configure areas: ${areas.join(', ')}` }, configTip(repo))
+  return listIds(repo).filter((id) => read(repo, id).snapshot.intent.areas.some((a) => !areas.includes(a)))
+}
+
+// Reverse links are computed, never stored: every other intent's relations, follow-ups, and step dependencies that point here.
+export function incomingLinks(repo: string, id: string): IncomingLink[] {
+  const links: IncomingLink[] = []
+  for (const other of listIds(repo)) {
+    if (other === id) continue
+    const { intent, steps } = read(repo, other).snapshot
+    for (const r of intent.relations ?? []) if (r.target === id) links.push({ from: other, type: r.type })
+    if ((intent.deferred ?? []).some((d) => d.followUp === id)) links.push({ from: other, type: 'follow-up' })
+    for (const s of steps)
+      for (const d of s.dependsOn ?? []) if (d.startsWith(`${id}.`)) links.push({ from: other, type: 'step-dependency', step: s.id, on: d })
+  }
+  return links
+}
 
 function readDir(dir: string): Snapshot {
   const intent = JSON.parse(readFileSync(join(dir, 'intent.json'), 'utf8'))
@@ -97,7 +178,7 @@ export function create(repo: string, dir: string): string {
   for (let attempt = 0; attempt < 3; attempt++) {
     const id = nextId(repo)
     const snapshot = { intent: { ...draft.intent, id }, steps: [] }
-    validate(`#${id}`, snapshot)
+    validate(`#${id}`, snapshot, repo)
     try {
       commit(repo, id, snapshot, { type: 'create', actor: 'agent', subject: `create #${id}: ${snapshot.intent.title}` }, null)
       return id
@@ -110,7 +191,7 @@ export function create(repo: string, dir: string): string {
 
 export function importDir(repo: string, dir: string): string {
   const snapshot = readDir(dir)
-  validate(`#${snapshot.intent.id}`, snapshot)
+  validate(`#${snapshot.intent.id}`, snapshot, repo)
   const subject = `import #${snapshot.intent.id} from ${dir}`
   const trailers = { Note: 'content recorded before git storage existed; earlier edits have no history' }
   commit(repo, snapshot.intent.id, snapshot, { type: 'import', actor: 'agent', subject, trailers }, null)
@@ -133,7 +214,7 @@ export function edit(repo: string, id: string, dir: string, message: string): vo
     ...(next.intent.id === id ? [] : [`edit: intent id changed from ${id} to ${next.intent.id}`]),
     ...(same(current.intent.decisions ?? [], next.intent.decisions ?? []) ? [] : ['edit: decisions can only change through decide']),
   ])
-  validate(`#${id}`, next)
+  validate(`#${id}`, next, repo)
   commit(repo, id, next, { type: 'edit', actor: 'agent', subject: `edit #${id}: ${message}` }, tip)
 }
 
@@ -144,9 +225,9 @@ export function decide(repo: string, id: string, questionId: string, answer: str
   const index = intent.openQuestions.findIndex((q) => q.id === questionId)
   if (index < 0) throw new Error(`#${id}: no open question ${questionId}`)
   const [q] = intent.openQuestions.splice(index, 1)
-  ;(intent.decisions ??= []).push({ id: q.id, question: q.text, answer, origin: q.origin ?? 'request' })
+  ;(intent.decisions ??= []).push({ id: q.id, question: q.text, answer, origin: q.origin ?? 'request', ...(q.owner ? { owner: q.owner } : {}) })
   const next = { intent, steps: snapshot.steps }
-  validate(`#${id}`, next)
+  validate(`#${id}`, next, repo)
   commit(repo, id, next, { type: 'decide', actor: 'human', subject: `decide ${questionId} on #${id}`, trailers: { Question: questionId } }, tip)
 }
 
@@ -171,13 +252,20 @@ export function approve(repo: string, id: string, gate: 'intent' | 'plan', rev: 
 
 export function loadIntentGate(repo: string, id: string): IntentGateView {
   const { snapshot } = read(repo, id)
-  assertValid(`#${id}`, validateIntent(snapshot.intent))
-  return { schemaVersion: 1, view: 'intent-gate', intentRev: intentRev(snapshot), approvedRev: lastApproval(repo, id, 'intent'), intent: snapshot.intent }
+  assertValid(`#${id}`, validateIntent(snapshot.intent, loadAreas(repo)))
+  return {
+    schemaVersion: 1,
+    view: 'intent-gate',
+    intentRev: intentRev(snapshot),
+    approvedRev: lastApproval(repo, id, 'intent'),
+    intent: snapshot.intent,
+    incoming: incomingLinks(repo, id),
+  }
 }
 
 export function loadPlanGate(repo: string, id: string): PlanGateView {
   const { snapshot } = read(repo, id)
-  validate(`#${id}`, snapshot)
+  validate(`#${id}`, snapshot, repo)
   assertValid(`#${id}`, validatePlanStart(snapshot.intent))
   return {
     schemaVersion: 1,

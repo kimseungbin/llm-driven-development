@@ -9,15 +9,17 @@ Capture what and why in the human's terms. Don't read code, tests, or schemas ye
 
 Plan data lives only in the product repo's `refs/plans/<id>`, written through `node src/cli.ts`. Never write plan files anywhere else. Run `approve` only on the human's explicit instruction (see step 5).
 
-1. Draft `out/work/new/intent.json` (any `id`; `create` assigns the real one).
+1. Draft `out/work/new/intent.json` (any `id`; `create` assigns the real one). Intents are JSON only, written through the CLI.
 2. Fill in:
    - `request`: the human's words, verbatim. Never paraphrase it; every other field is your interpretation and gets checked against it.
    - `title`, and `problem`: the current pain, naming who feels it. It's not a user story and not a solution.
-   - `areas`: your best guess from `fe`, `be`, `db`, `infra`.
-   - `acceptance`: behavior a test or a human can check, in the request's terms, with no code names. Check every criterion against the problem: none may work against someone the problem names.
+   - `areas`: your best guess from the repo's list (`node src/cli.ts areas --repo <repo>`). If the list doesn't fit the repo, use the setup-areas skill first.
+   - `acceptance`: behavior a test or a human can check, in the request's terms, with no code names and no stakeholder names; the problem names who feels the pain. Check every criterion against the problem: none may work against someone the problem names.
    - `deferred`: `{ "item", "reason", "followUp" }` for work still needed later. `followUp` is the intent ID that will do it; create a stub intent (request, problem, acceptance, no steps) if none exists. No acceptance criterion may quietly depend on a deferred item.
    - `nonGoals`: `{ "item", "reason" }` for things this change will never do.
+   - `relations`: `{ "type": "blocks" | "duplicates" | "parent", "target": "<intent id>" }` for links to other intents you found while reading them. Store a link on one side only; the other intent sees it as an incoming link.
    - `openQuestions`: `{ "id", "text", "proposal", "origin": "request" }` for gaps or conflicts in the request that only the human can settle. Always give a proposal with its reasoning. Ask every question that doesn't need the code now: anything left for the plan gate should be something only the code could raise. Product rules, edge-case behavior, limits, and who is affected are all intent-level questions.
+   - `owner` on a question, when someone other than the approving human must answer it (for example, Finance confirming a tax rule). A decision that needs someone else's confirmation stays an open question owned by them; it blocks the intent until their answer is recorded with `decide`.
    - `decisions`: an empty array.
 3. Store it: `node src/cli.ts create --repo <repo> --from out/work/new` prints the new ID. Then view it: `node src/cli.ts intent-view <id> --repo <repo> --out out/<id>.intent-gate.json`, then `node src/cli.ts render out/<id>.intent-gate.json`, and pass the output to the widget unchanged.
 4. Resolve the open questions one at a time with the AskUserQuestion tool, never as a batch:

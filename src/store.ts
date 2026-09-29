@@ -1,5 +1,5 @@
 import { git, tryGit } from './git.ts'
-import type { Intent, PlanStep } from './model.ts'
+import type { Intent, PlanStep, RepoConfig } from './model.ts'
 
 export interface Snapshot {
   intent: Intent
@@ -7,7 +7,7 @@ export interface Snapshot {
 }
 
 export interface Event {
-  type: 'import' | 'create' | 'edit' | 'decide' | 'approve'
+  type: 'import' | 'create' | 'edit' | 'decide' | 'approve' | 'configure'
   actor: 'human' | 'agent'
   subject: string
   trailers?: Record<string, string>
@@ -52,17 +52,36 @@ function writeTree(repo: string, snapshot: Snapshot): string {
   return git(repo, ['mktree'], `${entries.join('\n')}\n`)
 }
 
-// Each event is one commit whose tree is the full validated snapshot; the trailers say what happened.
-export function commit(repo: string, id: string, snapshot: Snapshot, event: Event, expectedTip: string | null): string {
+function commitTree(repo: string, refName: string, tree: string, event: Event, expectedTip: string | null): string {
   const trailers = { Event: event.type, ...event.trailers, Actor: event.actor }
   const message = `${event.subject}\n\n${Object.entries(trailers)
     .map(([k, v]) => `${k}: ${v}`)
     .join('\n')}\n`
   const parent = expectedTip ? ['-p', expectedTip] : []
-  const sha = git(repo, ['commit-tree', writeTree(repo, snapshot), ...parent, '-F', '-'], message)
+  const sha = git(repo, ['commit-tree', tree, ...parent, '-F', '-'], message)
   // The expected old value makes this a compare-and-swap: a concurrent writer fails instead of being overwritten.
-  git(repo, ['update-ref', ref(id), sha, expectedTip ?? zeroOid(repo)])
+  git(repo, ['update-ref', refName, sha, expectedTip ?? zeroOid(repo)])
   return sha
+}
+
+// Each event is one commit whose tree is the full validated snapshot; the trailers say what happened.
+export const commit = (repo: string, id: string, snapshot: Snapshot, event: Event, expectedTip: string | null): string =>
+  commitTree(repo, ref(id), writeTree(repo, snapshot), event, expectedTip)
+
+// The repo's config lives next to the plans, so it works on repos you don't own, with the same event history.
+export const CONFIG_REF = 'refs/ldd/config'
+
+export const configTip = (repo: string): string | null => tryGit(repo, ['rev-parse', '--verify', '-q', CONFIG_REF])
+
+export function readConfig(repo: string): RepoConfig | null {
+  const head = configTip(repo)
+  return head ? JSON.parse(git(repo, ['show', `${head}:config.json`])) : null
+}
+
+export function commitConfig(repo: string, config: RepoConfig, event: Event, expectedTip: string | null): string {
+  const blob = git(repo, ['hash-object', '-w', '--stdin'], json(config))
+  const tree = git(repo, ['mktree'], `100644 blob ${blob}\tconfig.json\n`)
+  return commitTree(repo, CONFIG_REF, tree, event, expectedTip)
 }
 
 export function events(repo: string, id: string): LoggedEvent[] {

@@ -1,4 +1,4 @@
-import type { Intent } from '../model.ts'
+import type { IncomingLink, Intent } from '../model.ts'
 import { displayId, esc } from './html.ts'
 import {
   acceptanceSection,
@@ -7,6 +7,7 @@ import {
   decisionsSection,
   gateButtons,
   INTENT_STYLE,
+  linksSection,
   problemSection,
   questionsSection,
   scopeSections,
@@ -20,6 +21,7 @@ export interface IntentGateView {
   intentRev: string
   approvedRev: string | null
   intent: Intent
+  incoming?: IncomingLink[]
 }
 
 const STYLE = style(`${INTENT_STYLE}
@@ -46,6 +48,7 @@ export function renderIntentGate(view: IntentGateView): string {
 ${problemSection(intent)}
 ${acceptanceSection(intent)}
 ${scopeSections(intent)}
+${linksSection(intent, view.incoming ?? [])}
 ${decisionsSection(intent)}
 ${questionsSection(questions)}
 <div class="v-status">${verdictLines(blocked, intentRev, approvedRev)}</div>
