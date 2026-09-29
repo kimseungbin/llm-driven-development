@@ -5,9 +5,9 @@ description: Turn a human's change request into a structured intent for the inte
 
 # Structure a request
 
-Capture what and why in the human's terms. Don't read code, tests, or schemas yet: the how comes after the intent gate, and reading the code first bends the problem toward whatever is easy to build. You may read existing intents (`git -C <repo> for-each-ref refs/plans/` and `node src/cli.ts export`) to spot duplicates and related work.
+Capture what and why in the human's terms. Don't read code, tests, or schemas yet: the how comes after the intent gate, and reading the code first bends the problem toward whatever is easy to build. You may read existing intents (`git -C <repo> for-each-ref refs/ldd/plans/` and `node src/cli.ts export`) to spot duplicates and related work.
 
-Plan data lives only in the product repo's `refs/plans/<id>`, written through `node src/cli.ts`. Never write plan files anywhere else. Run `approve` only on the human's explicit instruction (see step 5).
+Plan data lives only in the product repo's `refs/ldd/plans/<id>`, written through `node src/cli.ts`. Never write plan files anywhere else. Run `approve` only on the human's explicit instruction (see step 5).
 
 1. Draft `out/work/new/intent.json` (any `id`; `create` assigns the real one). Intents are JSON only, written through the CLI.
 2. Fill in:
