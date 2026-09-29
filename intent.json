@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q1",
-      "origin": "request",
-      "text": "Scope: the prototype is solo and local (no server, accounts, web UI, search, or webhooks). The ldd docs design a team coordinator (NestJS, Postgres, web UI, forge adapters). Which one is the design?",
-      "proposal": "Both, as two phases. The prototype's solo, local tool is the current phase. The ldd coordinator is the team-phase target and gets its own section. Anything that would be expensive to change later, such as the data layer, is designed now so the coordinator can adopt it unchanged. The alternatives drop one of the two designs."
-    },
-    {
       "id": "Q2",
       "origin": "request",
       "text": "Where do issues (intents and plans) live? The prototype keeps them in git refs in the product repo. The ldd docs keep them in the coordinator's database because issues can span repos and need deletion and per-item access control.",
@@ -94,5 +88,12 @@
       "proposal": "Short nested docs: a docs/README.md index with 'Where we left off', one folder per area, and files of about 40 lines. CLAUDE.md is updated to point at the index. The merged record replaces both docs/design.md and ~/repos/personal/ldd/docs, and ldd's docs are deleted once the merge is done."
     }
   ],
-  "decisions": []
+  "decisions": [
+    {
+      "id": "Q1",
+      "question": "Scope: the prototype is solo and local (no server, accounts, web UI, search, or webhooks). The ldd docs design a team coordinator (NestJS, Postgres, web UI, forge adapters). Which one is the design?",
+      "answer": "Both, as two phases. The solo, local tool is the current phase. The team coordinator is the team-phase target and gets its own section. The data layer is designed now so the coordinator can adopt it unchanged.",
+      "origin": "request"
+    }
+  ]
 }
