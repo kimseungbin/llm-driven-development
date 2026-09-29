@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "5",
+  "kind": "intent",
+  "title": "Retire the exercise scenarios",
+  "request": "I don't need scenarios anymore. we're already dogfooding",
+  "problem": "The two exercise scenarios (coupons and soft-delete) were built to try the gates on a realistic codebase before the tool could plan itself. Now the tool plans its own work, so the scenarios are extra upkeep: their repos have to be synced, their plans migrated with every format or ref change, and current plans still point at them for checks that the tool's own intents could do.",
+  "areas": [
+    "fe",
+    "be"
+  ],
+  "acceptance": [
+    "Nothing in this repo's plans, scripts, skills, or design record depends on the scenarios any more.",
+    "Checks that used a scenario are done on this repo's own intents instead.",
+    "What the scenarios taught stays findable where a decision relied on it."
+  ],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "origin": "request",
+      "text": "What happens to the two scenario repos on GitHub (llmdd-scenario-coupons, llmdd-scenario-soft-delete) and the plans stored in them?",
+      "proposal": "Archive both on GitHub, so they become read-only but stay reversible, and delete the local clones. The plans stay readable in the archived repos. The alternatives are deleting them for good, which only you can do and can't be undone, or leaving them untouched but unused."
+    },
+    {
+      "id": "Q2",
+      "origin": "request",
+      "text": "What happens to scenarios/ in this repo (the two README files, plus the gitignored clones)?",
+      "proposal": "Remove the directory entirely. The READMEs describe how to use the scenarios, and the design record keeps the lessons that matter (see Q3)."
+    },
+    {
+      "id": "Q3",
+      "origin": "request",
+      "text": "The design record cites scenario findings as the reason for some decisions (for example, ORD-7's problem statement led to labeling every view section, and coupons Q9 led to questions having an owner). What happens to the scenario sections?",
+      "proposal": "Drop the scenario status sections. Keep each finding as a one-line reason next to the decision it shaped, so the why survives without the scenario."
+    }
+  ],
+  "decisions": []
+}
