@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "4",
+  "kind": "intent",
+  "title": "Settle the team-phase coordinator design",
+  "request": "Deferred from #3: git ref for now. coordinator db maybe in future (not decided)",
+  "problem": "The team-phase coordinator is only sketched. Questions left open for that phase, starting with whether intents move from git refs to a coordinator database, have nowhere to live, so they could get lost or be settled by accident.",
+  "areas": [
+    "fe",
+    "be"
+  ],
+  "acceptance": [
+    "Every question deferred to the team phase is decided, or explicitly left open with a reason."
+  ],
+  "openQuestions": [],
+  "decisions": []
+}
