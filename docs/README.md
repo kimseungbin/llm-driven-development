@@ -1,6 +1,6 @@
 # Design: git-ref-based plan/review tracking (working title)
 
-Status: prototype. The write path, the three gate views (result rows sorted attention first, and chosen by step kind), per-repo areas, links between intents, and `setup` exist; diff extraction and reconciliation don't yet. Last updated 2026-09-29.
+Status: prototype. The write path, the three gate views in each person's language (result rows sorted attention first, and chosen by step kind), per-repo areas, links between intents, and `setup` exist; diff extraction and reconciliation don't yet. Last updated 2026-09-29.
 
 Labels: **Decided** = confirmed. **Leaning** = suggested, not confirmed. Open items are in [open-questions.md](open-questions.md).
 
@@ -12,7 +12,7 @@ Labels: **Decided** = confirmed. **Leaning** = suggested, not confirmed. Open it
   - #3 "Reconcile with the ldd design" (plan rev `8015f6a`). Plan refs now live under `refs/ldd/plans/`; the ldd docs were merged here and deleted.
   - #2 "Settle the review-side design" (plan rev `919968b`). Q1: observed-only also covers your own agents' work, with a reason ([reviews.md](reviews.md)). Q3: team approvals live in `refs/ldd`, mirrored to the forge ([gates/approvals.md](gates/approvals.md)). Q4: result views list every row, attention first ([rendering/layouts.md](rendering/layouts.md)); `inferred` is now on every result-gate item. Q2 moved to #4, since only local mode is in scope for now.
   - #6 "Change categories that fit every kind" (plan rev `d18c12c`). New `instructions` and `docs` kinds with `expect.sections` ([model/steps.md](model/steps.md)); one category list with per-kind subsets that the result gate enforces ([model/categories.md](model/categories.md)); prose results as table rows and diff blocks ([rendering/layouts.md](rendering/layouts.md)). Earlier results keep their labels.
-- **Built, at its result gate: #8 "Korean support (i18n)"** (plan rev `9be8b53`, branch `plan/8`). Gate views render in each person's language from `git config --global ldd.lang`, with `en` and `ko` catalogs; authored text follows the request's language, and approvals count in any language ([rendering/languages.md](rendering/languages.md)).
+  - #8 "Korean support (i18n)" (plan rev `9be8b53`). Gate views render in each person's language from `git config --global ldd.lang`, with `en` and `ko` catalogs; authored text follows the request's language, and approvals count in any language ([rendering/languages.md](rendering/languages.md)). Unplanned catalog parameters in .1 were attached to it at the result gate.
 - **Open: #7 "Fit per-kind change categories to real steps"**, a stub from #6's result gate: 12 of its 30 rows were uncategorized, because a `feature` step can only produce `added` and a `behavior-change` step can't produce `removed` or `type changed`. Decide whether the lists widen or steps split finer.
 - **Areas:** this repo's list is `cli`, `model`, `store`, `render`, `skills`, `docs` (user, 2026-09-29). Re-tagging #1-#8 with it moved their intent revs, so the approvals on #1, #2, #3, #5, and #6 are stale; they stay that way, since that work is done (user, 2026-09-29).
 - **Deferred: #4 "Settle the team-phase coordinator design"** until the team phase, since only local mode is in scope for now (user, 2026-09-29). It holds team-phase questions deferred from #3, plus #2's Q2 as its Q1.
