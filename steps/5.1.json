@@ -30,7 +30,7 @@
         "checkedBy": "human"
       },
       {
-        "text": "setup configures fetch and push of plan refs plus push of refs/heads/*, and running it twice adds nothing",
+        "text": "setup configures fetch and push of plan refs and of refs/ldd/config (from #1's step 1.4), plus push of refs/heads/*, and running it twice adds nothing",
         "checkedBy": "test"
       },
       {
@@ -45,7 +45,7 @@
   },
   "evidence": [
     "a test runs setup twice on a fresh clone and finds each refspec configured exactly once",
-    "after setup, git push sends both branches and plan refs, and git fetch brings every plan ref",
+    "after setup, git push sends branches, plan refs, and refs/ldd/config, and git fetch brings them all",
     "scripts/github.sh no longer exists"
   ],
   "dependsOn": []
