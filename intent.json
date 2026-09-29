@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "6",
+  "kind": "intent",
+  "title": "Change categories that fit every kind",
+  "request": "In 3.1 plan_prefix is change of value, not type isn't it?\n\n* Validate it\n* If so, we need to update change category right?\n\n(chosen: New intent for per-kind change categories, then redo #3's gate)",
+  "problem": "The result gate labels every change with categories made for data-type fields: added, removed, renamed, type changed, nullability changed. Changes of other kinds don't fit, so they get the nearest wrong label: a constant whose value changed shows as a type change, a function whose behavior changed shows as a type change, and a moved doc section shows as a rename. The reviewer at the result gate reads a wrong description of what changed, which is the one thing the gate must get right. #1's and #5's results were accepted with such labels, and #3's gate is waiting on this.",
+  "areas": [
+    "fe",
+    "be"
+  ],
+  "acceptance": [
+    "Every change at a result gate is described by a category that says what actually changed, whatever the step's kind.",
+    "A change no category fits is shown as uncategorized, never forced into the nearest category.",
+    "#3's result gate is shown again with correct categories before it's decided.",
+    "The mislabels in #1's and #5's accepted results are corrected in the record."
+  ],
+  "nonGoals": [
+    {
+      "item": "Building the extractor that assigns categories automatically",
+      "reason": "Extraction is its own build-order step; until then categories are assigned by hand and labeled inferred."
+    }
+  ],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "origin": "request",
+      "text": "What are the categories?",
+      "proposal": "One shared list: added, removed, renamed, moved, type changed, nullability changed, value changed, behavior changed. Each kind declares which of them it can produce (data-shape: added, removed, renamed, type changed, nullability changed; behavior-change: behavior changed, value changed; non-semantic: moved, renamed, value changed; and so on). One list keeps words consistent across kinds; per-kind subsets stop a kind from claiming a change it can't have. The alternatives: a separate list per kind, or one flat list any kind may use."
+    },
+    {
+      "id": "Q2",
+      "origin": "request",
+      "text": "Changes that aren't code, like moved doc sections, don't have a before and after value. How should they show?",
+      "proposal": "Non-semantic steps get their own table: What | From | To | Why, with moved and removed as the usual categories. Before/after columns stay for code changes. The alternative is one table for every kind, with before and after holding the old and new location."
+    },
+    {
+      "id": "Q3",
+      "origin": "request",
+      "text": "#1's and #5's results were accepted with some wrong labels. What happens to them?",
+      "proposal": "Record a correction in the design record listing each mislabel and its right category, without re-accepting. The changes themselves were right; only their descriptions were wrong. The alternative is to re-render both gates and accept them again."
+    }
+  ],
+  "decisions": []
+}
