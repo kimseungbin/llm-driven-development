@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "8",
+  "kind": "intent",
+  "title": "Korean support (i18n)",
+  "request": "I'd like to write a new intent for i18n (Korean support). Is this correct to call it a new intent? Or should I call it a new issue?\n\nCreate new intent",
+  "problem": "Every gate view is in English only. The human deciding at the gates is a native Korean speaker who works in English, so each decision is made through a second language, and a label or status line that is misread can lead to approving the wrong thing. The tool has no way to present its views in another language.",
+  "areas": [
+    "fe",
+    "be"
+  ],
+  "acceptance": [
+    "A gate view rendered in Korean shows every fixed label, badge, button, and status line in Korean.",
+    "A gate view rendered without choosing a language is unchanged from today.",
+    "Authored text (the request, problem, criteria, questions, and answers) appears exactly as written in every language.",
+    "An approval sent from a Korean view names the same gate and rev, and is accepted the same way, as one sent from an English view."
+  ],
+  "deferred": [],
+  "nonGoals": [
+    {
+      "item": "Machine translation of authored text",
+      "reason": "Every interpretation is checked against the human's own words; a translated request or answer would no longer be those words."
+    }
+  ],
+  "relations": [],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "origin": "request",
+      "text": "What does Korean support cover: only the rendered gate views, or also the CLI's messages and errors?",
+      "proposal": "Rendered gate views only. They are where decisions are made; CLI output is read mostly by agents, and its errors are what agents fix against."
+    },
+    {
+      "id": "Q2",
+      "origin": "request",
+      "text": "Is this Korean only, or a general mechanism where Korean is the first added language?",
+      "proposal": "A general mechanism with English and Korean. Another language is then just another set of translations, and it costs little more than Korean alone."
+    },
+    {
+      "id": "Q3",
+      "origin": "request",
+      "text": "How is the language chosen for a view?",
+      "proposal": "Per repo, as a setting recorded like the area list, with English as the default. In the solo phase one human reads every view; a per-viewer choice belongs to the team phase, where viewers have identities."
+    },
+    {
+      "id": "Q4",
+      "origin": "request",
+      "text": "When the human writes a request in Korean, what language do agents write the rest of the intent and plan in?",
+      "proposal": "The request's language. The fields are interpretations checked against the request, which is easiest when both are in the same language."
+    }
+  ],
+  "decisions": []
+}
