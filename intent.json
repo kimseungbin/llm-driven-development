@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q7",
-      "origin": "request",
-      "text": "Detecting stale plans: the prototype stores no base SHA, recomputes the base, and records the head SHA and observed-diff hash on each approval. The ldd docs store the commit the plan was made against and flag items that went stale against it. Which one?",
-      "proposal": "The prototype's approach, with the ldd check built on it. Plans store no SHA. Staleness is a mismatch between an approval's recorded evidence (head SHA, observed-diff hash) and the current observed diff. That gives the ldd stale-item flag without putting a SHA in authored data that a rebase would invalidate."
-    },
-    {
       "id": "Q8",
       "origin": "request",
       "text": "Who can approve? The prototype lets an agent run approve when your message explicitly names the gate and rev, recorded as Via: agent, with SSH-signed approvals as a later option. The ldd docs require a passkey signature for any act that decides a gate, so no agent can approve.",
@@ -93,6 +87,12 @@
       "id": "Q6",
       "question": "Linking commits to plan data: the prototype uses a Plan-Step trailer, with one step per commit. The ldd docs use an Ldd-Work trailer that names a work session. Which one?",
       "answer": "Plan-Step only. It links each commit to its step, which gives per-step diffs for reconciliation and the result gate. Research and decision records attach to step IDs from the plan gate onward. Ldd-Work is dropped.",
+      "origin": "request"
+    },
+    {
+      "id": "Q7",
+      "question": "Detecting stale plans: the prototype stores no base SHA, recomputes the base, and records the head SHA and observed-diff hash on each approval. The ldd docs store the commit the plan was made against and flag items that went stale against it. Which one?",
+      "answer": "Baseline on approvals, scoped by symbols. Plan content stores no SHA. A plan-gate approval records the main commit it saw; when main moves, only steps whose expected symbols changed go stale. A result-gate approval records the step's head SHA and observed-diff hash; the approval carries over if the recomputed hash is the same, and goes stale otherwise (like Gerrit change kinds and GitLab patch-ids).",
       "origin": "request"
     }
   ],
