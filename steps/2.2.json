@@ -28,6 +28,12 @@
         "text": "every row is still rendered; none is hidden or collapsed",
         "checkedBy": "test"
       }
+    ],
+    "add": [
+      {
+        "symbol": "attention",
+        "signature": "(item: ReconItem) => number, the group rank the sort uses"
+      }
     ]
   },
   "evidence": [

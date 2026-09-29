@@ -33,6 +33,13 @@
         "text": "the KRW sample renders the same HTML before and after",
         "checkedBy": "human"
       }
+    ],
+    "change": [
+      {
+        "symbol": "dataShape.body",
+        "from": "reads classifiedBy and confidence from detail",
+        "to": "reads them from the item"
+      }
     ]
   },
   "evidence": [
