@@ -16,12 +16,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q2",
-      "origin": "request",
-      "text": "What happens to scenarios/ in this repo (the two README files, plus the gitignored clones)?",
-      "proposal": "Remove the directory entirely. The READMEs describe how to use the scenarios, and the design record keeps the lessons that matter (see Q3)."
-    },
-    {
       "id": "Q3",
       "origin": "request",
       "text": "The design record cites scenario findings as the reason for some decisions (for example, ORD-7's problem statement led to labeling every view section, and coupons Q9 led to questions having an owner). What happens to the scenario sections?",
@@ -33,6 +27,12 @@
       "id": "Q1",
       "question": "What happens to the two scenario repos on GitHub (llmdd-scenario-coupons, llmdd-scenario-soft-delete) and the plans stored in them?",
       "answer": "Delete the repos. The human deletes both GitHub repos, and the plans stored in them are lost.",
+      "origin": "request"
+    },
+    {
+      "id": "Q2",
+      "question": "What happens to scenarios/ in this repo (the two README files, plus the gitignored clones)?",
+      "answer": "Remove the scenarios/ directory entirely, READMEs and local clones included.",
       "origin": "request"
     }
   ]
