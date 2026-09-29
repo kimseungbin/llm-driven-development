@@ -1,14 +1,17 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import { approve, create, decide, edit, exportTo, importDir, loadAreas, loadIntentGate, loadPlanGate, nextId, setAreas } from './plan.ts'
 import { renderView, viewTitle, type View } from './render/index.ts'
 import { personalLang } from './git.ts'
+import { publishRenderer } from './publish.ts'
 import { setup } from './store.ts'
 import { renderPage } from './render/page.ts'
 
 const usage = `usage (plan data lives in the product repo, under refs/ldd/plans/<id>):
   node src/cli.ts setup [--repo <repo>]                                 once per clone: sync plan and config refs with git push and git pull
+  node src/cli.ts publish                                               build the renderer, commit it to the renderer branch, and push it; prints its CDN base
   node src/cli.ts next-id --repo <repo>
   node src/cli.ts create --repo <repo> --from <dir>                      agent: new intent from <dir>/intent.json; prints the id
   node src/cli.ts export <id> --repo <repo> --out <dir>                  working copy for editing
@@ -64,6 +67,9 @@ const need = (value: string | undefined): string => value ?? fail(usage)
 
 const [command, arg1, arg2] = positionals
 
+// The renderer is this tool's own code, so it's published from this checkout, whatever --repo names.
+const TOOL = fileURLToPath(new URL('..', import.meta.url))
+
 if (command === 'render') {
   const view = JSON.parse(await readFile(need(arg1), 'utf8')) as View
   if (view.schemaVersion !== 1) fail(`${arg1}: expected schemaVersion 1`)
@@ -79,6 +85,8 @@ import { renderView } from '${values.cdn}/render/index.js'
 document.getElementById('v-root').innerHTML = renderView(${data}, ${JSON.stringify(lang)})
 </script>`)
   } else fail(usage)
+} else if (command === 'publish') {
+  await emit(`${attempt(() => publishRenderer(TOOL))}\n`)
 } else if (command === 'setup') {
   const added = attempt(() => setup(values.repo ?? '.'))
   await emit(added.length ? `refspecs:\n${added.map((a) => `  ${a}`).join('\n')}\n` : 'already set up\n')
