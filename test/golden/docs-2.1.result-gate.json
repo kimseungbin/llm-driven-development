@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "view": "result-gate",
+  "mode": "planned",
+  "step": {
+    "id": "DOCS-2.1",
+    "summary": "Record the inline result-view decision",
+    "kind": "docs",
+    "planRev": "8ab8b1c"
+  },
+  "observed": { "range": "main..docs/inline-rows", "head": "921e0c3" },
+  "items": [
+    {
+      "plan": "matched",
+      "breaking": false,
+      "category": "content-changed",
+      "classifiedBy": "inferred",
+      "detail": {
+        "what": "docs/rendering/layouts.md § Result gate",
+        "diff": "- One result gate per intent renders one of these views for each step, together.\n+ One result gate per intent renders one of these views for each step, together.\n+ The inline view lists every row, sorted by attention first: unplanned, missing,\n+ breaking, and inferred, then matched.",
+        "why": "Records the decision where the layout is described."
+      }
+    },
+    {
+      "plan": "unplanned",
+      "breaking": false,
+      "category": "moved",
+      "classifiedBy": "inferred",
+      "detail": {
+        "what": "Sort items by attention first",
+        "from": "layouts.md § Leaning",
+        "to": "layouts.md § Result gate",
+        "why": "It's decided now, so it leaves the leaning list."
+      }
+    }
+  ],
+  "invariants": [{ "text": "every decision lands in exactly one doc", "status": "passed" }]
+}

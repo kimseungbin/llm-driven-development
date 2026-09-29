@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "view": "result-gate",
+  "mode": "observed-only",
+  "step": {
+    "id": "KRW-12.1",
+    "summary": "Make implicit USD an explicit enum",
+    "kind": "data-shape",
+    "planRev": null
+  },
+  "observed": {
+    "range": "main..feat/krw",
+    "head": "a1c44e0"
+  },
+  "items": [
+    {
+      "plan": "matched",
+      "breaking": false,
+      "category": "added",
+      "classifiedBy": "deterministic",
+      "detail": {
+        "field": "Currency",
+        "before": null,
+        "after": "enum { USD }",
+        "impact": "New symbol, compatible"
+      }
+    },
+    {
+      "plan": "matched",
+      "breaking": true,
+      "category": "added",
+      "classifiedBy": "deterministic",
+      "detail": {
+        "field": "Money.currency",
+        "before": "implicit USD",
+        "after": "Currency",
+        "note": "required",
+        "impact": "Breaking: constructors, JSON"
+      }
+    },
+    {
+      "plan": "matched",
+      "breaking": false,
+      "category": "renamed",
+      "classifiedBy": "inferred",
+      "confidence": 0.72,
+      "detail": {
+        "field": "Money.displayAmount",
+        "before": "string",
+        "after": "formatted: string",
+        "impact": "Serialization key changes; confirm rename"
+      }
+    },
+    {
+      "plan": "matched",
+      "breaking": true,
+      "category": "removed",
+      "classifiedBy": "deterministic",
+      "detail": {
+        "field": "Money.precision",
+        "before": "number?",
+        "after": null,
+        "impact": "Breaking: 4 call sites read it"
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "text": "no observable behavior change",
+      "status": "pending",
+      "note": "tests not run"
+    }
+  ]
+}

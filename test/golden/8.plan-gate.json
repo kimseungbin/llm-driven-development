@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "view": "plan-gate",
+  "intentRev": "2abca27",
+  "planRev": "9be8b53",
+  "approvedIntentRev": "2abca27",
+  "approvedPlanRev": "9be8b53",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "8",
+    "kind": "intent",
+    "title": "Korean support (i18n)",
+    "request": "I'd like to write a new intent for i18n (Korean support). Is this correct to call it a new intent? Or should I call it a new issue?\n\nCreate new intent",
+    "problem": "Every gate view is in English only. The human deciding at the gates is a native Korean speaker who works in English, so each decision is made through a second language, and a label or status line that is misread can lead to approving the wrong thing. The tool has no way to present its views in another language.",
+    "areas": [
+      "render",
+      "skills",
+      "cli",
+      "docs"
+    ],
+    "acceptance": [
+      "A gate view rendered in Korean shows every fixed label, badge, button, and status line in Korean.",
+      "A gate view rendered without choosing a language is unchanged from today.",
+      "Authored text (the request, problem, criteria, questions, and answers) appears exactly as written in every language.",
+      "An approval sent from a Korean view names the same gate and rev, and is accepted the same way, as one sent from an English view.",
+      "Adding another language takes only a new set of translations, with no change to any view (Q2).",
+      "The language is each person's own choice: one person choosing a language never changes what anyone else sees (Q3).",
+      "A person's language choice applies in every repo they work in, without setting it per repo (Q5).",
+      "When a request is written in Korean, the agent-written fields of its intent and plan are in Korean too (Q4)."
+    ],
+    "deferred": [
+      {
+        "item": "Per-viewer language in the team phase's coordinator views, read from the viewer's identity",
+        "reason": "Viewer identity exists only in the team phase (Q5).",
+        "followUp": "4"
+      }
+    ],
+    "nonGoals": [
+      {
+        "item": "Machine translation of authored text",
+        "reason": "Every interpretation is checked against the human's own words; a translated request or answer would no longer be those words."
+      },
+      {
+        "item": "Translating the CLI's messages and errors",
+        "reason": "Agents read CLI output and fix against its errors; the human decides in the gate views (Q1)."
+      }
+    ],
+    "relations": [],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "What does Korean support cover: only the rendered gate views, or also the CLI's messages and errors?",
+        "answer": "Gate views only (Recommended): labels, badges, buttons, and status lines in rendered views. CLI messages and errors stay English.",
+        "origin": "request"
+      },
+      {
+        "id": "Q2",
+        "question": "Is this Korean only, or a general mechanism where Korean is the first added language?",
+        "answer": "General, en + ko (Recommended): views read their text from a per-language set of translations; another language is added as a new set, with no view changes.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "How is the language chosen for a view?",
+        "answer": "It should be a personal setting. But not sure the best way to ensure it.",
+        "origin": "request"
+      },
+      {
+        "id": "Q5",
+        "question": "Where does the personal language setting live, and how far does it reach?",
+        "answer": "User-level, all repos (Recommended): stored with the person like their git name and email (user-level git config), never in a repo. Team-phase views read it from the viewer's identity, deferred to #4.",
+        "origin": "request"
+      },
+      {
+        "id": "Q4",
+        "question": "When the human writes a request in Korean, what language do agents write the rest of the intent and plan in?",
+        "answer": "The request's language (Recommended): a Korean request gets a Korean problem, criteria, questions, and steps.",
+        "origin": "request"
+      },
+      {
+        "id": "Q6",
+        "question": "Each gate button sends a fixed chat message that the agent acts on, such as \"Approve the intent gate for #8 at rev e28140a.\" In a Korean view, is that message Korean or English?",
+        "answer": "Korean message: in a Korean view the whole button is Korean, including the message it sends. The approval rule and skills recognize a Korean approval that names the gate and the rev.",
+        "origin": "code"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "schemaVersion": 2,
+      "id": "8.1",
+      "parent": "8",
+      "kind": "signature-change",
+      "origin": "planned",
+      "summary": "Views read every fixed text from an English catalog passed in by language",
+      "risk": "medium",
+      "riskReason": "Touches every renderer; a string left inline or mistyped changes the English views everyone sees today.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "Messages",
+            "type": "every fixed label, heading, note, pill, button label, and button message the views show"
+          },
+          {
+            "symbol": "Lang",
+            "type": "a language code with a catalog"
+          },
+          {
+            "symbol": "CATALOGS",
+            "type": "Record<Lang, Messages>, English only"
+          },
+          {
+            "symbol": "en",
+            "type": "Messages"
+          }
+        ],
+        "change": [
+          {
+            "symbol": "renderView",
+            "from": "(view)",
+            "to": "(view, lang = 'en')"
+          },
+          {
+            "symbol": "viewTitle",
+            "from": "(view)",
+            "to": "(view, lang = 'en')"
+          },
+          {
+            "symbol": "renderPage",
+            "from": "(title, fragment)",
+            "to": "(title, fragment, lang = 'en'), and <html lang> follows it"
+          },
+          {
+            "symbol": "renderIntentGate",
+            "from": "(view)",
+            "to": "(view, t: Messages)"
+          },
+          {
+            "symbol": "renderPlanGate",
+            "from": "(view)",
+            "to": "(view, t: Messages)"
+          },
+          {
+            "symbol": "renderResultGate",
+            "from": "(view)",
+            "to": "(view, t: Messages)"
+          },
+          {
+            "symbol": "KindRenderer.body",
+            "from": "(view)",
+            "to": "(view, t: Messages)"
+          },
+          {
+            "symbol": "list",
+            "from": "(items)",
+            "to": "(items, lang)"
+          }
+        ],
+        "unchanged": [
+          "esc",
+          "symbol",
+          "displayId",
+          "shortStepId",
+          "KIND_CATEGORIES"
+        ],
+        "rules": [
+          {
+            "text": "no view has an English word inline; step kinds, symbols, revs, and IDs stay as they are, since they're identifiers",
+            "checkedBy": "human"
+          },
+          {
+            "text": "counts and lists in text come from catalog functions, so a language can phrase plurals and word order its own way",
+            "checkedBy": "human"
+          }
+        ],
+        "invariants": [
+          {
+            "text": "every view rendered without a language is byte-identical to before",
+            "checkedBy": "test"
+          }
+        ]
+      },
+      "evidence": [
+        "golden files captured before the change from the samples and #1-#8's views, compared after it",
+        "existing tests pass unchanged"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "8.2",
+      "parent": "8",
+      "kind": "feature",
+      "origin": "planned",
+      "summary": "A Korean catalog, including the messages buttons send",
+      "risk": "low",
+      "riskReason": "Adds a catalog nothing selects until the CLI reads the personal setting.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "ko",
+            "type": "Messages"
+          }
+        ],
+        "rules": [
+          {
+            "text": "CATALOGS has en and ko, and every catalog has exactly en's keys",
+            "checkedBy": "test"
+          },
+          {
+            "text": "a view rendered in ko contains none of en's fixed strings",
+            "checkedBy": "test"
+          },
+          {
+            "text": "a ko button message names the same intent, gate, and rev as the en one (Q6)",
+            "checkedBy": "test"
+          },
+          {
+            "text": "authored text renders exactly as stored in ko and en",
+            "checkedBy": "test"
+          }
+        ]
+      },
+      "evidence": [
+        "test/i18n.test.ts",
+        "the #8 intent gate and a sample result gate rendered in ko, read by the human"
+      ],
+      "dependsOn": [
+        "8.1"
+      ]
+    },
+    {
+      "schemaVersion": 2,
+      "id": "8.3",
+      "parent": "8",
+      "kind": "feature",
+      "origin": "planned",
+      "summary": "render reads the person's language from their user-level git config",
+      "risk": "low",
+      "riskReason": "Without the setting, render behaves exactly as today.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "personalLang",
+            "signature": "(): Lang, from git config --global ldd.lang, 'en' when unset"
+          }
+        ],
+        "rules": [
+          {
+            "text": "render passes personalLang() to every format, and the loader format embeds it in the call it emits",
+            "checkedBy": "test"
+          },
+          {
+            "text": "an ldd.lang with no catalog fails with the list of languages, rather than falling back to English",
+            "checkedBy": "test"
+          },
+          {
+            "text": "only the user-level config is read; a repo's own config never sets the language (Q5)",
+            "checkedBy": "test"
+          },
+          {
+            "text": "the usage text says how to set it: git config --global ldd.lang ko",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "test/i18n.test.ts runs the CLI with GIT_CONFIG_GLOBAL pointed at a temporary file"
+      ],
+      "dependsOn": [
+        "8.2"
+      ]
+    },
+    {
+      "schemaVersion": 2,
+      "id": "8.4",
+      "parent": "8",
+      "kind": "instructions",
+      "origin": "planned",
+      "summary": "Skills write in the request's language and accept an approval in any language",
+      "risk": "medium",
+      "riskReason": "The approval rule guards the gates; widening it to Korean must still require the gate and the rev.",
+      "expect": {
+        "sections": [
+          {
+            "doc": "structure-request",
+            "section": "Structure a request"
+          },
+          {
+            "doc": "propose-plan",
+            "section": "Propose a plan"
+          },
+          {
+            "doc": "propose-plan",
+            "section": "Steps"
+          },
+          {
+            "doc": "CLAUDE.md",
+            "section": "llm-driven-development"
+          }
+        ],
+        "rules": [
+          {
+            "text": "agents write every authored field of an intent and its plan in the request's language (Q4)",
+            "checkedBy": "human"
+          },
+          {
+            "text": "an approval counts in any language when it explicitly says to approve and names the gate and the rev, as the buttons in every language do (Q6)",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "dry run: structure a short Korean request with the skill; its fields come out in Korean and intent-view validates it"
+      ],
+      "dependsOn": [
+        "8.2"
+      ]
+    },
+    {
+      "schemaVersion": 2,
+      "id": "8.5",
+      "parent": "8",
+      "kind": "docs",
+      "origin": "planned",
+      "summary": "Record #8's decisions in the design record",
+      "risk": "low",
+      "riskReason": "Docs only.",
+      "expect": {
+        "sections": [
+          {
+            "doc": "docs/rendering/languages.md",
+            "section": "Languages (decided)"
+          },
+          {
+            "doc": "docs/rendering/README.md",
+            "section": "Rendering (decided)"
+          },
+          {
+            "doc": "docs/README.md",
+            "section": "Where we left off (2026-09-29)"
+          }
+        ]
+      },
+      "evidence": [
+        "the human reads languages.md against Q1-Q6"
+      ],
+      "dependsOn": [
+        "8.3",
+        "8.4"
+      ]
+    }
+  ]
+}

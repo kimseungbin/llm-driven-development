@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "view": "intent-gate",
+  "intentRev": "2abca27",
+  "approvedRev": "2abca27",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "8",
+    "kind": "intent",
+    "title": "Korean support (i18n)",
+    "request": "I'd like to write a new intent for i18n (Korean support). Is this correct to call it a new intent? Or should I call it a new issue?\n\nCreate new intent",
+    "problem": "Every gate view is in English only. The human deciding at the gates is a native Korean speaker who works in English, so each decision is made through a second language, and a label or status line that is misread can lead to approving the wrong thing. The tool has no way to present its views in another language.",
+    "areas": [
+      "render",
+      "skills",
+      "cli",
+      "docs"
+    ],
+    "acceptance": [
+      "A gate view rendered in Korean shows every fixed label, badge, button, and status line in Korean.",
+      "A gate view rendered without choosing a language is unchanged from today.",
+      "Authored text (the request, problem, criteria, questions, and answers) appears exactly as written in every language.",
+      "An approval sent from a Korean view names the same gate and rev, and is accepted the same way, as one sent from an English view.",
+      "Adding another language takes only a new set of translations, with no change to any view (Q2).",
+      "The language is each person's own choice: one person choosing a language never changes what anyone else sees (Q3).",
+      "A person's language choice applies in every repo they work in, without setting it per repo (Q5).",
+      "When a request is written in Korean, the agent-written fields of its intent and plan are in Korean too (Q4)."
+    ],
+    "deferred": [
+      {
+        "item": "Per-viewer language in the team phase's coordinator views, read from the viewer's identity",
+        "reason": "Viewer identity exists only in the team phase (Q5).",
+        "followUp": "4"
+      }
+    ],
+    "nonGoals": [
+      {
+        "item": "Machine translation of authored text",
+        "reason": "Every interpretation is checked against the human's own words; a translated request or answer would no longer be those words."
+      },
+      {
+        "item": "Translating the CLI's messages and errors",
+        "reason": "Agents read CLI output and fix against its errors; the human decides in the gate views (Q1)."
+      }
+    ],
+    "relations": [],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "What does Korean support cover: only the rendered gate views, or also the CLI's messages and errors?",
+        "answer": "Gate views only (Recommended): labels, badges, buttons, and status lines in rendered views. CLI messages and errors stay English.",
+        "origin": "request"
+      },
+      {
+        "id": "Q2",
+        "question": "Is this Korean only, or a general mechanism where Korean is the first added language?",
+        "answer": "General, en + ko (Recommended): views read their text from a per-language set of translations; another language is added as a new set, with no view changes.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "How is the language chosen for a view?",
+        "answer": "It should be a personal setting. But not sure the best way to ensure it.",
+        "origin": "request"
+      },
+      {
+        "id": "Q5",
+        "question": "Where does the personal language setting live, and how far does it reach?",
+        "answer": "User-level, all repos (Recommended): stored with the person like their git name and email (user-level git config), never in a repo. Team-phase views read it from the viewer's identity, deferred to #4.",
+        "origin": "request"
+      },
+      {
+        "id": "Q4",
+        "question": "When the human writes a request in Korean, what language do agents write the rest of the intent and plan in?",
+        "answer": "The request's language (Recommended): a Korean request gets a Korean problem, criteria, questions, and steps.",
+        "origin": "request"
+      },
+      {
+        "id": "Q6",
+        "question": "Each gate button sends a fixed chat message that the agent acts on, such as \"Approve the intent gate for #8 at rev e28140a.\" In a Korean view, is that message Korean or English?",
+        "answer": "Korean message: in a Korean view the whole button is Korean, including the message it sends. The approval rule and skills recognize a Korean approval that names the gate and the rev.",
+        "origin": "code"
+      }
+    ]
+  },
+  "incoming": []
+}

@@ -1,3 +1,4 @@
+import type { Messages } from './lang/index.ts'
 import type { PlanMatch } from './result-gate.ts'
 
 const entities: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
@@ -16,7 +17,7 @@ export const shortStepId = (stepId: string, intentId: string): string =>
 
 export const plural =(n: number, noun: string): string => `${n} ${noun}${n === 1 ? '' : 's'}`
 
-export const list = (items: string[]): string => new Intl.ListFormat('en', { type: 'conjunction' }).format(items)
+export const list = (items: string[], lang: string): string => new Intl.ListFormat(lang, { type: 'conjunction' }).format(items)
 
 // sendPrompt exists only inside a chat widget; elsewhere the prompt goes to the clipboard.
 const SEND = "var p=this.dataset.prompt;typeof sendPrompt==='function'?sendPrompt(p):navigator.clipboard.writeText(p)"
@@ -24,8 +25,8 @@ const SEND = "var p=this.dataset.prompt;typeof sendPrompt==='function'?sendPromp
 export const promptButton = (label: string, prompt: string): string =>
   `<button type="button" data-prompt="${esc(prompt)}" onclick="${esc(SEND)}">${esc(label)} ↗</button>`
 
-export function planCell(plan: PlanMatch, planned: boolean): string {
-  if (!planned) return '<span class="v-dim">n/a</span>'
-  if (plan === 'matched') return '<span class="v-ok"><i class="ti ti-check" aria-hidden="true"></i> matched</span>'
-  return plan === 'unplanned' ? '<span class="v-warn">unplanned</span>' : '<span class="v-bad">missing</span>'
+export function planCell(plan: PlanMatch, planned: boolean, t: Messages): string {
+  if (!planned) return `<span class="v-dim">${t.result.na}</span>`
+  if (plan === 'matched') return `<span class="v-ok"><i class="ti ti-check" aria-hidden="true"></i> ${t.planMatch.matched}</span>`
+  return plan === 'unplanned' ? `<span class="v-warn">${t.planMatch.unplanned}</span>` : `<span class="v-bad">${t.planMatch.missing}</span>`
 }

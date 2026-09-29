@@ -1,0 +1,31 @@
+<div class="v"><style>
+.v{padding:.5rem 0 0;font-size:14px;color:var(--text-primary)}
+.v .m{font-family:var(--font-mono);font-size:12px}
+.v-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
+.v-badge{background:var(--bg-accent);color:var(--text-accent);font-size:12px;padding:3px 10px;border-radius:var(--radius)}
+.v-chip{font-size:12px;padding:3px 10px;border-radius:var(--radius);background:var(--surface-1);color:var(--text-secondary)}
+.v-pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--radius);background:var(--surface-1)}
+.v-pill.v-ok{background:var(--bg-success)}.v-pill.v-warn{background:var(--bg-warning)}.v-pill.v-bad{background:var(--bg-danger)}
+.v-ok{color:var(--text-success)}.v-warn{color:var(--text-warning)}.v-bad{color:var(--text-danger)}.v-sec{color:var(--text-secondary)}.v-dim{color:var(--text-muted)}
+.v-note{font-size:11px;color:var(--text-muted);margin-top:4px}
+.v-h{font-size:13px;font-weight:500;margin:16px 0 6px}
+.v-status{display:grid;gap:6px;margin:12px 0;font-size:13px}
+
+.v-list{margin:0;padding-left:20px;font-size:13px}
+.v-q{border:0.5px solid var(--border-warning);border-radius:var(--radius);padding:8px 12px;margin-bottom:8px;font-size:13px}
+.v-d{border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 12px;margin-bottom:8px;font-size:13px}
+.v-quote{margin:0;padding:6px 12px;border-left:2px solid var(--border-strong);border-radius:0;font-size:13px;color:var(--text-secondary);white-space:pre-wrap}
+</style>
+<h2 class="sr-only">Intent, intent gate: #5 Retire the exercise scenarios, intent rev 85b0df0. Ready for decision.</h2>
+<div class="v-row"><span class="v-badge"><i class="ti ti-message-2" aria-hidden="true"></i> Intent</span><span class="v-sec" style="font-size:13px">Intent gate · approve what and why before any code is read?</span></div>
+<div class="v-row"><span style="font-weight:500;font-size:15px">#5</span><span class="v-sec">Retire the exercise scenarios</span><span class="v-chip">intent rev <span class="m">85b0df0</span></span><span class="v-chip">areas <span class="m">cli, docs</span></span></div>
+<div class="v-h">Request (verbatim)</div><blockquote class="v-quote">I don&#39;t need scenarios anymore. we&#39;re already dogfooding</blockquote>
+<div class="v-h">Problem</div><div style="font-size:13px">The two exercise scenarios (coupons and soft-delete) were built to try the gates on a realistic codebase before the tool could plan itself. Now the tool plans its own work, so the scenarios are extra upkeep: their repos have to be synced, their plans migrated with every format or ref change, and current plans still point at them for checks that the tool&#39;s own intents could do.</div>
+<div class="v-h">Acceptance criteria</div><ul class="v-list"><li>Nothing in this repo&#39;s plans, scripts, skills, or design record depends on the scenarios any more.</li><li>Checks that used a scenario are done on this repo&#39;s own intents instead.</li><li>What the scenarios taught stays findable where a decision relied on it.</li></ul>
+
+
+<div class="v-h">Decided</div><div class="v-d"><div><span class="v-ok" style="font-weight:500">Q1</span> What happens to the two scenario repos on GitHub (llmdd-scenario-coupons, llmdd-scenario-soft-delete) and the plans stored in them?</div><div style="margin-top:4px"><span class="v-sec">Decided:</span> Delete the repos. The human deletes both GitHub repos, and the plans stored in them are lost.</div></div><div class="v-d"><div><span class="v-ok" style="font-weight:500">Q2</span> What happens to scenarios/ in this repo (the two README files, plus the gitignored clones)?</div><div style="margin-top:4px"><span class="v-sec">Decided:</span> Remove the scenarios/ directory entirely, READMEs and local clones included.</div></div><div class="v-d"><div><span class="v-ok" style="font-weight:500">Q3</span> The design record cites scenario findings as the reason for some decisions (for example, ORD-7&#39;s problem statement led to labeling every view section, and coupons Q9 led to questions having an owner). What happens to the scenario sections?</div><div style="margin-top:4px"><span class="v-sec">Decided:</span> Drop the scenario sections. Keep each finding as a one-line reason next to the decision it shaped.</div></div>
+
+<div class="v-status"><span class="v-warn"><i class="ti ti-history" aria-hidden="true"></i> Changed since the last approval (rev <span class="m">85fbfa6</span>), so it needs approving again.</span><span class="v-ok"><i class="ti ti-circle-check" aria-hidden="true"></i> Ready for your decision.</span></div>
+<div class="v-row"><button type="button" data-prompt="Approve the intent gate for #5 at rev 85b0df0." onclick="var p=this.dataset.prompt;typeof sendPrompt===&#39;function&#39;?sendPrompt(p):navigator.clipboard.writeText(p)">Approve intent ↗</button><button type="button" data-prompt="I want changes to the #5 intent (rev 85b0df0)." onclick="var p=this.dataset.prompt;typeof sendPrompt===&#39;function&#39;?sendPrompt(p):navigator.clipboard.writeText(p)">Request changes ↗</button></div>
+</div>

@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "view": "plan-gate",
+  "intentRev": "85b0df0",
+  "planRev": "0b8648f",
+  "approvedIntentRev": "85fbfa6",
+  "approvedPlanRev": "113e2f3",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "5",
+    "kind": "intent",
+    "title": "Retire the exercise scenarios",
+    "request": "I don't need scenarios anymore. we're already dogfooding",
+    "problem": "The two exercise scenarios (coupons and soft-delete) were built to try the gates on a realistic codebase before the tool could plan itself. Now the tool plans its own work, so the scenarios are extra upkeep: their repos have to be synced, their plans migrated with every format or ref change, and current plans still point at them for checks that the tool's own intents could do.",
+    "areas": [
+      "cli",
+      "docs"
+    ],
+    "acceptance": [
+      "Nothing in this repo's plans, scripts, skills, or design record depends on the scenarios any more.",
+      "Checks that used a scenario are done on this repo's own intents instead.",
+      "What the scenarios taught stays findable where a decision relied on it."
+    ],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "What happens to the two scenario repos on GitHub (llmdd-scenario-coupons, llmdd-scenario-soft-delete) and the plans stored in them?",
+        "answer": "Delete the repos. The human deletes both GitHub repos, and the plans stored in them are lost.",
+        "origin": "request"
+      },
+      {
+        "id": "Q2",
+        "question": "What happens to scenarios/ in this repo (the two README files, plus the gitignored clones)?",
+        "answer": "Remove the scenarios/ directory entirely, READMEs and local clones included.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "The design record cites scenario findings as the reason for some decisions (for example, ORD-7's problem statement led to labeling every view section, and coupons Q9 led to questions having an owner). What happens to the scenario sections?",
+        "answer": "Drop the scenario sections. Keep each finding as a one-line reason next to the decision it shaped.",
+        "origin": "request"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "schemaVersion": 2,
+      "id": "5.1",
+      "parent": "5",
+      "kind": "feature",
+      "origin": "planned",
+      "summary": "Replace the sync script with a setup command in the CLI",
+      "risk": "medium",
+      "riskReason": "Once remote.origin.push is set, plain git push pushes only the configured refspecs, so a wrong setup silently stops branches or plan refs from reaching GitHub.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "setup",
+            "signature": "node src/cli.ts setup [--repo <repo>]"
+          },
+          {
+            "symbol": "syncRefspecs",
+            "signature": "() => { fetch: string[]; push: string[] }"
+          },
+          {
+            "symbol": "store.setup",
+            "signature": "(repo, remote) => refspecs it added"
+          },
+          {
+            "symbol": "PLAN_PREFIX",
+            "type": "'refs/plans/', the one spelling of the plan ref prefix"
+          },
+          {
+            "symbol": "test/setup.test.ts",
+            "type": "node --test suite, run with npm test"
+          }
+        ],
+        "remove": [
+          "scripts/github.sh",
+          "track_plans",
+          "each_repo",
+          "clone-scenarios"
+        ],
+        "rules": [
+          {
+            "text": "the refspecs come from the same prefix that ref and listIds use, so renaming the prefix changes setup too",
+            "checkedBy": "human"
+          },
+          {
+            "text": "setup configures fetch and push of plan refs and of refs/ldd/config (from #1's step 1.4), plus push of refs/heads/*, and running it twice adds nothing",
+            "checkedBy": "test"
+          },
+          {
+            "text": "plan refspecs have no +, so a ref that diverged on two Macs is rejected instead of overwritten",
+            "checkedBy": "test"
+          },
+          {
+            "text": "pushing and pulling are plain git push and git pull --ff-only",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "a test runs setup twice on a fresh clone and finds each refspec configured exactly once",
+        "after setup, git push sends branches, plan refs, and refs/ldd/config, and git fetch brings them all",
+        "scripts/github.sh no longer exists"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "5.2",
+      "parent": "5",
+      "kind": "non-semantic",
+      "origin": "planned",
+      "summary": "Remove the scenarios directory and its gitignore rule",
+      "risk": "medium",
+      "riskReason": "Deleting the local clones removes the last local copy of the scenario plans; the human then deletes the GitHub repos, which can't be undone.",
+      "expect": {
+        "rules": [
+          {
+            "text": "scenarios/ is removed, READMEs and the gitignored clones included, and .gitignore no longer mentions it",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the local clones are deleted only after #1's step 1.1 has its soft-delete evidence (plan-view for #7 built on 2026-09-29, before this step)",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the human deletes llmdd-scenario-coupons and llmdd-scenario-soft-delete on GitHub after this step; the agent never deletes them",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "git ls-files scenarios is empty and the directory is gone",
+        "gh repo view fails for both scenario repos, after the human deletes them"
+      ],
+      "dependsOn": [
+        "5.1"
+      ]
+    },
+    {
+      "schemaVersion": 2,
+      "id": "5.3",
+      "parent": "5",
+      "kind": "non-semantic",
+      "origin": "planned",
+      "summary": "Drop the scenarios and the sync script from the design record and CLAUDE.md",
+      "risk": "low",
+      "riskReason": "Documentation only; each scenario finding moves next to its decision.",
+      "expect": {
+        "rules": [
+          {
+            "text": "the two scenario sections and the scenario items in 'Where we left off' are removed",
+            "checkedBy": "human"
+          },
+          {
+            "text": "every decision the design record ties to a scenario keeps a one-line reason saying what the scenario showed",
+            "checkedBy": "human"
+          },
+          {
+            "text": "'Resuming on another Mac' is: clone, run node src/cli.ts setup, then git pull --ff-only and git push",
+            "checkedBy": "human"
+          },
+          {
+            "text": "CLAUDE.md says the human pushes with git push, not scripts/github.sh push",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "grep for coupons, soft-delete, scenario, and github.sh in the design record and CLAUDE.md finds only the one-line reasons"
+      ],
+      "dependsOn": [
+        "5.2"
+      ]
+    }
+  ]
+}

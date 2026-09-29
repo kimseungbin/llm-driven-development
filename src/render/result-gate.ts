@@ -1,8 +1,9 @@
 import { type ChangeCategory, KIND_CATEGORIES, type StepKind } from '../model.ts'
-import { displayId, esc, list, plural, promptButton } from './html.ts'
+import { displayId, esc, list, promptButton } from './html.ts'
 import { code } from './kinds/code.ts'
 import { prose, PROSE_STYLE } from './kinds/prose.ts'
 import { unknownKind } from './kinds/unknown.ts'
+import { en, type Messages } from './lang/en.ts'
 import { style } from './style.ts'
 
 export type PlanMatch = 'matched' | 'unplanned' | 'missing'
@@ -28,8 +29,8 @@ export interface ResultGateView {
 }
 
 export interface KindRenderer {
-  body(view: ResultGateView): string
-  itemName(item: ReconItem): string
+  body(view: ResultGateView, t: Messages): string
+  itemName(item: ReconItem, t: Messages): string
 }
 
 // The step's kind picks the view: code kinds get the before/after table, prose kinds the prose view.
@@ -45,13 +46,14 @@ const renderers: Record<StepKind, KindRenderer> = {
 }
 
 // A category the step's kind can't produce is a mislabel, so the view refuses it rather than show it.
+// The refusal is a CLI error, so it names the change in English whatever the view's language.
 function checkCategories(view: ResultGateView, kind: KindRenderer) {
   const allowed = KIND_CATEGORIES[view.step.kind]
   if (!allowed) throw new Error(`${view.step.id}: unknown step kind ${view.step.kind}`)
   for (const item of view.items)
     if (item.category !== 'uncategorized' && !allowed.includes(item.category))
       throw new Error(
-        `${view.step.id}: ${kind.itemName(item)} is ${item.category}, which a ${view.step.kind} step can't produce (${allowed.join(', ')}, or uncategorized)`,
+        `${view.step.id}: ${kind.itemName(item, en)} is ${item.category}, which a ${view.step.kind} step can't produce (${allowed.join(', ')}, or uncategorized)`,
       )
 }
 
@@ -74,7 +76,7 @@ const STYLE = style(`
 .v-table .v-grp th{font-size:11px;color:var(--text-muted);border-bottom:none;padding-bottom:0}
 .v-raw{margin:0;font-family:var(--font-mono);font-size:12px;white-space:pre-wrap}${PROSE_STYLE}`)
 
-export function renderResultGate(view: ResultGateView): string {
+export function renderResultGate(view: ResultGateView, t: Messages): string {
   const planned = view.mode === 'planned'
   const kind = renderers[view.step.kind] ?? unknownKind
   checkCategories(view, kind)
@@ -83,53 +85,53 @@ export function renderResultGate(view: ResultGateView): string {
   const unplanned = byPlan('unplanned')
   const missing = byPlan('missing')
   const breaking = view.items.filter((i) => i.breaking)
-  const names = (items: ReconItem[]) => items.map((i) => kind.itemName(i)).join(', ')
+  const names = (items: ReconItem[]) => items.map((i) => kind.itemName(i, t)).join(', ')
 
   const blockers: string[] = []
-  if (planned && unplanned.length) blockers.push(plural(unplanned.length, 'unplanned change'))
-  if (planned && missing.length) blockers.push(`${plural(missing.length, 'planned change')} missing`)
+  if (planned && unplanned.length) blockers.push(t.result.unplannedChanges(unplanned.length))
+  if (planned && missing.length) blockers.push(t.result.missingChanges(missing.length))
   const failed = view.invariants.filter((i) => i.status === 'failed').length
   const pending = view.invariants.filter((i) => i.status === 'pending').length
-  if (failed) blockers.push(plural(failed, 'failed invariant'))
-  if (pending) blockers.push(`${plural(pending, 'invariant')} without evidence`)
+  if (failed) blockers.push(t.result.failedInvariants(failed))
+  if (pending) blockers.push(t.result.pendingInvariants(pending))
 
-  const modeText = planned ? 'planned mode' : 'observed-only, reviewed without a plan'
+  const modeText = planned ? t.result.mode.planned : t.result.mode.observed
   const against = view.step.planRev
-    ? `<span class="v-chip">against plan rev <span class="m">${esc(view.step.planRev)}</span></span>`
-    : '<span class="v-chip">no plan</span>'
+    ? `<span class="v-chip">${t.result.against(`<span class="m">${esc(view.step.planRev)}</span>`)}</span>`
+    : `<span class="v-chip">${t.result.noPlan}</span>`
 
   const stat = (label: string, value: number | null, tone: string) =>
-    `<div class="v-stat"><div>${label}</div><div class="${value ? tone : ''}">${value ?? 'n/a'}</div></div>`
+    `<div class="v-stat"><div>${label}</div><div class="${value ? tone : ''}">${value ?? t.result.na}</div></div>`
 
   const invariantTone = { passed: 'v-ok', failed: 'v-bad', pending: 'v-sec' }
   const invariants = view.invariants.map(
     (i) =>
-      `<span class="${invariantTone[i.status]}"><i class="ti ti-shield-check" aria-hidden="true"></i> Invariant "${esc(i.text)}": ${i.status}${i.note ? ` (${esc(i.note)})` : ''}</span>`,
+      `<span class="${invariantTone[i.status]}"><i class="ti ti-shield-check" aria-hidden="true"></i> ${t.result.invariant(esc(i.text), t.result.invariantStatus[i.status], i.note ? esc(i.note) : null)}</span>`,
   )
   const verdict = blockers.length
-    ? `<span class="v-warn"><i class="ti ti-lock" aria-hidden="true"></i> Approval blocked: ${esc(list(blockers))}. Resolve them or override with a reason.</span>`
-    : '<span class="v-ok"><i class="ti ti-circle-check" aria-hidden="true"></i> Ready for your decision.</span>'
+    ? `<span class="v-warn"><i class="ti ti-lock" aria-hidden="true"></i> ${t.result.blocked(esc(list(blockers, t.lang)))}</span>`
+    : `<span class="v-ok"><i class="ti ti-circle-check" aria-hidden="true"></i> ${t.readyForYou}</span>`
 
   const buttons: string[] = []
   if (planned && unplanned.length)
-    buttons.push(promptButton('Triage unplanned', `For ${id}, how should these unplanned changes be handled: attach to this step, split into a new step, or reject? ${names(unplanned)}`))
+    buttons.push(promptButton(t.result.triage, t.result.triagePrompt(id, names(unplanned))))
   if (breaking.length)
-    buttons.push(promptButton('Migration plan', `For ${id}, how should consumers be migrated for these breaking changes? ${names(breaking)}`))
+    buttons.push(promptButton(t.result.migration, t.result.migrationPrompt(id, names(breaking))))
   if (blockers.length)
-    buttons.push(promptButton('Override with reason', `I want to override the approval block on ${id} (${list(blockers)}). What reason and evidence would the write path record?`))
+    buttons.push(promptButton(t.result.override, t.result.overridePrompt(id, list(blockers, t.lang))))
 
   const summary = planned
-    ? `${byPlan('matched').length} matched, ${unplanned.length} unplanned, ${missing.length} missing, ${breaking.length} breaking`
-    : `${view.items.length} changes, ${breaking.length} breaking`
+    ? t.result.summaryPlanned(byPlan('matched').length, unplanned.length, missing.length, breaking.length)
+    : t.result.summaryObserved(view.items.length, breaking.length)
   const filterName = `v-filter-${esc(id)}`
 
   return `<div class="v">${STYLE}
-<h2 class="sr-only">Result, result gate, ${modeText}: ${esc(id)}. ${summary}. ${blockers.length ? 'Approval blocked' : 'Ready for decision'}.</h2>
-<div class="v-row"><span class="v-badge"><i class="ti ti-checklist" aria-hidden="true"></i> Result</span><span class="v-sec" style="font-size:13px">Result gate · ${modeText} · accept this step's result?</span></div>
+<h2 class="sr-only">${esc(t.result.sr(modeText, id, summary, blockers.length ? t.state.blocked : t.state.ready))}</h2>
+<div class="v-row"><span class="v-badge"><i class="ti ti-checklist" aria-hidden="true"></i> ${t.result.badge}</span><span class="v-sec" style="font-size:13px">${t.result.gate(modeText)}</span></div>
 <div class="v-row"><span style="font-weight:500;font-size:15px">${esc(id)}</span><span class="v-sec">${esc(view.step.summary)}</span><span class="v-chip m">${esc(view.step.kind)}</span>${against}</div>
-<div class="v-stats">${stat('Matched', planned ? byPlan('matched').length : null, 'v-ok')}${stat('Unplanned', planned ? unplanned.length : null, 'v-warn')}${stat('Planned, missing', planned ? missing.length : null, 'v-bad')}${stat('Breaking', breaking.length, 'v-bad')}</div>
-<div class="v-row" role="radiogroup" aria-label="Filter changes"><label><input type="radio" name="${filterName}" value="all" checked>All changes</label><label><input type="radio" name="${filterName}" value="breaking">Breaking only</label></div>
-${kind.body({ ...view, items: view.items.toSorted((a, b) => attention(a) - attention(b)) })}
+<div class="v-stats">${stat(t.result.stats.matched, planned ? byPlan('matched').length : null, 'v-ok')}${stat(t.result.stats.unplanned, planned ? unplanned.length : null, 'v-warn')}${stat(t.result.stats.missing, planned ? missing.length : null, 'v-bad')}${stat(t.result.stats.breaking, breaking.length, 'v-bad')}</div>
+<div class="v-row" role="radiogroup" aria-label="${t.result.filter}"><label><input type="radio" name="${filterName}" value="all" checked>${t.result.allChanges}</label><label><input type="radio" name="${filterName}" value="breaking">${t.result.breakingOnly}</label></div>
+${kind.body({ ...view, items: view.items.toSorted((a, b) => attention(a) - attention(b)) }, t)}
 <div class="v-status">${invariants.join('')}${verdict}</div>
 <div class="v-row">${buttons.join('')}</div>
 </div>`

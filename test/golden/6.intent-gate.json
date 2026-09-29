@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "view": "intent-gate",
+  "intentRev": "f7c6b57",
+  "approvedRev": "f506611",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "6",
+    "kind": "intent",
+    "title": "Change categories that fit every kind",
+    "request": "In 3.1 plan_prefix is change of value, not type isn't it?\n\n* Validate it\n* If so, we need to update change category right?\n\n(chosen: New intent for per-kind change categories, then redo #3's gate)",
+    "problem": "The result gate labels every change with categories made for data-type fields: added, removed, renamed, type changed, nullability changed. Changes of other kinds don't fit, so they get the nearest wrong label: a constant whose value changed shows as a type change, a function whose behavior changed shows as a type change, and a moved doc section shows as a rename. The reviewer at the result gate reads a wrong description of what changed, which is the one thing the gate must get right. #1's, #2's, #3's, and #5's results were accepted with such labels; the changes themselves were right. The kind list has the same gap: skills, CLAUDE.md, and the design record have no kind of their own, so they were planned as non-semantic, though a change to a skill changes what every future agent does.",
+    "areas": [
+      "model",
+      "render",
+      "skills"
+    ],
+    "acceptance": [
+      "Every change at a result gate is described by a category that says what actually changed, whatever the step's kind.",
+      "A change no category fits is shown as uncategorized, never forced into the nearest category."
+    ],
+    "nonGoals": [
+      {
+        "item": "Building the extractor that assigns categories automatically",
+        "reason": "Extraction is its own build-order step; until then categories are assigned by hand and labeled inferred."
+      },
+      {
+        "item": "Correcting the labels in #1's, #2's, #3's, and #5's accepted results",
+        "reason": "The new categories apply from #6 on; earlier results keep their labels (Q3, user, 2026-09-29)."
+      }
+    ],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q0",
+        "question": "Which kinds do prose changes get? Agent-facing instructions (skills, CLAUDE.md, hook prompts) change agent behavior; the design record is for humans; neither fits the code kinds, and both were planned as non-semantic (1.6, 1.7, 3.2, 3.3, 5.3).",
+        "answer": "instructions + docs: two new kinds. instructions: expect names the file and section, rules say what it now tells agents, and evidence is a dry run of the skill. docs: sections added, removed, or moved. non-semantic narrows back to typos, formatting, and pure moves.",
+        "origin": "request"
+      },
+      {
+        "id": "Q1",
+        "question": "What are the categories?",
+        "answer": "Shared list, subsets: one list (added, removed, renamed, moved, type changed, nullability changed, value changed, behavior changed, content changed); each kind declares which it can produce, as in the proposal. Validation rejects a category outside a kind's subset, and a change outside it shows as uncategorized.",
+        "origin": "request"
+      },
+      {
+        "id": "Q2",
+        "question": "Prose changes, like moved doc sections or a skill's new rule, don't have a before and after value. How should they show?",
+        "answer": "By what changed. Mechanical prose changes (moved, renamed, or a whole section added or removed) are table rows: What | From | To | Why. Wording changes (content changed, and behavior changed for instructions) are quoted, not tabled: one diff code block per change, - lines for removed and + lines for added text, with a line saying why. (User: if it's a simple or mechanical fix, a table is right; if sentences or paragraphs change, quote them as a code block.)",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "#1's, #2's, #3's, and #5's results were accepted with some wrong labels. What happens to them?",
+        "answer": "Leave them: the new categories apply from #6 on, and #1's, #2's, #3's, and #5's accepted results keep their labels. This drops #6's third acceptance criterion.",
+        "origin": "request"
+      },
+      {
+        "id": "Q4",
+        "question": "Q0 says instructions and docs steps name the file and section they change, but every expect entry must be a symbol: one token, no spaces, never a file path. How do prose steps name what they change?",
+        "answer": "New sections field: prose kinds get expect.sections: { doc, section }[]. doc is the skill name for a skill, or the repo-relative path for another file; section is the heading text. For prose the file is the identity, so a path is fine there. Code keeps the no-paths rule.",
+        "origin": "code"
+      }
+    ]
+  },
+  "incoming": []
+}

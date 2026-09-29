@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "view": "intent-gate",
+  "intentRev": "ee6ac1e",
+  "approvedRev": "cb351f7",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "2",
+    "kind": "intent",
+    "title": "Settle the review-side design",
+    "request": "Deferred from #1: the review-side design questions.",
+    "problem": "Review-side questions were left open until real result gates had been run, so reviews couldn't be designed with confidence.",
+    "areas": [
+      "model",
+      "render"
+    ],
+    "acceptance": [
+      "Each question below is decided after reviewing at least one real step result."
+    ],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "Can reviews of your own agents' work skip the plan (observed-only), or only reviews of other people's changes?",
+        "answer": "Own work too, with a reason: your agents may skip the plan (spikes, hotfixes) by passing the explicit flag and a one-line reason. These reviews never count as 'verified' and are listed separately in every filter.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "Where do approvals live once there's a team: here or in pull-request reviews?",
+        "answer": "refs/ldd, mirrored: approvals are passkey-signed events in refs/ldd (#3 Q8). The coordinator mirrors the gate to the forge as a required check. A PR approval never decides a gate, so the record works the same on every forge, including bare remotes.",
+        "origin": "request"
+      },
+      {
+        "id": "Q4",
+        "question": "Should inline review views show only the rows that need a decision?",
+        "answer": "All rows in chat, sorted: the chat widget lists every row, with the ones needing attention (unplanned, missing, breaking, inferred) first. Everything stays in one place, accepting that a large change makes the widget long and costly.",
+        "origin": "request"
+      }
+    ],
+    "deferred": [
+      {
+        "item": "Whether reviews of other people's changes reach their authors (was Q2).",
+        "reason": "Only local mode is in scope for now (user, 2026-09-29).",
+        "followUp": "4"
+      }
+    ]
+  },
+  "incoming": [
+    {
+      "from": "1",
+      "type": "follow-up"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+<div class="v"><style>
+.v{padding:.5rem 0 0;font-size:14px;color:var(--text-primary)}
+.v .m{font-family:var(--font-mono);font-size:12px}
+.v-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
+.v-badge{background:var(--bg-accent);color:var(--text-accent);font-size:12px;padding:3px 10px;border-radius:var(--radius)}
+.v-chip{font-size:12px;padding:3px 10px;border-radius:var(--radius);background:var(--surface-1);color:var(--text-secondary)}
+.v-pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--radius);background:var(--surface-1)}
+.v-pill.v-ok{background:var(--bg-success)}.v-pill.v-warn{background:var(--bg-warning)}.v-pill.v-bad{background:var(--bg-danger)}
+.v-ok{color:var(--text-success)}.v-warn{color:var(--text-warning)}.v-bad{color:var(--text-danger)}.v-sec{color:var(--text-secondary)}.v-dim{color:var(--text-muted)}
+.v-note{font-size:11px;color:var(--text-muted);margin-top:4px}
+.v-h{font-size:13px;font-weight:500;margin:16px 0 6px}
+.v-status{display:grid;gap:6px;margin:12px 0;font-size:13px}
+
+.v-list{margin:0;padding-left:20px;font-size:13px}
+.v-q{border:0.5px solid var(--border-warning);border-radius:var(--radius);padding:8px 12px;margin-bottom:8px;font-size:13px}
+.v-d{border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 12px;margin-bottom:8px;font-size:13px}
+.v-step{border-top:0.5px solid var(--border);padding:10px 0}
+.v-step .v-row{margin-bottom:4px}
+.v-expect{font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);margin:6px 0 0}
+.v-toggle{position:relative;font-size:13px;padding:6px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);cursor:pointer}
+.v-toggle:has(input:checked){background:var(--surface-1)}
+.v-toggle:has(input:focus-visible){outline:2px solid var(--border-accent)}
+.v-toggle input{position:absolute;opacity:0;pointer-events:none}
+.v-reason{display:none}
+.v:has(input[value=reasons]:checked) .v-reason{display:block}
+</style>
+<h2 class="sr-only">Plan, plan gate: #5 Retire the exercise scenarios, plan rev 0b8648f, 3 steps. Approval blocked.</h2>
+<div class="v-row"><span class="v-badge"><i class="ti ti-list-check" aria-hidden="true"></i> Plan</span><span class="v-sec" style="font-size:13px">Plan gate · approve this decomposition before work starts?</span></div>
+<div class="v-row"><span style="font-weight:500;font-size:15px">#5</span><span class="v-sec">Retire the exercise scenarios</span><span class="v-chip">intent rev <span class="m">85b0df0</span></span><span class="v-chip">plan rev <span class="m">0b8648f</span></span><span class="v-chip">3 steps</span><span class="v-chip">areas <span class="m">cli, docs</span></span></div>
+<div class="v-h">Acceptance criteria (from intent rev 85b0df0)</div><ul class="v-list"><li>Nothing in this repo&#39;s plans, scripts, skills, or design record depends on the scenarios any more.</li><li>Checks that used a scenario are done on this repo&#39;s own intents instead.</li><li>What the scenarios taught stays findable where a decision relied on it.</li></ul>
+
+<div class="v-h">Steps, in order</div>
+<div class="v-row"><label class="v-toggle"><input type="checkbox" value="reasons">Show all risk reasons</label></div>
+<div class="v-step"><div class="v-row"><span style="font-weight:500" title="#5.1">.1</span><span class="v-chip m">feature</span><span class="v-pill v-warn">medium risk</span></div>
+<div>Replace the sync script with a setup command in the CLI</div><div class="v-note v-reason">Risk: Once remote.origin.push is set, plain git push pushes only the configured refspecs, so a wrong setup silently stops branches or plan refs from reaching GitHub.</div><div class="v-expect"><div>add: setup node src/cli.<wbr>ts setup [--repo &lt;repo&gt;]</div><div>add: syncRefspecs () =&gt; { fetch: string[]; push: string[] }</div><div>add: store.<wbr>setup (repo, remote) =&gt; refspecs it added</div><div>add: PLAN_PREFIX: &#39;refs/plans/&#39;, the one spelling of the plan ref prefix</div><div>add: test/setup.<wbr>test.<wbr>ts: node --test suite, run with npm test</div><div>remove: scripts/github.<wbr>sh</div><div>remove: track_plans</div><div>remove: each_repo</div><div>remove: clone-scenarios</div><div>rule (checked by human): the refspecs come from the same prefix that ref and listIds use, so renaming the prefix changes setup too</div><div>rule (checked by test): setup configures fetch and push of plan refs and of refs/ldd/config (from #1&#39;s step 1.<wbr>4), plus push of refs/heads/*, and running it twice adds nothing</div><div>rule (checked by test): plan refspecs have no +, so a ref that diverged on two Macs is rejected instead of overwritten</div><div>rule (checked by human): pushing and pulling are plain git push and git pull --ff-only</div></div><div class="v-note">Evidence: a test runs setup twice on a fresh clone and finds each refspec configured exactly once; after setup, git push sends branches, plan refs, and refs/ldd/config, and git fetch brings them all; scripts/github.sh no longer exists</div></div>
+<div class="v-step"><div class="v-row"><span style="font-weight:500" title="#5.2">.2</span><span class="v-chip m">non-semantic</span><span class="v-pill v-warn">medium risk</span><span class="v-dim" style="font-size:12px">after .1</span></div>
+<div>Remove the scenarios directory and its gitignore rule</div><div class="v-note v-reason">Risk: Deleting the local clones removes the last local copy of the scenario plans; the human then deletes the GitHub repos, which can&#39;t be undone.</div><div class="v-expect"><div>rule (checked by human): scenarios/ is removed, READMEs and the gitignored clones included, and .<wbr>gitignore no longer mentions it</div><div>rule (checked by human): the local clones are deleted only after #1&#39;s step 1.<wbr>1 has its soft-delete evidence (plan-view for #7 built on 2026-09-29, before this step)</div><div>rule (checked by human): the human deletes llmdd-scenario-coupons and llmdd-scenario-soft-delete on GitHub after this step; the agent never deletes them</div></div><div class="v-note">Evidence: git ls-files scenarios is empty and the directory is gone; gh repo view fails for both scenario repos, after the human deletes them</div></div>
+<div class="v-step"><div class="v-row"><span style="font-weight:500" title="#5.3">.3</span><span class="v-chip m">non-semantic</span><span class="v-pill v-ok">low risk</span><span class="v-dim" style="font-size:12px">after .2</span></div>
+<div>Drop the scenarios and the sync script from the design record and CLAUDE.md</div><div class="v-note v-reason">Risk: Documentation only; each scenario finding moves next to its decision.</div><div class="v-expect"><div>rule (checked by human): the two scenario sections and the scenario items in &#39;Where we left off&#39; are removed</div><div>rule (checked by human): every decision the design record ties to a scenario keeps a one-line reason saying what the scenario showed</div><div>rule (checked by human): &#39;Resuming on another Mac&#39; is: clone, run node src/cli.<wbr>ts setup, then git pull --ff-only and git push</div><div>rule (checked by human): CLAUDE.<wbr>md says the human pushes with git push, not scripts/github.<wbr>sh push</div></div><div class="v-note">Evidence: grep for coupons, soft-delete, scenario, and github.sh in the design record and CLAUDE.md finds only the one-line reasons</div></div>
+<div class="v-status"><span class="v-warn"><i class="ti ti-history" aria-hidden="true"></i> Changed since the last approval (rev <span class="m">113e2f3</span>), so it needs approving again.</span><span class="v-warn"><i class="ti ti-lock" aria-hidden="true"></i> Approval blocked: intent rev 85b0df0 isn&#39;t approved (last approved: 85fbfa6).</span></div>
+<div class="v-row"><button type="button" data-prompt="I want changes to the #5 plan (rev 0b8648f)." onclick="var p=this.dataset.prompt;typeof sendPrompt===&#39;function&#39;?sendPrompt(p):navigator.clipboard.writeText(p)">Request changes ↗</button></div>
+</div>

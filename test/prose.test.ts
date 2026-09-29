@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { prose, type ProseChange } from '../src/render/kinds/prose.ts'
+import { en } from '../src/render/lang/en.ts'
 import type { ReconItem, ResultGateView } from '../src/render/result-gate.ts'
 
 const item = (category: ReconItem['category'], detail: ProseChange, extra: Partial<ReconItem> = {}): ReconItem => ({
@@ -27,20 +28,20 @@ const removed = item('removed', { what: 'sectionB', from: 'a.md', why: 'obsolete
 const reworded = item('content-changed', { what: 'paragraphC', diff: '- old words\n+ new words', why: 'clearer' })
 
 test('mechanical changes are table rows', () => {
-  const html = prose.body(view([moved]))
+  const html = prose.body(view([moved]), en)
   assert.match(html, /<th>What<\/th><th>Change<\/th><th>From<\/th><th>To<\/th><th>Plan<\/th><th>Why<\/th>/)
   assert.match(html, /<tr data-breaking="false"><td class="m">sectionA<\/td>.*<td>a\.md<\/td><td>b\.md<\/td>.*grouped<\/td><\/tr>/)
 })
 
 test('wording changes are diff blocks with marked lines and a why line', () => {
-  const html = prose.body(view([reworded]))
+  const html = prose.body(view([reworded]), en)
   assert.ok(!html.includes('<table'))
   assert.match(html, /<pre class="v-diff"><span class="v-del">- old words<\/span>\n<span class="v-add">\+ new words<\/span><\/pre>/)
   assert.match(html, /Why: clearer/)
 })
 
 test('changes keep their order, and consecutive rows share a table', () => {
-  const html = prose.body(view([moved, removed, reworded, moved]))
+  const html = prose.body(view([moved, removed, reworded, moved]), en)
   assert.equal(html.match(/<table/g)?.length, 2)
   const order = ['sectionA', 'sectionB', 'paragraphC'].map((w) => html.indexOf(w))
   assert.deepEqual(order, order.toSorted((a, b) => a - b))
@@ -48,7 +49,7 @@ test('changes keep their order, and consecutive rows share a table', () => {
 })
 
 test('every row and block carries data-breaking', () => {
-  const html = prose.body(view([moved, removed, reworded]))
+  const html = prose.body(view([moved, removed, reworded]), en)
   assert.equal(html.match(/data-breaking="(true|false)"/g)?.length, 3)
   assert.match(html, /<tr data-breaking="true"><td class="m">sectionB/)
   assert.match(html, /<div class="v-prose" data-breaking="false">/)

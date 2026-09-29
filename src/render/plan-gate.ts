@@ -1,6 +1,7 @@
 import type { Expect, Intent, PlanStep } from '../model.ts'
-import { displayId, esc, plural, shortStepId, symbol } from './html.ts'
+import { displayId, esc, shortStepId, symbol } from './html.ts'
 import { acceptanceSection, areasChip, blockers, gateButtons, INTENT_STYLE, questionsSection, verdictLines } from './intent.ts'
+import type { Messages } from './lang/index.ts'
 import { style } from './style.ts'
 
 export interface PlanGateView {
@@ -16,17 +17,18 @@ export interface PlanGateView {
 
 const riskTone = { low: 'v-ok', medium: 'v-warn', high: 'v-bad' }
 
-function expectLines(e: Expect): string[] {
+function expectLines(e: Expect, t: Messages): string[] {
+  const x = t.plan.expect
   const ref = (r: NonNullable<Expect['add']>[number]) =>
     [r.symbol, r.type && `: ${r.type}`, r.signature && ` ${r.signature}`, r.from && r.to && ` ${r.from} → ${r.to}`].filter(Boolean).join('')
   return [
-    ...(e.add ?? []).map((r) => `add: ${ref(r)}`),
-    ...(e.remove ?? []).map((s) => `remove: ${s}`),
-    ...(e.change ?? []).map((r) => `change: ${ref(r)}`),
-    ...(e.unchanged ?? []).map((s) => `unchanged: ${s}`),
-    ...(e.sections ?? []).map((r) => `section: ${r.doc} § ${r.section}`),
-    ...(e.rules ?? []).map((c) => `rule (checked by ${c.checkedBy}): ${c.text}`),
-    ...(e.invariants ?? []).map((c) => `invariant (checked by ${c.checkedBy}): ${c.text}`),
+    ...(e.add ?? []).map((r) => `${x.add}: ${ref(r)}`),
+    ...(e.remove ?? []).map((s) => `${x.remove}: ${s}`),
+    ...(e.change ?? []).map((r) => `${x.change}: ${ref(r)}`),
+    ...(e.unchanged ?? []).map((s) => `${x.unchanged}: ${s}`),
+    ...(e.sections ?? []).map((r) => `${x.section}: ${r.doc} § ${r.section}`),
+    ...(e.rules ?? []).map((c) => `${x.rule(x.checkedBy[c.checkedBy])}: ${c.text}`),
+    ...(e.invariants ?? []).map((c) => `${x.invariant(x.checkedBy[c.checkedBy])}: ${c.text}`),
   ]
 }
 
@@ -42,45 +44,48 @@ const STYLE = style(`${INTENT_STYLE}
 .v-reason{display:none}
 .v:has(input[value=reasons]:checked) .v-reason{display:block}`)
 
-export function renderPlanGate(view: PlanGateView): string {
+export function renderPlanGate(view: PlanGateView, t: Messages): string {
   const { intent, steps, planRev, intentRev, approvedIntentRev, approvedPlanRev } = view
   const id = displayId(intent.id)
   // Intent-level questions are settled before planning starts, so only code-raised ones reach this gate.
   const questions = intent.openQuestions.filter((q) => q.origin === 'code')
-  const blocked = blockers(questions)
-  if (approvedIntentRev !== intentRev) blocked.push(`intent rev ${intentRev} isn't approved (last approved: ${approvedIntentRev ?? 'never'})`)
+  const blocked = blockers(questions, t)
+  if (approvedIntentRev !== intentRev) blocked.push(t.plan.intentNotApproved(intentRev, approvedIntentRev))
   const short = (stepId: string) => shortStepId(stepId, intent.id)
   const hiddenReasons = steps.some((s) => s.risk !== 'high' && s.riskReason)
 
   const stepRows = steps.map((s) => {
-    const discovered = s.origin === 'discovered' ? '<span class="v-pill v-warn">discovered</span>' : ''
-    const after = s.dependsOn.length ? `<span class="v-dim" style="font-size:12px">after ${esc(s.dependsOn.map(short).join(', '))}</span>` : ''
+    const discovered = s.origin === 'discovered' ? `<span class="v-pill v-warn">${t.plan.discovered}</span>` : ''
+    const after = s.dependsOn.length ? `<span class="v-dim" style="font-size:12px">${t.plan.after(esc(s.dependsOn.map(short).join(', ')))}</span>` : ''
     const reason = s.riskReason
-      ? `<div class="v-note${s.risk === 'high' ? '' : ' v-reason'}">Risk: ${esc(s.riskReason)}</div>`
+      ? `<div class="v-note${s.risk === 'high' ? '' : ' v-reason'}">${t.plan.riskReason(esc(s.riskReason))}</div>`
       : ''
-    const lines = expectLines(s.expect).map((l) => `<div>${symbol(l)}</div>`).join('')
-    return `<div class="v-step"><div class="v-row"><span style="font-weight:500" title="${esc(displayId(s.id))}">${esc(short(s.id))}</span><span class="v-chip m">${esc(s.kind)}</span><span class="v-pill ${riskTone[s.risk]}">${s.risk} risk</span>${discovered}${after}</div>
-<div>${esc(s.summary)}</div>${reason}${lines ? `<div class="v-expect">${lines}</div>` : ''}<div class="v-note">Evidence: ${esc(s.evidence.join('; '))}</div></div>`
+    const lines = expectLines(s.expect, t).map((l) => `<div>${symbol(l)}</div>`).join('')
+    return `<div class="v-step"><div class="v-row"><span style="font-weight:500" title="${esc(displayId(s.id))}">${esc(short(s.id))}</span><span class="v-chip m">${esc(s.kind)}</span><span class="v-pill ${riskTone[s.risk]}">${t.plan.risk[s.risk]}</span>${discovered}${after}</div>
+<div>${esc(s.summary)}</div>${reason}${lines ? `<div class="v-expect">${lines}</div>` : ''}<div class="v-note">${t.plan.evidence(esc(s.evidence.join('; ')))}</div></div>`
   })
 
   const buttons = gateButtons(
     intent,
     questions,
     approvedPlanRev === planRev || blocked.length > 0,
-    ['Approve plan', `Approve the plan gate for ${id} at rev ${planRev}.`],
-    `I want changes to the ${id} plan (rev ${planRev}).`,
+    [t.plan.approve, t.plan.approvePrompt(id, planRev)],
+    t.plan.changesPrompt(id, planRev),
+    t,
   )
+  const state = blocked.length ? t.state.blocked : approvedPlanRev === planRev ? t.state.approved : t.state.ready
+  const stepCount = t.plan.steps(steps.length)
 
   return `<div class="v">${STYLE}
-<h2 class="sr-only">Plan, plan gate: ${esc(id)} ${esc(intent.title)}, plan rev ${esc(planRev)}, ${plural(steps.length, 'step')}. ${blocked.length ? 'Approval blocked' : approvedPlanRev === planRev ? 'Approved' : 'Ready for decision'}.</h2>
-<div class="v-row"><span class="v-badge"><i class="ti ti-list-check" aria-hidden="true"></i> Plan</span><span class="v-sec" style="font-size:13px">Plan gate · approve this decomposition before work starts?</span></div>
-<div class="v-row"><span style="font-weight:500;font-size:15px">${esc(id)}</span><span class="v-sec">${esc(intent.title)}</span><span class="v-chip">intent rev <span class="m">${esc(intentRev)}</span></span><span class="v-chip">plan rev <span class="m">${esc(planRev)}</span></span><span class="v-chip">${plural(steps.length, 'step')}</span>${areasChip(intent)}</div>
-${acceptanceSection(intent, `Acceptance criteria (from intent rev ${intentRev})`)}
-${questionsSection(questions, 'Found while planning: needs your decision')}
-<div class="v-h">Steps, in order</div>
-${hiddenReasons ? '<div class="v-row"><label class="v-toggle"><input type="checkbox" value="reasons">Show all risk reasons</label></div>' : ''}
+<h2 class="sr-only">${esc(t.plan.sr(id, intent.title, planRev, stepCount, state))}</h2>
+<div class="v-row"><span class="v-badge"><i class="ti ti-list-check" aria-hidden="true"></i> ${t.plan.badge}</span><span class="v-sec" style="font-size:13px">${t.plan.gate}</span></div>
+<div class="v-row"><span style="font-weight:500;font-size:15px">${esc(id)}</span><span class="v-sec">${esc(intent.title)}</span><span class="v-chip">${t.intentRev} <span class="m">${esc(intentRev)}</span></span><span class="v-chip">${t.planRev} <span class="m">${esc(planRev)}</span></span><span class="v-chip">${stepCount}</span>${areasChip(intent, t)}</div>
+${acceptanceSection(intent, t.plan.acceptance(intentRev))}
+${questionsSection(questions, t.plan.foundWhilePlanning, t)}
+<div class="v-h">${t.plan.stepsInOrder}</div>
+${hiddenReasons ? `<div class="v-row"><label class="v-toggle"><input type="checkbox" value="reasons">${t.plan.showReasons}</label></div>` : ''}
 ${stepRows.join('\n')}
-<div class="v-status">${verdictLines(blocked, planRev, approvedPlanRev)}</div>
+<div class="v-status">${verdictLines(blocked, planRev, approvedPlanRev, t)}</div>
 <div class="v-row">${buttons}</div>
 </div>`
 }

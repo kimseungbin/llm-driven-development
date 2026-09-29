@@ -1,0 +1,559 @@
+{
+  "schemaVersion": 1,
+  "view": "plan-gate",
+  "intentRev": "8660e85",
+  "planRev": "77df704",
+  "approvedIntentRev": "1bc1770",
+  "approvedPlanRev": "fa0a214",
+  "intent": {
+    "schemaVersion": 1,
+    "id": "1",
+    "kind": "intent",
+    "title": "Settle the intent and plan structure and gate views",
+    "request": "We have settled UI and structure for both intent and plan right?\n\nSo let's do it with the tools we already have. So it's like self-.... or recursive",
+    "problem": "The intent and plan formats and their gate views are only partly decided. The open questions are scattered through the design record, so it's hard to tell what's settled, and checking a plan against real changes can't start until a step's expectations have a defined shape.",
+    "areas": [
+      "model",
+      "store",
+      "render",
+      "skills",
+      "docs"
+    ],
+    "acceptance": [
+      "Every question below is decided, and the design record shows each one as decided.",
+      "The formats, their validation, and the authoring skills match every decision that changes a format.",
+      "The intent gate and plan gate layouts are each approved as a whole, after seeing them rendered on a real scenario.",
+      "The review-side questions are tracked in their own intent, so none of them get lost."
+    ],
+    "deferred": [
+      {
+        "item": "Review-side design questions: observed-only reviews for your own agents' work, whether reviews reach other authors, where approvals live once there's a team, and whether inline review views show only the rows that need a decision",
+        "reason": "They belong to the third gate, which hasn't been used on a real step yet, so deciding them now would be guessing.",
+        "followUp": "2"
+      }
+    ],
+    "nonGoals": [
+      {
+        "item": "Step kinds for front-end, database, and infrastructure changes",
+        "reason": "So far these are opinions only. Kinds get added when a scenario needs one."
+      }
+    ],
+    "openQuestions": [],
+    "decisions": [
+      {
+        "id": "Q1",
+        "question": "Who breaks an intent into steps and writes each step's expectations?",
+        "answer": "The agent proposes the steps and their expectations after reading the code, and the human approves, edits, or rejects them at the plan gate.",
+        "origin": "request"
+      },
+      {
+        "id": "Q2",
+        "question": "What's the list of step kinds, and does a step's risk come from its kind?",
+        "answer": "Start with five kinds (dto-shape, signature-change, behavior-change, feature, non-semantic) plus a fallback, open to adding more. If the list keeps growing, move to nested kinds. Risk is set per step, not derived from its kind.",
+        "origin": "request"
+      },
+      {
+        "id": "Q3",
+        "question": "How fine-grained is a plan: one step per logical change, or one step per field or symbol?",
+        "answer": "One step per logical change, whose expectations list every symbol it touches.",
+        "origin": "request"
+      },
+      {
+        "id": "Q4",
+        "question": "What shape do a step's expectations take, so they can be checked against what actually changed?",
+        "answer": "A fixed, validated shape per kind. Symbol lists (added, removed, changed from and to, unchanged) are checked by machine; rules and invariants stay prose, marked as checked by a test or the human. Anything machine-checked must be a symbol list, never prose. The fallback kind has no machine check.",
+        "origin": "request"
+      },
+      {
+        "id": "Q11",
+        "question": "A step's risk is now set per step, proposed by the agent. Does it need a stated reason?",
+        "answer": "A reason is required only for high-risk steps, but the agent records a one-line reason for every step. Views show high-risk reasons by default and hide the others until the reader turns them on.",
+        "origin": "request"
+      },
+      {
+        "id": "Q5",
+        "question": "How are relationships between intents recorded?",
+        "answer": "Typed links stored on one side only: blocks, duplicates, parent, plus the existing follow-up for deferred work. Links between steps of different intents go in the step's dependencies at the plan gate. Reverse links are computed, and a prose mention is just a mention.",
+        "origin": "request"
+      },
+      {
+        "id": "Q6",
+        "question": "How does a decision that needs someone else's confirmation get tracked, like Finance confirming the tax treatment?",
+        "answer": "It stays an open question owned by the outside party, and it blocks the intent until they confirm. Questions get an owner, which defaults to the approving human.",
+        "origin": "request"
+      },
+      {
+        "id": "Q7",
+        "question": "Should each acceptance criterion name the stakeholder need it serves?",
+        "answer": "Never. Acceptance criteria stay plain statements; the problem names who feels the pain.",
+        "origin": "request"
+      },
+      {
+        "id": "Q8",
+        "question": "What format are intents and plans written in: JSON only, or markdown with a structured header?",
+        "answer": "JSON only, written through the CLI. Markdown may be added later as an input the CLI converts.",
+        "origin": "request"
+      },
+      {
+        "id": "Q9",
+        "question": "The area list (fe, be, db, infra) doesn't fit every repo; this tool itself is a command-line tool that stores data in git. Should each repo define its own areas?",
+        "answer": "Each repo declares its own closed list of areas in a small config file, defaulting to fe, be, db, and infra. A setup skill helps create that config: it looks at the repo's layout, proposes an area list, and the human confirms it.",
+        "origin": "request"
+      },
+      {
+        "id": "Q10",
+        "question": "What's the third gate called?",
+        "answer": "The result gate. Its view badge becomes 'Result', and 'review' stays the word for what happens at every gate.",
+        "origin": "request"
+      },
+      {
+        "id": "Q12",
+        "question": "Plans already stored in refs use the current step format: #7 in the soft-delete repo, and this plan itself once its steps are written. Per-step risk and fixed expectation shapes change that format. Migrate the stored plans in place, or version the format and keep reading the old one?",
+        "answer": "Migrate in one step: switch to step format version 2 and migrate every stored plan in the same step. Stored plans are briefly unreadable between the code change and the migration, and that's accepted.",
+        "origin": "code"
+      },
+      {
+        "id": "Q13",
+        "question": "Where does a repo's area list live: a committed file in the product repo, or a ref next to the plans?",
+        "answer": "A ref next to the plans (refs/plans-config), written through the CLI with event history like plans. It works on repos you don't own. Revisit if areas ever gain path patterns.",
+        "origin": "code"
+      },
+      {
+        "id": "Q14",
+        "question": "The dto-shape kind (decided in Q2) covers any change to a data type's fields, not just data transfer objects: domain entities and the tool's own model too. Rename it?",
+        "answer": "Rename dto-shape to data-shape: a change to the fields of a data type (add, remove, rename, retype, or nullability), whatever role the type plays. Supersedes only the kind's name from Q2.",
+        "origin": "request"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "schemaVersion": 2,
+      "id": "1.1",
+      "parent": "1",
+      "kind": "data-shape",
+      "origin": "planned",
+      "summary": "Switch steps to format version 2, with their own risk and a fixed expectation shape per kind, and migrate every stored plan",
+      "risk": "high",
+      "riskReason": "Stored plans can't be read between the code change and the migration (accepted in Q12), and the migration rewrites this plan too.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "PlanStep.risk",
+            "type": "'low' | 'medium' | 'high'"
+          },
+          {
+            "symbol": "PlanStep.riskReason",
+            "type": "string"
+          },
+          {
+            "symbol": "STEP_KINDS",
+            "type": "data-shape | signature-change | behavior-change | feature | non-semantic | other"
+          },
+          {
+            "symbol": "RISKS",
+            "type": "'low' | 'medium' | 'high'"
+          },
+          {
+            "symbol": "Risk",
+            "type": "type"
+          },
+          {
+            "symbol": "StepKind",
+            "type": "type"
+          },
+          {
+            "symbol": "Check",
+            "type": "{ text, checkedBy }"
+          },
+          {
+            "symbol": "SymbolRef",
+            "type": "type"
+          },
+          {
+            "symbol": "Expect",
+            "type": "type"
+          },
+          {
+            "symbol": "EXPECT_FIELDS",
+            "type": "add | remove | change | unchanged | rules | invariants"
+          },
+          {
+            "symbol": "scripts/migrate-steps-v2.ts",
+            "type": "one-off migration script"
+          }
+        ],
+        "remove": [
+          "riskByKind"
+        ],
+        "change": [
+          {
+            "symbol": "PlanStep.schemaVersion",
+            "from": "1",
+            "to": "2"
+          },
+          {
+            "symbol": "dtoShape",
+            "from": "dtoShape",
+            "to": "dataShape"
+          },
+          {
+            "symbol": "describe",
+            "from": "describe",
+            "to": "expectLines"
+          }
+        ],
+        "rules": [
+          {
+            "text": "each kind's expectations are validated: symbol lists (add, remove, change from and to, unchanged) for machine checks, and rules and invariants as prose, each marked as checked by a test or by the human",
+            "checkedBy": "human"
+          },
+          {
+            "text": "a high-risk step must give its reason",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the plan gate shows each step's own risk; high-risk reasons are always visible, the rest sit behind a CSS-only toggle",
+            "checkedBy": "human"
+          },
+          {
+            "text": "soft-delete #7 and this repo's #1 are each migrated by one edit event, right after the code change",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the dto-shape kind is renamed data-shape everywhere: stored plans, the sample view, and the renderer registry",
+            "checkedBy": "human"
+          }
+        ],
+        "invariants": [
+          {
+            "text": "no stored plan is left in format version 1 after this step",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "plan-view builds for soft-delete #7 and this repo's #1 under the new validation",
+        "a version-1 step, and a high-risk step without a reason, are both rejected",
+        "each migration shows up as a single edit event in git log"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "1.2",
+      "parent": "1",
+      "kind": "data-shape",
+      "origin": "planned",
+      "summary": "Let a question name who must answer it",
+      "risk": "low",
+      "riskReason": "The field is optional, so every existing question stays valid.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "Question.owner",
+            "type": "string, defaulting to the approving human"
+          },
+          {
+            "symbol": "Decision.owner",
+            "type": "string, copied from the question by decide"
+          }
+        ],
+        "rules": [
+          {
+            "text": "a question owned by someone other than the approver shows its owner",
+            "checkedBy": "human"
+          },
+          {
+            "text": "an owned question blocks its gate until decide records the owner's answer",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "the intent gate renders an owned question with its owner",
+        "validation accepts questions with and without an owner"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "1.3",
+      "parent": "1",
+      "kind": "feature",
+      "origin": "planned",
+      "summary": "Typed links between intents, and step dependencies that cross intents",
+      "risk": "medium",
+      "riskReason": "Validation starts reading other intents' refs, so a missing or broken ref now affects this intent too.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "Intent.relations",
+            "type": "{ type: 'blocks' | 'duplicates' | 'parent', target: string }[]"
+          },
+          {
+            "symbol": "incomingLinks",
+            "signature": "(repo, id) => links from other intents that point at this one"
+          },
+          {
+            "symbol": "RELATION_TYPES",
+            "type": "'blocks' | 'duplicates' | 'parent'"
+          },
+          {
+            "symbol": "IncomingLink",
+            "type": "{ from, type, step?, on? }"
+          },
+          {
+            "symbol": "linksSection",
+            "signature": "(intent, incoming) => html"
+          }
+        ],
+        "change": [
+          {
+            "symbol": "PlanStep.dependsOn",
+            "from": "steps of this plan",
+            "to": "steps of this plan or of another intent in the same repo"
+          },
+          {
+            "symbol": "validate",
+            "from": "(where, snapshot)",
+            "to": "(where, snapshot, repo)"
+          }
+        ],
+        "rules": [
+          {
+            "text": "links are stored on one side only, and reverse links are computed by scanning refs/plans",
+            "checkedBy": "human"
+          },
+          {
+            "text": "a link or cross-intent dependency must point at an intent, and step, that exists",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the intent gate shows outgoing and incoming links, follow-ups included",
+            "checkedBy": "human"
+          },
+          {
+            "text": "each relation is listed once, and an intent can't link to itself",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "validation rejects a link to an intent that doesn't exist",
+        "this repo's #2 shows #1 as linking to it"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "1.4",
+      "parent": "1",
+      "kind": "feature",
+      "origin": "planned",
+      "summary": "Each repo keeps its own area list in a config ref, with a skill that helps set it up",
+      "risk": "medium",
+      "riskReason": "Changing a repo's list can make its existing intents invalid until their areas are edited.",
+      "expect": {
+        "add": [
+          {
+            "symbol": "refs/ldd/config",
+            "type": "config ref whose tree holds the area list"
+          },
+          {
+            "symbol": "loadAreas",
+            "signature": "(repo) => string[]"
+          },
+          {
+            "symbol": "areas",
+            "signature": "node src/cli.ts areas --repo <repo>"
+          },
+          {
+            "symbol": "set-areas",
+            "signature": "node src/cli.ts set-areas --repo <repo> --areas <a,b,...>"
+          },
+          {
+            "symbol": "setAreas",
+            "signature": "(repo, areas) => ids of intents the new list leaves invalid"
+          },
+          {
+            "symbol": "readConfig",
+            "signature": "(repo) => RepoConfig | null"
+          },
+          {
+            "symbol": "commitConfig",
+            "signature": "(repo, config, event, expectedTip) => sha"
+          },
+          {
+            "symbol": "RepoConfig",
+            "type": "{ schemaVersion: 1; areas: string[] }"
+          }
+        ],
+        "change": [
+          {
+            "symbol": "validateIntent",
+            "from": "areas from the fixed list",
+            "to": "areas from the repo's list, defaulting to fe, be, db, infra"
+          },
+          {
+            "symbol": "AREAS",
+            "from": "AREAS",
+            "to": "DEFAULT_AREAS"
+          },
+          {
+            "symbol": "Intent.areas",
+            "from": "Area[]",
+            "to": "string[]"
+          }
+        ],
+        "rules": [
+          {
+            "text": "the config is written only through the CLI, as an event commit, like plans",
+            "checkedBy": "human"
+          },
+          {
+            "text": "scripts/github.sh pushes and fetches the config ref along with the plans",
+            "checkedBy": "human"
+          },
+          {
+            "text": "a setup skill looks at the repo's layout, proposes an area list, and asks the human to confirm it before writing it",
+            "checkedBy": "human"
+          },
+          {
+            "text": "set-areas rejects an empty list, names that aren't short lowercase words, and duplicates, and names every intent the new list leaves invalid",
+            "checkedBy": "human"
+          }
+        ],
+        "remove": [
+          "Area"
+        ]
+      },
+      "evidence": [
+        "an intent using an area outside its repo's list is rejected",
+        "a repo without a config accepts the default four",
+        "the config ref round-trips through github.sh push and pull"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "1.5",
+      "parent": "1",
+      "kind": "signature-change",
+      "origin": "planned",
+      "summary": "Rename the evidence gate to the result gate",
+      "risk": "low",
+      "riskReason": "Only the sample view uses the old name, and it's renamed in the same step.",
+      "expect": {
+        "change": [
+          {
+            "symbol": "renderEvidenceGate",
+            "from": "renderEvidenceGate",
+            "to": "renderResultGate"
+          },
+          {
+            "symbol": "EvidenceGateView",
+            "from": "EvidenceGateView",
+            "to": "ResultGateView"
+          },
+          {
+            "symbol": "View.view",
+            "from": "'evidence-gate'",
+            "to": "'result-gate'"
+          },
+          {
+            "symbol": "render/evidence-gate.ts",
+            "from": "evidence-gate.ts",
+            "to": "result-gate.ts"
+          },
+          {
+            "symbol": "viewTitle",
+            "from": "'<id> review'",
+            "to": "'<id> result'"
+          }
+        ],
+        "rules": [
+          {
+            "text": "the view's badge reads Result, and its label names the result gate",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the sample view is renamed along with it",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "the sample renders under the new name",
+        "the old name appears nowhere except in the design record's history"
+      ],
+      "dependsOn": []
+    },
+    {
+      "schemaVersion": 2,
+      "id": "1.6",
+      "parent": "1",
+      "kind": "non-semantic",
+      "origin": "planned",
+      "summary": "Update the authoring skills to match the decisions",
+      "risk": "medium",
+      "riskReason": "The skills drive how every future intent and plan gets written, so a wrong rule spreads.",
+      "expect": {
+        "rules": [
+          {
+            "text": "structure-request: a question can name an owner; a decision that needs someone else's confirmation stays open, owned by them; acceptance criteria never name stakeholders; intents are JSON, written through the CLI",
+            "checkedBy": "human"
+          },
+          {
+            "text": "propose-plan: the agent proposes and the human approves; one step per logical change, listing every symbol it touches; the six kinds; a risk and a one-line reason on every step; each kind's expectation shape; links and cross-intent dependencies",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "every decision that affects authoring appears as a rule in one of the skills",
+        "a dry run of each skill on a small request produces output that validates"
+      ],
+      "dependsOn": [
+        "1.1",
+        "1.2",
+        "1.3",
+        "1.4",
+        "1.5"
+      ]
+    },
+    {
+      "schemaVersion": 2,
+      "id": "1.7",
+      "parent": "1",
+      "kind": "non-semantic",
+      "origin": "planned",
+      "summary": "Record the decisions in the design record, and get the gate layouts approved",
+      "risk": "low",
+      "riskReason": "Documentation, plus a human sign-off; no code changes.",
+      "expect": {
+        "rules": [
+          {
+            "text": "Q1 through Q13 move from open questions into the decided sections, dated",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the Where we left off section reflects the result",
+            "checkedBy": "human"
+          },
+          {
+            "text": "the intent-gate and plan-gate layouts are shown on this repo's own intents (#3 and #5) and approved as a whole",
+            "checkedBy": "human"
+          }
+        ]
+      },
+      "evidence": [
+        "no intent- or plan-structure item is left under Open questions",
+        "the human's layout approval is recorded as a decision"
+      ],
+      "dependsOn": [
+        "1.6"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+<div class="v"><style>
+.v{padding:.5rem 0 0;font-size:14px;color:var(--text-primary)}
+.v .m{font-family:var(--font-mono);font-size:12px}
+.v-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
+.v-badge{background:var(--bg-accent);color:var(--text-accent);font-size:12px;padding:3px 10px;border-radius:var(--radius)}
+.v-chip{font-size:12px;padding:3px 10px;border-radius:var(--radius);background:var(--surface-1);color:var(--text-secondary)}
+.v-pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--radius);background:var(--surface-1)}
+.v-pill.v-ok{background:var(--bg-success)}.v-pill.v-warn{background:var(--bg-warning)}.v-pill.v-bad{background:var(--bg-danger)}
+.v-ok{color:var(--text-success)}.v-warn{color:var(--text-warning)}.v-bad{color:var(--text-danger)}.v-sec{color:var(--text-secondary)}.v-dim{color:var(--text-muted)}
+.v-note{font-size:11px;color:var(--text-muted);margin-top:4px}
+.v-h{font-size:13px;font-weight:500;margin:16px 0 6px}
+.v-status{display:grid;gap:6px;margin:12px 0;font-size:13px}
+
+.v-list{margin:0;padding-left:20px;font-size:13px}
+.v-q{border:0.5px solid var(--border-warning);border-radius:var(--radius);padding:8px 12px;margin-bottom:8px;font-size:13px}
+.v-d{border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 12px;margin-bottom:8px;font-size:13px}
+.v-step{border-top:0.5px solid var(--border);padding:10px 0}
+.v-step .v-row{margin-bottom:4px}
+.v-expect{font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);margin:6px 0 0}
+.v-toggle{position:relative;font-size:13px;padding:6px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);cursor:pointer}
+.v-toggle:has(input:checked){background:var(--surface-1)}
+.v-toggle:has(input:focus-visible){outline:2px solid var(--border-accent)}
+.v-toggle input{position:absolute;opacity:0;pointer-events:none}
+.v-reason{display:none}
+.v:has(input[value=reasons]:checked) .v-reason{display:block}
+</style>
+<h2 class="sr-only">Plan, plan gate: #2 Settle the review-side design, plan rev f890963, 2 steps. Approval blocked.</h2>
+<div class="v-row"><span class="v-badge"><i class="ti ti-list-check" aria-hidden="true"></i> Plan</span><span class="v-sec" style="font-size:13px">Plan gate · approve this decomposition before work starts?</span></div>
+<div class="v-row"><span style="font-weight:500;font-size:15px">#2</span><span class="v-sec">Settle the review-side design</span><span class="v-chip">intent rev <span class="m">ee6ac1e</span></span><span class="v-chip">plan rev <span class="m">f890963</span></span><span class="v-chip">2 steps</span><span class="v-chip">areas <span class="m">model, render</span></span></div>
+<div class="v-h">Acceptance criteria (from intent rev ee6ac1e)</div><ul class="v-list"><li>Each question below is decided after reviewing at least one real step result.</li></ul>
+
+<div class="v-h">Steps, in order</div>
+<div class="v-row"><label class="v-toggle"><input type="checkbox" value="reasons">Show all risk reasons</label></div>
+<div class="v-step"><div class="v-row"><span style="font-weight:500" title="#2.1">.1</span><span class="v-chip m">data-shape</span><span class="v-pill v-ok">low risk</span></div>
+<div>Result-gate items carry whether they were inferred, whatever their kind</div><div class="v-note v-reason">Risk: Only the result-gate view input changes; the one sample is updated with it, and no stored plan data uses these fields.</div><div class="v-expect"><div>add: ReconItem.<wbr>classifiedBy: &#39;deterministic&#39; | &#39;inferred&#39;</div><div>add: ReconItem.<wbr>confidence: number | undefined</div><div>remove: FieldChange.<wbr>classifiedBy</div><div>remove: FieldChange.<wbr>confidence</div><div>change: dataShape.<wbr>body reads classifiedBy and confidence from detail → reads them from the item</div><div>unchanged: ReconItem.<wbr>plan</div><div>unchanged: ReconItem.<wbr>breaking</div><div>unchanged: ReconItem.<wbr>detail</div><div>unchanged: KindRenderer</div><div>invariant (checked by human): the KRW sample renders the same HTML before and after</div></div><div class="v-note">Evidence: diff of node src/cli.ts render samples/krw-12.1.result-gate.json output before and after is empty; npm test passes</div></div>
+<div class="v-step"><div class="v-row"><span style="font-weight:500" title="#2.2">.2</span><span class="v-chip m">behavior-change</span><span class="v-pill v-ok">low risk</span><span class="v-dim" style="font-size:12px">after .1</span></div>
+<div>The result gate lists every row, attention first</div><div class="v-note v-reason">Risk: Only row order in a rendered view changes; counts, blockers, and the breaking filter stay the same.</div><div class="v-expect"><div>add: attention (item: ReconItem) =&gt; number, the group rank the sort uses</div><div>change: renderResultGate rows in input order → rows ordered unplanned, missing, breaking, inferred, then matched, keeping input order within each group</div><div>unchanged: KindRenderer</div><div>unchanged: ReconItem</div><div>rule (checked by test): a row goes in the first group it qualifies for, so an unplanned breaking row sorts with unplanned</div><div>rule (checked by test): every row is still rendered; none is hidden or collapsed</div></div><div class="v-note">Evidence: test/result-gate.test.ts: &#39;result gate lists rows attention first&#39; and &#39;result gate renders every row&#39;; the KRW sample renders unplanned rows before matched ones</div></div>
+<div class="v-status"><span class="v-warn"><i class="ti ti-history" aria-hidden="true"></i> Changed since the last approval (rev <span class="m">919968b</span>), so it needs approving again.</span><span class="v-warn"><i class="ti ti-lock" aria-hidden="true"></i> Approval blocked: intent rev ee6ac1e isn&#39;t approved (last approved: cb351f7).</span></div>
+<div class="v-row"><button type="button" data-prompt="I want changes to the #2 plan (rev f890963)." onclick="var p=this.dataset.prompt;typeof sendPrompt===&#39;function&#39;?sendPrompt(p):navigator.clipboard.writeText(p)">Request changes ↗</button></div>
+</div>

@@ -1,0 +1,49 @@
+<div class="v"><style>
+.v{padding:.5rem 0 0;font-size:14px;color:var(--text-primary)}
+.v .m{font-family:var(--font-mono);font-size:12px}
+.v-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
+.v-badge{background:var(--bg-accent);color:var(--text-accent);font-size:12px;padding:3px 10px;border-radius:var(--radius)}
+.v-chip{font-size:12px;padding:3px 10px;border-radius:var(--radius);background:var(--surface-1);color:var(--text-secondary)}
+.v-pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--radius);background:var(--surface-1)}
+.v-pill.v-ok{background:var(--bg-success)}.v-pill.v-warn{background:var(--bg-warning)}.v-pill.v-bad{background:var(--bg-danger)}
+.v-ok{color:var(--text-success)}.v-warn{color:var(--text-warning)}.v-bad{color:var(--text-danger)}.v-sec{color:var(--text-secondary)}.v-dim{color:var(--text-muted)}
+.v-note{font-size:11px;color:var(--text-muted);margin-top:4px}
+.v-h{font-size:13px;font-weight:500;margin:16px 0 6px}
+.v-status{display:grid;gap:6px;margin:12px 0;font-size:13px}
+
+.v-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.v-stat{background:var(--surface-1);border-radius:var(--radius);padding:10px 12px;font-size:22px;font-weight:500}
+.v-stat>div:first-child{font-size:12px;font-weight:400;color:var(--text-secondary)}
+.v-row label{position:relative;font-size:13px;padding:6px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);cursor:pointer}
+.v-row label:has(input:checked){background:var(--surface-1)}
+.v-row label:has(input:focus-visible){outline:2px solid var(--border-accent)}
+.v-row input{position:absolute;opacity:0;pointer-events:none}
+.v:has(input[value=breaking]:checked) [data-breaking=false]{display:none}
+.v-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+.v-table th{text-align:left;font-weight:500;color:var(--text-secondary);padding:6px 8px;border-bottom:0.5px solid var(--border)}
+.v-table td{padding:8px;border-bottom:0.5px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+.v-table .v-grp th{font-size:11px;color:var(--text-muted);border-bottom:none;padding-bottom:0}
+.v-raw{margin:0;font-family:var(--font-mono);font-size:12px;white-space:pre-wrap}
+.v-prose{border-bottom:0.5px solid var(--border);padding:8px 0;font-size:13px}
+.v-diff{margin:6px 0;padding:8px 10px;background:var(--surface-1);border-radius:var(--radius);font-family:var(--font-mono);font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.v-diff .v-del{color:var(--text-danger)}.v-diff .v-add{color:var(--text-success)}
+</style>
+<h2 class="sr-only">Result, result gate, planned mode: DOCS-2.1. 1 matched, 1 unplanned, 0 missing, 0 breaking. Approval blocked.</h2>
+<div class="v-row"><span class="v-badge"><i class="ti ti-checklist" aria-hidden="true"></i> Result</span><span class="v-sec" style="font-size:13px">Result gate · planned mode · accept this step's result?</span></div>
+<div class="v-row"><span style="font-weight:500;font-size:15px">DOCS-2.1</span><span class="v-sec">Record the inline result-view decision</span><span class="v-chip m">docs</span><span class="v-chip">against plan rev <span class="m">8ab8b1c</span></span></div>
+<div class="v-stats"><div class="v-stat"><div>Matched</div><div class="v-ok">1</div></div><div class="v-stat"><div>Unplanned</div><div class="v-warn">1</div></div><div class="v-stat"><div>Planned, missing</div><div class="">0</div></div><div class="v-stat"><div>Breaking</div><div class="">0</div></div></div>
+<div class="v-row" role="radiogroup" aria-label="Filter changes"><label><input type="radio" name="v-filter-DOCS-2.1" value="all" checked>All changes</label><label><input type="radio" name="v-filter-DOCS-2.1" value="breaking">Breaking only</label></div>
+<div class="v-sec" style="font-size:12px;margin-bottom:6px">Observed in text · <span class="m">main..docs/inline-rows @ 921e0c3</span></div>
+<table class="v-table">
+<colgroup><col style="width:20%"><col style="width:14%"><col style="width:18%"><col style="width:18%"><col style="width:12%"><col style="width:18%"></colgroup>
+<thead><tr><th>What</th><th>Change</th><th>From</th><th>To</th><th>Plan</th><th>Why</th></tr></thead>
+<tbody><tr data-breaking="false"><td class="m">Sort items by attention first</td><td><span class="v-pill">moved?</span><span class="v-note">inferred</span></td><td>layouts.md § Leaning</td><td>layouts.md § Result gate</td><td><span class="v-warn">unplanned</span></td><td class="v-sec">It&#39;s decided now, so it leaves the leaning list.</td></tr></tbody>
+</table>
+<div class="v-prose" data-breaking="false"><div class="v-row" style="margin-bottom:0"><span class="m">docs/rendering/layouts.md § Result gate</span><span class="v-pill">content changed?</span><span class="v-note">inferred</span><span class="v-ok"><i class="ti ti-check" aria-hidden="true"></i> matched</span></div>
+<pre class="v-diff"><span class="v-del">- One result gate per intent renders one of these views for each step, together.</span>
+<span class="v-add">+ One result gate per intent renders one of these views for each step, together.</span>
+<span class="v-add">+ The inline view lists every row, sorted by attention first: unplanned, missing,</span>
+<span class="v-add">+ breaking, and inferred, then matched.</span></pre><div class="v-sec">Why: Records the decision where the layout is described.</div></div>
+<div class="v-status"><span class="v-ok"><i class="ti ti-shield-check" aria-hidden="true"></i> Invariant "every decision lands in exactly one doc": passed</span><span class="v-warn"><i class="ti ti-lock" aria-hidden="true"></i> Approval blocked: 1 unplanned change. Resolve them or override with a reason.</span></div>
+<div class="v-row"><button type="button" data-prompt="For DOCS-2.1, how should these unplanned changes be handled: attach to this step, split into a new step, or reject? Sort items by attention first" onclick="var p=this.dataset.prompt;typeof sendPrompt===&#39;function&#39;?sendPrompt(p):navigator.clipboard.writeText(p)">Triage unplanned ↗</button><button type="button" data-prompt="I want to override the approval block on DOCS-2.1 (1 unplanned change). What reason and evidence would the write path record?" onclick="var p=this.dataset.prompt;typeof sendPrompt===&#39;function&#39;?sendPrompt(p):navigator.clipboard.writeText(p)">Override with reason ↗</button></div>
+</div>
