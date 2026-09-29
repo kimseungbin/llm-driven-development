@@ -73,7 +73,7 @@ test('an unknown language fails with the list of languages', () => {
 })
 
 // Runs render with its user-level config in a temporary file, from inside a repo with its own config.
-function renderCli(opts: { global?: string; local?: string; format?: string }) {
+function renderCli(opts: { global?: string; local?: string; format?: string; extra?: string[] }) {
   const home = mkdtempSync(join(tmpdir(), 'ldd-lang-'))
   const globalConfig = join(home, 'gitconfig')
   writeFileSync(globalConfig, opts.global ? `[ldd]\n\tlang = ${opts.global}\n` : '')
@@ -81,7 +81,7 @@ function renderCli(opts: { global?: string; local?: string; format?: string }) {
   execFileSync('git', ['init', '-q', repo])
   if (opts.local) execFileSync('git', ['-C', repo, 'config', 'ldd.lang', opts.local])
   const view = fileURLToPath(new URL('8.intent-gate.json', dir))
-  const args = [cli, 'render', view, ...(opts.format ? ['--format', opts.format, '--cdn', 'https://cdn.example'] : [])]
+  const args = [cli, 'render', view, '--format', opts.format ?? 'widget', ...(opts.extra ?? [])]
   return spawnSync('node', args, { cwd: repo, encoding: 'utf8', env: { ...process.env, GIT_CONFIG_GLOBAL: globalConfig, XDG_CONFIG_HOME: home } })
 }
 const cli = fileURLToPath(new URL('../src/cli.ts', import.meta.url))
@@ -108,9 +108,10 @@ test('the page format is marked with the language and titled in it', () => {
   assert.match(out.stdout, /<title>#8 인텐트<\/title>/)
 })
 
-test('the loader format passes the language to the renderer it calls', () => {
-  const out = renderCli({ global: 'ko', format: 'loader' })
-  assert.match(out.stdout, /renderView\(\{.*\}, "ko"\)/s)
+test('the --cdn option is gone: the published renderer decides the CDN', () => {
+  const out = renderCli({ format: 'loader', extra: ['--cdn', 'https://cdn.example'] })
+  assert.equal(out.status, 1)
+  assert.match(out.stderr, /--cdn/)
 })
 
 test('a language with no catalog fails with the list of languages', () => {
