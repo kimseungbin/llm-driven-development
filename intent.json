@@ -16,12 +16,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q1",
-      "origin": "request",
-      "text": "What happens to the two scenario repos on GitHub (llmdd-scenario-coupons, llmdd-scenario-soft-delete) and the plans stored in them?",
-      "proposal": "Archive both on GitHub, so they become read-only but stay reversible, and delete the local clones. The plans stay readable in the archived repos. The alternatives are deleting them for good, which only you can do and can't be undone, or leaving them untouched but unused."
-    },
-    {
       "id": "Q2",
       "origin": "request",
       "text": "What happens to scenarios/ in this repo (the two README files, plus the gitignored clones)?",
@@ -34,5 +28,12 @@
       "proposal": "Drop the scenario status sections. Keep each finding as a one-line reason next to the decision it shaped, so the why survives without the scenario."
     }
   ],
-  "decisions": []
+  "decisions": [
+    {
+      "id": "Q1",
+      "question": "What happens to the two scenario repos on GitHub (llmdd-scenario-coupons, llmdd-scenario-soft-delete) and the plans stored in them?",
+      "answer": "Delete the repos. The human deletes both GitHub repos, and the plans stored in them are lost.",
+      "origin": "request"
+    }
+  ]
 }
