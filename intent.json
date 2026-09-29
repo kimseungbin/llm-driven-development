@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q2",
-      "origin": "request",
-      "text": "Prose changes, like moved doc sections or a skill's new rule, don't have a before and after value. How should they show?",
-      "proposal": "The prose kinds (instructions, docs, non-semantic) get their own table: What | From | To | Why, where From and To are the old and new location or wording. Before/after columns stay for code changes. The alternative is one table for every kind, with before and after holding the old and new location."
-    },
-    {
       "id": "Q3",
       "origin": "request",
       "text": "#1's, #2's, #3's, and #5's results were accepted with some wrong labels. What happens to them?",
@@ -45,6 +39,12 @@
       "id": "Q1",
       "question": "What are the categories?",
       "answer": "Shared list, subsets: one list (added, removed, renamed, moved, type changed, nullability changed, value changed, behavior changed, content changed); each kind declares which it can produce, as in the proposal. Validation rejects a category outside a kind's subset, and a change outside it shows as uncategorized.",
+      "origin": "request"
+    },
+    {
+      "id": "Q2",
+      "question": "Prose changes, like moved doc sections or a skill's new rule, don't have a before and after value. How should they show?",
+      "answer": "By what changed. Mechanical prose changes (moved, renamed, or a whole section added or removed) are table rows: What | From | To | Why. Wording changes (content changed, and behavior changed for instructions) are quoted, not tabled: one diff code block per change, - lines for removed and + lines for added text, with a line saying why. (User: if it's a simple or mechanical fix, a table is right; if sentences or paragraphs change, quote them as a code block.)",
       "origin": "request"
     }
   ]
