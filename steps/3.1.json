@@ -23,6 +23,11 @@
         "symbol": "usage",
         "from": "names refs/plans/<id>",
         "to": "names refs/ldd/plans/<id>"
+      },
+      {
+        "symbol": "CONFIG_REF",
+        "from": "'refs/ldd/config'",
+        "to": "derived from NAMESPACE"
       }
     ],
     "rules": [
@@ -60,6 +65,16 @@
     "unchanged": [
       "ref",
       "listIds"
+    ],
+    "add": [
+      {
+        "symbol": "NAMESPACE",
+        "type": "'refs/ldd/', the one spelling of the tool's namespace"
+      },
+      {
+        "symbol": "toolOwned",
+        "signature": "(spec) => whether a refspec belongs to the tool"
+      }
     ]
   },
   "evidence": [
