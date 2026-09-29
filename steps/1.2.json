@@ -12,6 +12,10 @@
       {
         "symbol": "Question.owner",
         "type": "string, defaulting to the approving human"
+      },
+      {
+        "symbol": "Decision.owner",
+        "type": "string, copied from the question by decide"
       }
     ],
     "rules": [
