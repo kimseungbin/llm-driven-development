@@ -11,9 +11,9 @@ export interface ReconItem {
   detail: unknown
 }
 
-export interface EvidenceGateView {
+export interface ResultGateView {
   schemaVersion: 1
-  view: 'evidence-gate'
+  view: 'result-gate'
   mode: 'planned' | 'observed-only'
   step: { id: string; summary: string; kind: string; planRev: string | null }
   observed: { kind: string; range: string; head: string }
@@ -22,7 +22,7 @@ export interface EvidenceGateView {
 }
 
 export interface KindRenderer {
-  body(view: EvidenceGateView): string
+  body(view: ResultGateView): string
   itemName(item: ReconItem): string
 }
 
@@ -43,7 +43,7 @@ const STYLE = style(`
 .v-table .v-grp th{font-size:11px;color:var(--text-muted);border-bottom:none;padding-bottom:0}
 .v-raw{margin:0;font-family:var(--font-mono);font-size:12px;white-space:pre-wrap}`)
 
-export function renderEvidenceGate(view: EvidenceGateView): string {
+export function renderResultGate(view: ResultGateView): string {
   const planned = view.mode === 'planned'
   const kind = kinds[view.observed.kind] ?? unknownKind
   const id = displayId(view.step.id)
@@ -92,8 +92,8 @@ export function renderEvidenceGate(view: EvidenceGateView): string {
   const filterName = `v-filter-${esc(id)}`
 
   return `<div class="v">${STYLE}
-<h2 class="sr-only">Review, evidence gate, ${modeText}: ${esc(id)}. ${summary}. ${blockers.length ? 'Approval blocked' : 'Ready for decision'}.</h2>
-<div class="v-row"><span class="v-badge"><i class="ti ti-checklist" aria-hidden="true"></i> Review</span><span class="v-sec" style="font-size:13px">Evidence gate · ${modeText} · accept this step's result?</span></div>
+<h2 class="sr-only">Result, result gate, ${modeText}: ${esc(id)}. ${summary}. ${blockers.length ? 'Approval blocked' : 'Ready for decision'}.</h2>
+<div class="v-row"><span class="v-badge"><i class="ti ti-checklist" aria-hidden="true"></i> Result</span><span class="v-sec" style="font-size:13px">Result gate · ${modeText} · accept this step's result?</span></div>
 <div class="v-row"><span style="font-weight:500;font-size:15px">${esc(id)}</span><span class="v-sec">${esc(view.step.summary)}</span><span class="v-chip m">${esc(view.step.kind)}</span>${against}</div>
 <div class="v-stats">${stat('Matched', planned ? byPlan('matched').length : null, 'v-ok')}${stat('Unplanned', planned ? unplanned.length : null, 'v-warn')}${stat('Planned, missing', planned ? missing.length : null, 'v-bad')}${stat('Breaking', breaking.length, 'v-bad')}</div>
 <div class="v-row" role="radiogroup" aria-label="Filter changes"><label><input type="radio" name="${filterName}" value="all" checked>All changes</label><label><input type="radio" name="${filterName}" value="breaking">Breaking only</label></div>

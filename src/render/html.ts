@@ -1,4 +1,4 @@
-import type { PlanMatch } from './evidence-gate.ts'
+import type { PlanMatch } from './result-gate.ts'
 
 const entities: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
 

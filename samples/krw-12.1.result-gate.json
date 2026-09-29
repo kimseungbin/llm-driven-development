@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "view": "evidence-gate",
+  "view": "result-gate",
   "mode": "planned",
   "step": {
     "id": "KRW-12.1",

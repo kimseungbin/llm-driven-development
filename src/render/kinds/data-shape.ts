@@ -1,4 +1,4 @@
-import type { KindRenderer } from '../evidence-gate.ts'
+import type { KindRenderer } from '../result-gate.ts'
 import { esc, planCell, symbol } from '../html.ts'
 
 interface FieldChange {

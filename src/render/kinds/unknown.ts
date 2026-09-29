@@ -1,4 +1,4 @@
-import type { KindRenderer } from '../evidence-gate.ts'
+import type { KindRenderer } from '../result-gate.ts'
 import { esc, planCell } from '../html.ts'
 
 export const unknownKind: KindRenderer = {
