@@ -2,51 +2,51 @@
   "schemaVersion": 2,
   "id": "5.1",
   "parent": "5",
-  "kind": "behavior-change",
+  "kind": "feature",
   "origin": "planned",
-  "summary": "Make the sync script handle this repo only",
+  "summary": "Replace the sync script with a setup command in the CLI",
   "risk": "medium",
-  "riskReason": "The script is how plan refs reach GitHub and a new Mac; a broken setup command would leave a fresh clone without the plan refspecs.",
+  "riskReason": "Once remote.origin.push is set, plain git push pushes only the configured refspecs, so a wrong setup silently stops branches or plan refs from reaching GitHub.",
   "expect": {
-    "remove": [
-      "scenarios",
-      "each_repo"
-    ],
-    "change": [
+    "add": [
       {
-        "symbol": "clone-scenarios",
-        "from": "sets refspecs here and clones both scenario repos",
-        "to": "setup: sets the plan refspecs on a fresh clone of this repo and fetches"
+        "symbol": "setup",
+        "signature": "node src/cli.ts setup [--repo <repo>]"
       },
       {
-        "symbol": "publish",
-        "from": "creates the project repo and both scenario repos",
-        "to": "creates the project repo only"
-      },
-      {
-        "symbol": "push",
-        "from": "pushes all three repos",
-        "to": "pushes this repo"
-      },
-      {
-        "symbol": "pull",
-        "from": "pulls all three repos",
-        "to": "pulls this repo, fast-forward only"
+        "symbol": "syncRefspecs",
+        "signature": "(repo) => { fetch: string[]; push: string[] }"
       }
     ],
-    "unchanged": [
-      "track_plans"
+    "remove": [
+      "scripts/github.sh",
+      "track_plans",
+      "each_repo",
+      "clone-scenarios"
     ],
     "rules": [
       {
-        "text": "plan refs still sync without force, so a ref that diverged on two Macs is rejected instead of overwritten",
+        "text": "the refspecs come from the same prefix that ref and listIds use, so renaming the prefix changes setup too",
+        "checkedBy": "human"
+      },
+      {
+        "text": "setup configures fetch and push of plan refs plus push of refs/heads/*, and running it twice adds nothing",
+        "checkedBy": "test"
+      },
+      {
+        "text": "plan refspecs have no +, so a ref that diverged on two Macs is rejected instead of overwritten",
+        "checkedBy": "test"
+      },
+      {
+        "text": "pushing and pulling are plain git push and git pull --ff-only",
         "checkedBy": "human"
       }
     ]
   },
   "evidence": [
-    "scripts/github.sh setup on a fresh clone configures the plan refspecs and fetches every plan ref",
-    "scripts/github.sh has no mention of scenarios"
+    "a test runs setup twice on a fresh clone and finds each refspec configured exactly once",
+    "after setup, git push sends both branches and plan refs, and git fetch brings every plan ref",
+    "scripts/github.sh no longer exists"
   ],
   "dependsOn": []
 }

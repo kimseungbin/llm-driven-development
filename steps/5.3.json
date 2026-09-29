@@ -4,9 +4,9 @@
   "parent": "5",
   "kind": "non-semantic",
   "origin": "planned",
-  "summary": "Drop the scenario sections from the design record and keep their findings as reasons",
+  "summary": "Drop the scenarios and the sync script from the design record and CLAUDE.md",
   "risk": "low",
-  "riskReason": "Documentation only; each finding moves next to its decision.",
+  "riskReason": "Documentation only; each scenario finding moves next to its decision.",
   "expect": {
     "rules": [
       {
@@ -18,13 +18,17 @@
         "checkedBy": "human"
       },
       {
-        "text": "'Resuming on another Mac' uses scripts/github.sh setup instead of clone-scenarios",
+        "text": "'Resuming on another Mac' is: clone, run node src/cli.ts setup, then git pull --ff-only and git push",
+        "checkedBy": "human"
+      },
+      {
+        "text": "CLAUDE.md says the human pushes with git push, not scripts/github.sh push",
         "checkedBy": "human"
       }
     ]
   },
   "evidence": [
-    "grep for coupons, soft-delete, and scenario in the design record finds only the one-line reasons"
+    "grep for coupons, soft-delete, scenario, and github.sh in the design record and CLAUDE.md finds only the one-line reasons"
   ],
   "dependsOn": [
     "5.2"
