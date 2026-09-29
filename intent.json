@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q6",
-      "origin": "request",
-      "text": "Linking commits to plan data: the prototype uses a Plan-Step trailer, with one step per commit. The ldd docs use an Ldd-Work trailer that names a work session. Which one?",
-      "proposal": "Plan-Step only. It links each commit straight to its step, and the step links to the intent, so work sessions and their records attach to step IDs instead. Ldd-Work is dropped."
-    },
-    {
       "id": "Q7",
       "origin": "request",
       "text": "Detecting stale plans: the prototype stores no base SHA, recomputes the base, and records the head SHA and observed-diff hash on each approval. The ldd docs store the commit the plan was made against and flag items that went stale against it. Which one?",
@@ -93,6 +87,12 @@
       "id": "Q5",
       "question": "Who works out planned vs built? The prototype computes it deterministically from the observed diff and step expectations, and stores LLM judgments separately, labeled inferred. The ldd docs have the author's agent submit review items that map the diff to the intent, which the coordinator then checks.",
       "answer": "Computed deterministically. Symbol lists are compared by machine; behavior and invariants are checked by the tests named in evidence or by the human; LLM judgments stay separate and labeled inferred. Agent-submitted review items are dropped, and the ldd coverage check becomes the unplanned bucket. Research and decision records written while working stay, attached to the intent and its steps.",
+      "origin": "request"
+    },
+    {
+      "id": "Q6",
+      "question": "Linking commits to plan data: the prototype uses a Plan-Step trailer, with one step per commit. The ldd docs use an Ldd-Work trailer that names a work session. Which one?",
+      "answer": "Plan-Step only. It links each commit to its step, which gives per-step diffs for reconciliation and the result gate. Research and decision records attach to step IDs from the plan gate onward. Ldd-Work is dropped.",
       "origin": "request"
     }
   ],
