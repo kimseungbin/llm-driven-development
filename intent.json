@@ -6,8 +6,8 @@
   "request": "I don't need scenarios anymore. we're already dogfooding",
   "problem": "The two exercise scenarios (coupons and soft-delete) were built to try the gates on a realistic codebase before the tool could plan itself. Now the tool plans its own work, so the scenarios are extra upkeep: their repos have to be synced, their plans migrated with every format or ref change, and current plans still point at them for checks that the tool's own intents could do.",
   "areas": [
-    "fe",
-    "be"
+    "cli",
+    "docs"
   ],
   "acceptance": [
     "Nothing in this repo's plans, scripts, skills, or design record depends on the scenarios any more.",
