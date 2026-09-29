@@ -22,12 +22,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q9",
-      "origin": "request",
-      "text": "Rendering: the prototype uses deterministic renderers per kind, and Claude never writes markup for records (your requirement). The ldd docs have agents write SVG diagrams, which are then sanitized. How do they fit together?",
-      "proposal": "Deterministic renderers draw every record view. An architecture diagram is something the human or agent authors: it's attached to a decision as sanitized SVG, shown as-is, and labeled authored. Counts, flags, and tables always come from renderers."
-    },
-    {
       "id": "Q10",
       "origin": "request",
       "text": "Git notes: the prototype rejected notes for plan data. The ldd docs use refs/notes/ldd only for a record, written after a merge, of how each merged commit was reviewed. Keep that record?",
@@ -93,6 +87,12 @@
       "id": "Q8",
       "question": "Who can approve? The prototype lets an agent run approve when your message explicitly names the gate and rev, recorded as Via: agent, with SSH-signed approvals as a later option. The ldd docs require a passkey signature for any act that decides a gate, so no agent can approve.",
       "answer": "By phase. Solo phase: CLI approve with delegated Via: agent approvals, as built now. Team phase: acts that decide a gate need a passkey signature, and delegated approvals never count toward a team gate. SSH-signed approvals are dropped in favor of passkeys.",
+      "origin": "request"
+    },
+    {
+      "id": "Q9",
+      "question": "Rendering: the prototype uses deterministic renderers per kind, and Claude never writes markup for records (your requirement). The ldd docs have agents write SVG diagrams, which are then sanitized. How do they fit together?",
+      "answer": "Deterministic renderers draw every record view, count, flag, and table. An architecture diagram is authored content attached to a decision: sanitized SVG, shown as-is, and labeled authored.",
       "origin": "request"
     }
   ],
