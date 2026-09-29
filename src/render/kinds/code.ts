@@ -24,7 +24,8 @@ const tone: Record<ReconItem['category'], string> = {
 
 const value = (v: string | null) => (v === null ? '<span class="v-dim">none</span>' : esc(v))
 
-export const dataShape: KindRenderer = {
+// The before/after table for every code kind. A data-shape step's rows are fields; other kinds' rows are symbols.
+export const code: KindRenderer = {
   itemName: (item) => (item.detail as FieldChange).field,
 
   body(view) {
@@ -42,7 +43,7 @@ export const dataShape: KindRenderer = {
     return `<table class="v-table">
 <colgroup><col style="width:17%"><col style="width:17%"><col style="width:19%"><col style="width:15%"><col style="width:14%"><col style="width:18%"></colgroup>
 <thead><tr class="v-grp"><th></th><th colspan="3">Observed in code · <span class="m">${esc(range)} @ ${esc(head)}</span></th><th>Vs plan</th><th></th></tr>
-<tr><th>Field</th><th>Before</th><th>After</th><th>Change</th><th>Plan</th><th>Impact</th></tr></thead>
+<tr><th>${view.step.kind === 'data-shape' ? 'Field' : 'Symbol'}</th><th>Before</th><th>After</th><th>Change</th><th>Plan</th><th>Impact</th></tr></thead>
 <tbody>${rows.join('\n')}</tbody>
 </table>`
   },

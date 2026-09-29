@@ -5,10 +5,10 @@
   "step": {
     "id": "KRW-12.1",
     "summary": "Make implicit USD an explicit enum",
-    "kind": "refactor.behavior-preserving",
+    "kind": "data-shape",
     "planRev": "3f9a2c1"
   },
-  "observed": { "kind": "data-shape", "range": "main..feat/krw", "head": "a1c44e0" },
+  "observed": { "range": "main..feat/krw", "head": "a1c44e0" },
   "items": [
     {
       "plan": "matched",

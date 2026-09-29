@@ -8,7 +8,7 @@
     "kind": "docs",
     "planRev": "8ab8b1c"
   },
-  "observed": { "kind": "docs", "range": "main..docs/inline-rows", "head": "921e0c3" },
+  "observed": { "range": "main..docs/inline-rows", "head": "921e0c3" },
   "items": [
     {
       "plan": "matched",

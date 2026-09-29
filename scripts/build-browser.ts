@@ -2,13 +2,20 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { stripTypeScriptTypes } from 'node:module'
 import { dirname, join, relative } from 'node:path'
 
-const src = 'src/render'
-const out = 'dist/render'
+const src = 'src'
+const out = 'dist'
 
-for (const entry of await readdir(src, { recursive: true, withFileTypes: true })) {
-  if (!entry.isFile() || !entry.name.endsWith('.ts')) continue
-  const from = join(entry.parentPath, entry.name)
-  const to = join(out, relative(src, from)).replace(/\.ts$/, '.js')
+// The renderers and the model they read (kinds and categories); nothing else runs in a browser.
+const files = [
+  'model.ts',
+  ...(await readdir(join(src, 'render'), { recursive: true, withFileTypes: true }))
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.ts'))
+    .map((entry) => relative(src, join(entry.parentPath, entry.name))),
+]
+
+for (const file of files) {
+  const from = join(src, file)
+  const to = join(out, file).replace(/\.ts$/, '.js')
   const js = stripTypeScriptTypes(await readFile(from, 'utf8'))
     // Browsers resolve specifiers literally, so the .ts extensions Node needs must become .js.
     .replace(/(from\s+['"]\.{1,2}\/[^'"]+)\.ts(['"])/g, '$1.js$2')

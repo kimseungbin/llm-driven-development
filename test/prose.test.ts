@@ -17,7 +17,7 @@ const view = (items: ReconItem[]): ResultGateView => ({
   view: 'result-gate',
   mode: 'planned',
   step: { id: '9.1', summary: 'test step', kind: 'docs', planRev: 'abc1234' },
-  observed: { kind: 'docs', range: 'main..test', head: 'def5678' },
+  observed: { range: 'main..test', head: 'def5678' },
   items,
   invariants: [],
 })
