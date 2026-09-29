@@ -23,7 +23,14 @@
       "reason": "The new categories apply from #6 on; earlier results keep their labels (Q3, user, 2026-09-29)."
     }
   ],
-  "openQuestions": [],
+  "openQuestions": [
+    {
+      "id": "Q4",
+      "origin": "code",
+      "text": "Q0 says instructions and docs steps name the file and section they change, but every expect entry must be a symbol: one token, no spaces, never a file path. How do prose steps name what they change?",
+      "proposal": "A new expect field for the prose kinds only, sections: { doc, section }[]. doc is the skill name for a skill and the repo-relative path for any other file (CLAUDE.md, docs/model/steps.md); section is the heading text. The no-paths rule stays for code, where a symbol survives a file move and a path doesn't; for prose the file is the identity. Reconciliation matches changed headings against it. The alternatives: encode each target as one slug token (docs/model/steps.md#format-version-2) in the existing add, change, and remove lists; or name targets only in rules, checked by the human."
+    }
+  ],
   "decisions": [
     {
       "id": "Q0",
