@@ -18,12 +18,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q5",
-      "origin": "request",
-      "text": "When a thing changes what kind it is, such as an object becoming a class, what should its row say?",
-      "proposal": "Show both kinds, before and after (object → class), under the existing type changed category, rather than adding a new category. #6 Q1 kept one small shared list so a word means the same thing in every kind, and the before and after already tell the reviewer what happened."
-    },
-    {
       "id": "Q6",
       "origin": "request",
       "text": "For the uncategorized rows: should each kind's category list widen to the changes that ordinarily come with it, or should steps split finer so each stays within its kind's list?",
@@ -53,6 +47,12 @@
       "id": "Q4",
       "question": "How much of what changed inside a thing is enough, and when is it too long?",
       "answer": "One level, body behind toggle (Recommended): one level down, only what changed (a class's changed members, a function's old and new signature, a value's old and new value, a behavior's changed condition and outcome). A body diff sits behind a toggle that starts closed.",
+      "origin": "request"
+    },
+    {
+      "id": "Q5",
+      "question": "When a thing changes what kind it is, such as an object becoming a class, what should its row say?",
+      "answer": "Both kinds, type changed (Recommended): show the kind before and after (object → class) under the existing type changed category.",
       "origin": "request"
     }
   ]
