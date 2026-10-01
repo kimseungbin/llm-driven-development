@@ -18,12 +18,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q1",
-      "origin": "request",
-      "text": "Should the two halves, rows that land in uncategorized and rows that don't say what kind of thing changed or what changed in it, stay one intent?",
-      "proposal": "Keep both in #7. They are the same pain, a row that doesn't tell the reviewer what changed, and both change what one row carries, so deciding them together avoids reshaping the rows twice. Split the depth half into its own intent only if you want the category fix to land first."
-    },
-    {
       "id": "Q2",
       "origin": "request",
       "text": "Which kinds of thing must a row be able to name, and does this cover prose rows (instructions, docs) as well as code rows?",
@@ -54,5 +48,12 @@
       "proposal": "Widen the lists, checked against #6's 12 rows: a feature step can also change existing things (renamed, type changed, value changed, behavior changed), and a behavior-change step can also produce removed and type changed. Splitting would make the planner cut one logical change into several steps just to satisfy the labels, against one step per logical change, and give the reviewer more steps for the same work. Asked last because showing what changed inside a thing (Q4) may turn some of those rows into members added, which feature already allows."
     }
   ],
-  "decisions": []
+  "decisions": [
+    {
+      "id": "Q1",
+      "question": "Should the two halves, rows that land in uncategorized and rows that don't say what kind of thing changed or what changed in it, stay one intent?",
+      "answer": "Keep both in #7 (Recommended)",
+      "origin": "request"
+    }
+  ]
 }
