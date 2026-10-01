@@ -2,17 +2,57 @@
   "schemaVersion": 1,
   "id": "7",
   "kind": "intent",
-  "title": "Fit per-kind change categories to real steps",
-  "request": "The first gate under the new rules has many uncategorized rows: a feature step can only produce 'added', and a behavior-change step can't produce 'removed' or 'type changed'. What should happen?\n\n(chosen: New intent (Recommended))",
-  "problem": "#6's result gate, the first under per-kind categories, showed 12 of its 30 rows as uncategorized. A feature step that also changes existing symbols, and a behavior-change step that also retypes or removes a field, have no category for those changes. The reviewer can't tell whether uncategorized means a step mixed kinds or the kind's list is too narrow, so the label stops carrying information.",
+  "title": "Result-gate rows that say what changed, how, and in what kind of thing",
+  "request": "The first gate under the new rules has many uncategorized rows: a feature step can only produce 'added', and a behavior-change step can't produce 'removed' or 'type changed'. What should happen?\n\n(chosen: New intent (Recommended))\n\nIn result gate, it is difficult to know what's really changed in depth. For example it lists changed symbols but I can't even know what it is changing - a class? object? function?\n\n(chosen: Fold into #7)",
+  "problem": "The reviewer at a result gate can't tell from its rows what really changed. On #6's result gate, the first under per-kind categories, 12 of 30 rows showed as uncategorized: a feature step that also changes existing symbols, and a behavior-change step that also retypes or removes a field, have no category for those changes. The reviewer can't tell whether uncategorized means a step mixed kinds or the kind's list is too narrow, so the label stops carrying information. And even a categorized row only names the changed symbol: it doesn't say whether that is a class, an object, or a function, or what changed inside it, so the reviewer has to open the code to judge a change the gate exists to show.",
   "areas": [
     "model",
     "render"
   ],
   "acceptance": [
     "At a result gate, uncategorized appears only for a change that no category describes, not for an ordinary part of a step of that kind.",
-    "#6's result gate is the worked example the decision is checked against."
+    "Every changed thing at a result gate says what kind of thing it is, such as a class, an object, or a function, so the reviewer doesn't have to open the code to find out.",
+    "Every changed thing says what changed inside it, not only that it changed, so the reviewer can judge the change against the plan without opening the code.",
+    "The added detail doesn't bury what needs attention: unplanned, missing, breaking, and inferred rows still come first, and each row stays readable at a glance.",
+    "#6's result gate is the worked example both halves are checked against."
   ],
-  "openQuestions": [],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "origin": "request",
+      "text": "Should the two halves, rows that land in uncategorized and rows that don't say what kind of thing changed or what changed in it, stay one intent?",
+      "proposal": "Keep both in #7. They are the same pain, a row that doesn't tell the reviewer what changed, and both change what one row carries, so deciding them together avoids reshaping the rows twice. Split the depth half into its own intent only if you want the category fix to land first."
+    },
+    {
+      "id": "Q2",
+      "origin": "request",
+      "text": "Which kinds of thing must a row be able to name, and does this cover prose rows (instructions, docs) as well as code rows?",
+      "proposal": "Name the kinds a reader of the code would use: class, interface, type, enum, function, method, field or property, constant or variable, object, and module for a whole-file change. Prose rows already say what they are (a section), so they keep their current view. This answers 'a class? object? function?' directly; a coarser split such as type versus value wouldn't."
+    },
+    {
+      "id": "Q3",
+      "origin": "request",
+      "text": "What must a reviewer be able to see for each changed thing?",
+      "proposal": "Four things: what kind of thing it is, where it lives (the class or module that contains it), its change category, and the before and after of the part that changed. Together they say what it is and what happened to it without opening the code; the category alone only says that something happened."
+    },
+    {
+      "id": "Q4",
+      "origin": "request",
+      "text": "How much of what changed inside a thing is enough, and when is it too long?",
+      "proposal": "Go one level down and show only what changed: for a class, the members added, removed, or changed; for a function, its old and new signature; for a value, its old and new value; for a behavior change, the condition and outcome that changed. Never show a whole body inline; a body's diff, if shown at all, sits behind a toggle that starts closed. #2 Q4 accepted a long widget to keep everything in one place, but whole bodies across #6's 30 rows would bury the rows that need attention, and one level is enough to say what changed in it."
+    },
+    {
+      "id": "Q5",
+      "origin": "request",
+      "text": "When a thing changes what kind it is, such as an object becoming a class, what should its row say?",
+      "proposal": "Show both kinds, before and after (object → class), under the existing type changed category, rather than adding a new category. #6 Q1 kept one small shared list so a word means the same thing in every kind, and the before and after already tell the reviewer what happened."
+    },
+    {
+      "id": "Q6",
+      "origin": "request",
+      "text": "For the uncategorized rows: should each kind's category list widen to the changes that ordinarily come with it, or should steps split finer so each stays within its kind's list?",
+      "proposal": "Widen the lists, checked against #6's 12 rows: a feature step can also change existing things (renamed, type changed, value changed, behavior changed), and a behavior-change step can also produce removed and type changed. Splitting would make the planner cut one logical change into several steps just to satisfy the labels, against one step per logical change, and give the reviewer more steps for the same work. Asked last because showing what changed inside a thing (Q4) may turn some of those rows into members added, which feature already allows."
+    }
+  ],
   "decisions": []
 }
