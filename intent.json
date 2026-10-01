@@ -18,12 +18,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q2",
-      "origin": "request",
-      "text": "Which kinds of thing must a row be able to name, and does this cover prose rows (instructions, docs) as well as code rows?",
-      "proposal": "Name the kinds a reader of the code would use: class, interface, type, enum, function, method, field or property, constant or variable, object, and module for a whole-file change. Prose rows already say what they are (a section), so they keep their current view. This answers 'a class? object? function?' directly; a coarser split such as type versus value wouldn't."
-    },
-    {
       "id": "Q3",
       "origin": "request",
       "text": "What must a reviewer be able to see for each changed thing?",
@@ -53,6 +47,12 @@
       "id": "Q1",
       "question": "Should the two halves, rows that land in uncategorized and rows that don't say what kind of thing changed or what changed in it, stay one intent?",
       "answer": "Keep both in #7 (Recommended)",
+      "origin": "request"
+    },
+    {
+      "id": "Q2",
+      "question": "Which kinds of thing must a row be able to name, and does this cover prose rows (instructions, docs) as well as code rows?",
+      "answer": "Language's own kinds: use what the language's compiler calls it (in TypeScript: type alias, accessor, namespace...). Prose rows name a kind too: what kind of text it is (skill, CLAUDE.md, design doc, hook prompt).",
       "origin": "request"
     }
   ]
