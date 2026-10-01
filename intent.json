@@ -11,7 +11,7 @@
   ],
   "acceptance": [
     "At a result gate, uncategorized appears only for a change that no category describes, not for an ordinary part of a step of that kind.",
-    "Every changed thing at a result gate says what kind of thing it is, such as a class, an object, or a function, so the reviewer doesn't have to open the code to find out.",
+    "Every changed thing at a result gate says what kind of thing it is, in its language's own terms for code (such as a class, a type alias, or a function) and as a kind of text for prose (such as a skill or a design doc), so the reviewer doesn't have to open the file to find out.",
     "Every changed thing says what changed inside it, not only that it changed, so the reviewer can judge the change against the plan without opening the code.",
     "The added detail doesn't bury what needs attention: unplanned, missing, breaking, and inferred rows still come first, and each row stays readable at a glance.",
     "#6's result gate is the worked example both halves are checked against."
