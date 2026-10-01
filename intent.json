@@ -18,12 +18,6 @@
   ],
   "openQuestions": [
     {
-      "id": "Q3",
-      "origin": "request",
-      "text": "What must a reviewer be able to see for each changed thing?",
-      "proposal": "Four things: what kind of thing it is, where it lives (the class or module that contains it), its change category, and the before and after of the part that changed. Together they say what it is and what happened to it without opening the code; the category alone only says that something happened."
-    },
-    {
       "id": "Q4",
       "origin": "request",
       "text": "How much of what changed inside a thing is enough, and when is it too long?",
@@ -53,6 +47,12 @@
       "id": "Q2",
       "question": "Which kinds of thing must a row be able to name, and does this cover prose rows (instructions, docs) as well as code rows?",
       "answer": "Language's own kinds: use what the language's compiler calls it (in TypeScript: type alias, accessor, namespace...). Prose rows name a kind too: what kind of text it is (skill, CLAUDE.md, design doc, hook prompt).",
+      "origin": "request"
+    },
+    {
+      "id": "Q3",
+      "question": "What must a reviewer be able to see for each changed thing?",
+      "answer": "Kind, home, category, diff (Recommended): what kind of thing it is, where it lives (the containing class or module), its category, and the before and after of the part that changed.",
       "origin": "request"
     }
   ]
