@@ -16,14 +16,7 @@
     "The added detail doesn't bury what needs attention: unplanned, missing, breaking, and inferred rows still come first, and each row stays readable at a glance.",
     "#6's result gate is the worked example both halves are checked against."
   ],
-  "openQuestions": [
-    {
-      "id": "Q6",
-      "origin": "request",
-      "text": "For the uncategorized rows: should each kind's category list widen to the changes that ordinarily come with it, or should steps split finer so each stays within its kind's list?",
-      "proposal": "Widen the lists, checked against #6's 12 rows: a feature step can also change existing things (renamed, type changed, value changed, behavior changed), and a behavior-change step can also produce removed and type changed. Splitting would make the planner cut one logical change into several steps just to satisfy the labels, against one step per logical change, and give the reviewer more steps for the same work. Asked last because showing what changed inside a thing (Q4) may turn some of those rows into members added, which feature already allows."
-    }
-  ],
+  "openQuestions": [],
   "decisions": [
     {
       "id": "Q1",
@@ -53,6 +46,12 @@
       "id": "Q5",
       "question": "When a thing changes what kind it is, such as an object becoming a class, what should its row say?",
       "answer": "Both kinds, type changed (Recommended): show the kind before and after (object → class) under the existing type changed category.",
+      "origin": "request"
+    },
+    {
+      "id": "Q6",
+      "question": "For the uncategorized rows: should each kind's category list widen to the changes that ordinarily come with it, or should steps split finer so each stays within its kind's list?",
+      "answer": "Widen the lists (Recommended), checked against #6's 12 rows: feature also gets renamed, type changed, value changed, and behavior changed for existing things; behavior-change also gets removed and type changed.",
       "origin": "request"
     }
   ]
